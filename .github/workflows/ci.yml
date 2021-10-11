@@ -18,3 +18,12 @@ jobs:
 
       - name: Build application
         run: npm run build
+
+      - name: Lint Typecript and templates
+        run: npm run lint
+
+      - name: Lint styles
+        run: npm run lint:styles
+
+      - name: Test
+        run: npm run test
