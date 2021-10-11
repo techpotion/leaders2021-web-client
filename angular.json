@@ -10,30 +10,30 @@
           "strict": true
         },
         "@schematics/angular:component": {
-            "skipTests": true,
-            "style": "scss",
-            "changeDetection": "OnPush",
-            "lintFix": true
+          "skipTests": true,
+          "style": "scss",
+          "changeDetection": "OnPush",
+          "lintFix": true
         },
         "@schematics/angular:class": {
-            "skipTests": true,
-            "lintFix": true
+          "skipTests": true,
+          "lintFix": true
         },
         "@schematics/angular:directive": {
-            "skipTests": true,
-            "lintFix": true
+          "skipTests": true,
+          "lintFix": true
         },
         "@schematics/angular:guard": {
-            "skipTests": true,
-            "lintFix": true
+          "skipTests": true,
+          "lintFix": true
         },
         "@schematics/angular:pipe": {
-            "skipTests": true,
-            "lintFix": true
+          "skipTests": true,
+          "lintFix": true
         },
         "@schematics/angular:service": {
-            "skipTests": true,
-            "lintFix": true
+          "skipTests": true,
+          "lintFix": true
         }
       },
       "root": "",
@@ -126,9 +126,21 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "web-client"
+  "defaultProject": "web-client",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }
