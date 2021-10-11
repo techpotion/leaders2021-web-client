@@ -1,8 +1,8 @@
 name: OnPush CI
-on: [ push ]
+on: push
 
 jobs:
-  build:
+  prebuild:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout git branch
@@ -14,16 +14,28 @@ jobs:
           node-version: '16'
 
       - name: Install dependencies
-        uses: .github/actions/prebuild@v1
+        uses: npm install
 
+  build:
+    runs-on: ubuntu-latest
+    needs: prebuild
+    steps:
       - name: Build application
         run: npm run build
 
+  lint:
+    runs-on: ubuntu-latest
+    needs: prebuild
+    steps:
       - name: Lint Typecript and templates
         run: npm run lint
 
       - name: Lint styles
         run: npm run lint:styles
 
+  test:
+    runs-on: ubuntu-latest
+    needs: prebuild
+    steps:
       - name: Test
         run: npm run test
