@@ -12,22 +12,28 @@
         "@schematics/angular:component": {
             "skipTests": true,
             "style": "scss",
-            "changeDetection": "OnPush"
+            "changeDetection": "OnPush",
+            "lintFix": true
         },
         "@schematics/angular:class": {
-            "skipTests": true
+            "skipTests": true,
+            "lintFix": true
         },
         "@schematics/angular:directive": {
-            "skipTests": true
+            "skipTests": true,
+            "lintFix": true
         },
         "@schematics/angular:guard": {
-            "skipTests": true
+            "skipTests": true,
+            "lintFix": true
         },
         "@schematics/angular:pipe": {
-            "skipTests": true
+            "skipTests": true,
+            "lintFix": true
         },
         "@schematics/angular:service": {
-            "skipTests": true
+            "skipTests": true,
+            "lintFix": true
         }
       },
       "root": "",
