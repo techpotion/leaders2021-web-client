@@ -14,7 +14,7 @@ jobs:
           node-version: '16'
 
       - name: Install dependencies
-        uses: ./.github/actions/prebuild@v1
+        uses: .github/actions/prebuild@v1
 
       - name: Build application
         run: npm run build
