@@ -1,7 +1,0 @@
-name: Prebuild action
-description: Installs dependencies as separate action
-
-runs:
-  steps:
-    - name: Install dependencies
-      run: npm install
