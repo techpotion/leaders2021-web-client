@@ -36,7 +36,7 @@ jobs:
       - name: Test
         run: npm run test
 
-  deploy:
+  dockerize:
     needs: build-lint-test
     runs-on: ubuntu-latest
     steps:
@@ -61,5 +61,13 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: latest
 
+  deploy:
+    needs: dockerize
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deploy webhook
+        uses: joelwmale/webhook-action@master
+        with:
+          url: ${{ secrets.DEPLOY_WEBHOOK_URL }}
