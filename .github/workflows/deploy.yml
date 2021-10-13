@@ -1,9 +1,9 @@
 name: Deploy CI
-on: push
+on:
   # On push directly or by merging branch with pull request
-  # push:
-    # branches:
-      # - develop
+  push:
+    branches:
+      - develop
 
 env:
   REGISTRY: ghcr.io
