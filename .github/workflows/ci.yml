@@ -1,4 +1,4 @@
-name: OnPush CI
+name: OnPullRequest CI
 on:
   # On every action in pull request
   pull_request:
