@@ -1,8 +1,12 @@
 name: OnPush CI
-on: push
+on:
+  # On every action in pull request
+  pull_request:
+    branches:
+      - develop
 
 jobs:
-  prebuild:
+  build-lint-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout git branch
