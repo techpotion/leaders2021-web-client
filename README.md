@@ -3,7 +3,7 @@
 
 # Sport Object Analysis
 
-Sport Object Analysis web client for Digital Transformation Leaders 2021 contest
+Sport Object Analysis web client for Digital Transformation Leaders 2021 contest.
 
 Application introduces an interactive map of Moscow sport objects with
 different filters and recomendations for district infrastructure development.
