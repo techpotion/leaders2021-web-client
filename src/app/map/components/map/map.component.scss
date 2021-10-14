@@ -1,0 +1,9 @@
+.map {
+  height: 100%;
+
+  ::ng-deep {
+    .mapboxgl-control-container {
+      display: none;
+    }
+  }
+}
