@@ -6,6 +6,9 @@ import { AppComponent } from './app.component';
 
 import { MapModule } from './map/map.module';
 
+import { interceptorProviders } from './core/interceptors/interceptor-providers';
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -15,7 +18,9 @@ import { MapModule } from './map/map.module';
     AppRoutingModule,
     MapModule,
   ],
-  providers: [],
+  providers: [
+    interceptorProviders,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule { }
