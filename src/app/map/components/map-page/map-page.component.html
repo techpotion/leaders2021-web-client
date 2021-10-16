@@ -21,7 +21,9 @@
             darkIcon="assets/dark/population.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
-            [disabled]="(mapModeSubject | async) !== 'default'"
+            [disabled]="(mapModeSubject | async) !== 'default'
+                         && (mapModeSubject | async) !== 'sport-heatmap'"
+            (pressChange)="onSportObjectsTogglePress($event)"
             lightIcon="assets/light/runner.svg"
             darkIcon="assets/dark/runner.svg"    
         > </tp-map-toggle>

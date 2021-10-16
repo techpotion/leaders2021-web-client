@@ -4,6 +4,7 @@ import { of, BehaviorSubject, Observable } from 'rxjs';
 import { map, tap, switchMap } from 'rxjs/operators';
 
 import { PopulationApiService } from '../../../population/services/population-api.service';
+import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
 
 import { Heatmap } from '../../models/heatmap';
 
@@ -20,6 +21,7 @@ export class MapPageComponent {
 
   constructor(
     public readonly populationApi: PopulationApiService,
+    public readonly sportObjectsApi: SportObjectsApiService,
   ) { }
 
   public readonly loadingSubject = new BehaviorSubject<boolean>(false);
@@ -30,9 +32,17 @@ export class MapPageComponent {
   = this.mapModeSubject.pipe(
     tap(() => this.loadingSubject.next(true)),
     switchMap(mode => {
-      if (mode === 'default') { return of(null); }
       if (mode === 'population-heatmap') {
         return this.populationApi.getDensity().pipe(
+          tap((source) => console.log('population', source)),
+          map(source => [this.createHeatmap(source)]),
+        );
+      }
+      if (mode === 'sport-heatmap') {
+        return this.sportObjectsApi.getDensity().pipe(
+          // TODO: Отладить. API возвращает тот же геожсон, что и
+          // в плотности населения
+          tap((source) => console.log('sport', source)),
           map(source => [this.createHeatmap(source)]),
         );
       }
@@ -43,6 +53,11 @@ export class MapPageComponent {
 
   public onPopulationTogglePress(pressed: boolean): void {
     const mapModeUpdate = pressed ? 'population-heatmap' : 'default';
+    this.mapModeSubject.next(mapModeUpdate);
+  }
+
+  public onSportObjectsTogglePress(pressed: boolean): void {
+    const mapModeUpdate = pressed ? 'sport-heatmap' : 'default';
     this.mapModeSubject.next(mapModeUpdate);
   }
 
