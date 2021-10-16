@@ -1,4 +1,5 @@
-<tp-map class="map">
+<tp-map class="map"
+    [heatmaps]="heatmaps | async">
 </tp-map>
 
 <div class="toggle-container">
@@ -13,10 +14,14 @@
             darkIcon="assets/dark/layers.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
+            [disabled]="(mapModeSubject | async) !== 'default'
+                         && (mapModeSubject | async) !== 'population-heatmap'"
+            (pressChange)="onPopulationTogglePress($event)"
             lightIcon="assets/light/population.svg"
             darkIcon="assets/dark/population.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
+            [disabled]="(mapModeSubject | async) !== 'default'"
             lightIcon="assets/light/runner.svg"
             darkIcon="assets/dark/runner.svg"    
         > </tp-map-toggle>
