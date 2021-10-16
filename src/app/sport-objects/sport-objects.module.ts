@@ -8,7 +8,7 @@ import { SportObjectsRoutingModule } from './sport-objects-routing.module';
   declarations: [],
   imports: [
     CommonModule,
-    SportObjectsRoutingModule
-  ]
+    SportObjectsRoutingModule,
+  ],
 })
 export class SportObjectsModule { }
