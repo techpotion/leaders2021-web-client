@@ -14,14 +14,14 @@
             darkIcon="assets/dark/layers.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
-            [disabled]="(mapModeSubject | async) !== 'default'
-                         && (mapModeSubject | async) !== 'population-heatmap'"
+            [isPressed]="(mapModeSubject | async) === 'population-heatmap'"
             (pressChange)="onPopulationTogglePress($event)"
             lightIcon="assets/light/population.svg"
             darkIcon="assets/dark/population.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
-            [disabled]="(mapModeSubject | async) !== 'default'"
+            [isPressed]="(mapModeSubject | async) === 'sport-heatmap'"
+            (pressChange)="onSportObjectsTogglePress($event)"
             lightIcon="assets/light/runner.svg"
             darkIcon="assets/dark/runner.svg"    
         > </tp-map-toggle>

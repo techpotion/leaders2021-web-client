@@ -1,6 +1,6 @@
 export interface Heatmap {
   data: GeoJSON.FeatureCollection;
-  property: string;
+  property?: string;
   maxzoom?: number;
   radiusStops: HeatmapRadiusStop[];
 }

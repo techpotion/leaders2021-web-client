@@ -22,7 +22,7 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { MapService } from '../../services/map.service';
 
 
-mapboxgl.accessToken = environment.mapToken;
+mapboxgl.accessToken = environment.map.token;
 
 const MOSCOW_COORDS: LatLng = { lng: 37.618423, lat: 55.751244 };
 
@@ -51,7 +51,7 @@ export class MapComponent implements AfterViewInit {
   public ngAfterViewInit(): void {
     this.map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v11',
+      style: environment.map.style,
       center: this.centerSubject.value,
       zoom: this.zoomSubject.value.current,
       minZoom: this.zoomSubject.value.min,

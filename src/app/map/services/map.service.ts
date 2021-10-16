@@ -22,34 +22,43 @@ export class MapService {
       data: heatmap.data,
     });
 
-    const propertyValues = heatmap.data.features
-      .map(feature => feature.properties)
-      .filter(isNotNil)
-      .map(properties => properties[heatmap.property] as number);
-
     const radiusStops = heatmap.radiusStops.map(
       ({ zoom, radius }) => [ zoom, radius ],
     );
 
-    map.addLayer({
+    const layer: mapboxgl.HeatmapLayer = {
       id,
       type: 'heatmap',
       source: id,
       maxzoom: heatmap.maxzoom,
       paint: {
-        'heatmap-weight': {
-          property: 'heatness',
-          stops: [
-            [_.min(propertyValues), 0],
-            [_.max(propertyValues), 1],
-          ],
-        },
         'heatmap-radius': {
           stops: radiusStops,
         },
         'heatmap-opacity': 0.3,
       },
-    });
+    };
+
+    if (heatmap.property) {
+      const heatProperty = heatmap.property;
+      const propertyValues = heatmap.data.features
+        .map(feature => feature.properties)
+        .filter(isNotNil)
+        .map(properties => properties[heatProperty] as number);
+
+      if (!layer.paint) {
+        layer.paint = {};
+      }
+      layer.paint['heatmap-weight'] = {
+        property: 'heatness',
+        stops: [
+          [_.min(propertyValues), 0],
+          [_.max(propertyValues), 1],
+        ],
+      };
+    }
+
+    map.addLayer(layer);
   }
 
   public removeHeatmap(map: mapboxgl.Map, id: string): void {
