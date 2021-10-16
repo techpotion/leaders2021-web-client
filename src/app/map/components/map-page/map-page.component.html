@@ -1,6 +1,28 @@
 <tp-map class="map">
 </tp-map>
 
+<div class="toggle-container">
+    <tp-map-toggle
+        lightIcon="assets/light/polygon.svg"
+        darkIcon="assets/dark/polygon.svg"    
+    > </tp-map-toggle>
+
+    <div class="layers-toggles">
+        <tp-map-toggle
+            lightIcon="assets/light/layers.svg"
+            darkIcon="assets/dark/layers.svg"    
+        > </tp-map-toggle>
+        <tp-map-toggle
+            lightIcon="assets/light/population.svg"
+            darkIcon="assets/dark/population.svg"    
+        > </tp-map-toggle>
+        <tp-map-toggle
+            lightIcon="assets/light/runner.svg"
+            darkIcon="assets/dark/runner.svg"    
+        > </tp-map-toggle>
+    </div>
+</div>
+
 <tp-loading-spinner class="loading-spinner"
                     [ngClass]="{ 'shown': loadingSubject | async }">
 </tp-loading-spinner>
