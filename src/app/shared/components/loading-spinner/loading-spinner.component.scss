@@ -1,0 +1,24 @@
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+:host {
+  border-radius: 30px;
+
+  background: var(--color-theme-white-1000);
+
+  img {
+    display: block;
+    width: 28px;
+
+    margin: 13px 16px;
+
+    animation: rotating 3s linear infinite;
+  }
+}

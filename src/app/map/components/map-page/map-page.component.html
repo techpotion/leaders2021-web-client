@@ -1,2 +1,6 @@
 <tp-map class="map">
 </tp-map>
+
+<tp-loading-spinner class="loading-spinner"
+                    [ngClass]="{ 'shown': loadingSubject | async }">
+</tp-loading-spinner>

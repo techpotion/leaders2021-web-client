@@ -1,5 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 
+import { BehaviorSubject } from 'rxjs';
+
 
 @Component({
   selector: 'tp-map-page',
@@ -10,5 +12,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 export class MapPageComponent {
 
   constructor() { }
+
+  public readonly loadingSubject = new BehaviorSubject<boolean>(false);
 
 }
