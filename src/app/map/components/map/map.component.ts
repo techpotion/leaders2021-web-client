@@ -18,6 +18,9 @@ import { MapZoom } from '../../models/map-zoom';
 
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
+import { PopulationApiService } from '../../../population/services/population-api.service';
+
+
 mapboxgl.accessToken = environment.mapToken;
 
 const MOSCOW_COORDS: LatLng = { lng: 37.618423, lat: 55.751244 };
@@ -38,7 +41,9 @@ const EVENT_DEBOUNCE_TIME = 300;
 })
 export class MapComponent implements AfterViewInit {
 
-  constructor() { }
+  constructor(
+    public readonly populationApi: PopulationApiService,
+  ) { }
 
   // #region Lifecycle hooks
 
@@ -76,8 +81,53 @@ export class MapComponent implements AfterViewInit {
     existingMap.on('zoom', () => this.zoomSubject.next(
       { ...this.zoomSubject.value, current: existingMap.getZoom() },
     ));
+
     existingMap.on('move', () =>
       this.centerSubject.next(existingMap.getCenter()));
+
+    existingMap.on('load', () => {
+      console.log(this.map!.loaded());
+      void this.populationApi.getDensity().toPromise().then(population => {
+        console.log('population', population);
+
+        existingMap.addSource('population-source', {
+          type: 'geojson',
+          data: population,
+        });
+
+        const heatnesses = population.features.map(feature =>
+          feature.properties?.heatness as number);
+        const min = _.min(heatnesses);
+        const max = _.max(heatnesses);
+
+        existingMap.addLayer({
+          id: 'population-layer',
+          type: 'heatmap',
+          source: 'population-source',
+          maxzoom: 16,
+          paint: {
+            'heatmap-weight': {
+              property: 'heatness',
+              stops: [
+                [min, 0],
+                [max, 1],
+              ],
+            },
+            'heatmap-radius': {
+              stops: [
+                [8, 8],
+                [9, 16],
+                [10, 32],
+                [11, 64],
+                [14, 256],
+                [18, 512],
+              ],
+            },
+            'heatmap-opacity': 0.3,
+          },
+        });
+      });
+    });
   }
 
   // #endregion
