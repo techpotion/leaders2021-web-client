@@ -14,11 +14,24 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 
 import { LatLng } from '../../models/lat-lng';
+import { MapZoom } from '../../models/map-zoom';
+import { Heatmap } from '../../models/heatmap';
+
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
+
+import { MapService } from '../../services/map.service';
 
 
 mapboxgl.accessToken = environment.mapToken;
+
 const MOSCOW_COORDS: LatLng = { lng: 37.618423, lat: 55.751244 };
-const DEFAULT_ZOOM = 11;
+
+const DEFAULT_ZOOM: MapZoom = {
+  current: 11,
+  min: 8,
+  max: 18,
+};
+
 const EVENT_DEBOUNCE_TIME = 300;
 
 @Component({
@@ -29,7 +42,9 @@ const EVENT_DEBOUNCE_TIME = 300;
 })
 export class MapComponent implements AfterViewInit {
 
-  constructor() { }
+  constructor(
+    public readonly mapUtils: MapService,
+  ) { }
 
   // #region Lifecycle hooks
 
@@ -38,11 +53,15 @@ export class MapComponent implements AfterViewInit {
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v11',
       center: this.centerSubject.value,
-      zoom: this.zoomSubject.value,
+      zoom: this.zoomSubject.value.current,
+      minZoom: this.zoomSubject.value.min,
+      maxZoom: this.zoomSubject.value.max,
     });
 
-    this.map.on('zoom', () => this.zoomSubject.next(this.map.getZoom()));
-    this.map.on('move', () => this.centerSubject.next(this.map.getCenter()));
+    // eslint-disable-next-line
+    this.map.addControl(new MapboxLanguage());
+
+    this.subscribeOnMapEvents();
   }
 
   // #endregion
@@ -50,7 +69,67 @@ export class MapComponent implements AfterViewInit {
 
   // #region Map
 
-  public map!: mapboxgl.Map;
+  private map?: mapboxgl.Map;
+
+  private subscribeOnMapEvents(): void {
+    if (!this.map) {
+      throw new Error('Failed to subscribe to map events: '
+        + 'map is not initialized yet.');
+    }
+    // Subscribing on events of existing map instance.
+    const existingMap = this.map;
+
+    existingMap.on('zoom', () => this.zoomSubject.next(
+      { ...this.zoomSubject.value, current: existingMap.getZoom() },
+    ));
+
+    existingMap.on('move', () =>
+      this.centerSubject.next(existingMap.getCenter()));
+
+    existingMap.on('load', () => {
+      for (const callback of this.loadCallbacks) {
+        callback();
+      }
+      this.loadCallbacks = [];
+    });
+  }
+
+  public loadCallbacks: (() => void)[] = [];
+
+  // #endregion
+
+
+  // #region Heatmap
+
+  private heatmapIds: string[] = [];
+
+  @Input()
+  public set heatmaps(sources: Heatmap[] | null) {
+    const updateSources = sources ?? [];
+
+    if (!this.map || !this.map.loaded()) {
+      this.loadCallbacks.push(() => this.updateHeatmaps(updateSources));
+      return;
+    }
+
+    this.updateHeatmaps(updateSources);
+  }
+
+  private updateHeatmaps(sources: Heatmap[]): void {
+    if (!this.map || !this.map.loaded()) {
+      throw new Error('Cannot update heatmaps: map is not loaded');
+    }
+    const loadedMap = this.map;
+
+    this.mapUtils.removeHeatmaps(loadedMap, this.heatmapIds);
+    this.heatmapIds = [];
+
+    sources.forEach((source, index) => {
+      const id = `heatmap${index}`;
+      this.mapUtils.addHeatmap(loadedMap, source, id);
+      this.heatmapIds.push(id);
+    });
+  }
 
   // #endregion
 
@@ -59,17 +138,40 @@ export class MapComponent implements AfterViewInit {
 
   @Input()
   public set zoom(value: number) {
-    this.zoomSubject.next(value);
-    this.map.setZoom(value);
+    this.zoomSubject.next({ ...this.zoomSubject.value, current: value });
+
+    if (this.map) {
+      this.map.setZoom(value);
+    }
   }
 
-  private readonly zoomSubject = new BehaviorSubject<number>(DEFAULT_ZOOM);
+  private readonly zoomSubject = new BehaviorSubject<MapZoom>(
+    DEFAULT_ZOOM,
+  );
 
   @Output()
   public readonly zoomChange = this.zoomSubject.pipe(
     distinctUntilChanged(),
     debounceTime(EVENT_DEBOUNCE_TIME),
   );
+
+  @Input()
+  public set maxzoom(value: number) {
+    this.zoomSubject.next({ ...this.zoomSubject.value, max: value });
+
+    if (this.map) {
+      this.map.setMaxZoom(value);
+    }
+  }
+
+  @Input()
+  public set minZoom(value: number) {
+    this.zoomSubject.next({ ...this.zoomSubject.value, min: value });
+
+    if (this.map) {
+      this.map.setMinZoom(value);
+    }
+  }
 
   // #endregion
 
@@ -79,7 +181,10 @@ export class MapComponent implements AfterViewInit {
   @Input()
   public set center(value: LatLng) {
     this.centerSubject.next(value);
-    this.map.setCenter(value);
+
+    if (this.map) {
+      this.map.setCenter(value);
+    }
   }
 
   private readonly centerSubject = new BehaviorSubject<LatLng>(MOSCOW_COORDS);

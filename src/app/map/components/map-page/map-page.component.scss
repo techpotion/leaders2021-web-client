@@ -1,0 +1,44 @@
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+
+  .toggle-container {
+    position: absolute;
+    top: 25px;
+    right: 40px;
+    z-index: 1;
+
+    display: flex;
+    gap: 25px;
+
+    .layers-toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      border-radius: 25px;
+
+      background: var(--color-background);
+    }
+  }
+
+  .loading-spinner {
+    position: absolute;
+    right: 40px;
+    bottom: 25px;
+    z-index: 1;
+
+    opacity: 0;
+
+    transition: var(--transition-default);
+
+    pointer-events: none;
+
+    &.shown {
+      opacity: 1;
+
+      pointer-events: auto;
+    }
+  }
+}
