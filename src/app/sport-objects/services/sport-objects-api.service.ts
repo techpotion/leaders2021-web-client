@@ -15,7 +15,7 @@ export class SportObjectsApiService {
   ) { }
 
   public getDensity(): Observable<GeoJSON.FeatureCollection> {
-    return this.http.get<{ geoJson: string }>('/GetGeoJsonObjects').pipe(
+    return this.http.get<{ geoJson: string }>('/GetGeoJsonSportsObjects').pipe(
       map(dto => JSON.parse(dto.geoJson) as GeoJSON.FeatureCollection),
     );
   }

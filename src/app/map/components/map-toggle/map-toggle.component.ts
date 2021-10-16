@@ -47,6 +47,7 @@ export class MapToggleComponent implements OnInit {
   }
 
   @HostBinding('class.pressed')
+  @Input()
   public isPressed = false;
 
   @Output()

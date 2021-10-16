@@ -34,16 +34,12 @@ export class MapPageComponent {
     switchMap(mode => {
       if (mode === 'population-heatmap') {
         return this.populationApi.getDensity().pipe(
-          tap((source) => console.log('population', source)),
-          map(source => [this.createHeatmap(source)]),
+          map(source => [this.createPopulationHeatmap(source)]),
         );
       }
       if (mode === 'sport-heatmap') {
         return this.sportObjectsApi.getDensity().pipe(
-          // TODO: Отладить. API возвращает тот же геожсон, что и
-          // в плотности населения
-          tap((source) => console.log('sport', source)),
-          map(source => [this.createHeatmap(source)]),
+          map(source => [this.createSportObjectHeatmap(source)]),
         );
       }
       return of(null);
@@ -61,7 +57,9 @@ export class MapPageComponent {
     this.mapModeSubject.next(mapModeUpdate);
   }
 
-  private createHeatmap(geojson: GeoJSON.FeatureCollection): Heatmap {
+  private createPopulationHeatmap(
+    geojson: GeoJSON.FeatureCollection,
+  ): Heatmap {
     return {
       data: geojson,
       property: 'heatness',
@@ -72,6 +70,24 @@ export class MapPageComponent {
         { zoom: 10, radius: 32 },
         { zoom: 11, radius: 64 },
         { zoom: 14, radius: 256 },
+        { zoom: 18, radius: 512 },
+      ],
+    };
+  }
+
+  private createSportObjectHeatmap(
+    geojson: GeoJSON.FeatureCollection,
+  ): Heatmap {
+    return {
+      data: geojson,
+      maxzoom: 16,
+      radiusStops: [
+        { zoom: 8, radius: 2 },
+        { zoom: 9, radius: 4 },
+        { zoom: 10, radius: 8 },
+        { zoom: 11, radius: 16 },
+        { zoom: 14, radius: 64 },
+        { zoom: 16, radius: 128 },
         { zoom: 18, radius: 512 },
       ],
     };
