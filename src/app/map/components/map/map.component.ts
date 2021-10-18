@@ -94,71 +94,35 @@ export class MapComponent implements AfterViewInit {
       }
       this.loadCallbacks = [];
 
-      void this.sportObjectApi.getObjectsGeoJson().toPromise().then(featureCollection => {
-        existingMap.addSource('markers', {
-          type: 'geojson',
-          data: featureCollection,
-          cluster: true,
-          clusterRadius: 100,
+      void this.sportObjectApi.getObjectsGeoJson().toPromise().then(
+        featureCollection => {
+          const markers = this.mapUtils.addMarkerLayer(existingMap, {
+            data: featureCollection,
+            image: {
+              source: 'assets/marker.svg',
+              anchor: 'bottom',
+            },
+            className: 'marker',
+            cluster: {
+              background: '#193C9D',
+              color: '#FFFFFF',
+            },
+          }, 'marker-layer');
+
+          existingMap.on('render', () => {
+            const shownMarkerIds =
+              this.mapUtils.getShownMarkerIds(existingMap, 'marker-layer');
+
+            for (const marker of markers.values()) {
+              marker.remove();
+            }
+
+            for (const id of shownMarkerIds) {
+              markers.get(id)?.addTo(existingMap);
+            }
+          });
+
         });
-
-        existingMap.addLayer({
-          id: 'clusters',
-          type: 'circle',
-          source: 'markers',
-          filter: ['has', 'point_count'],
-          paint: {
-            'circle-color': '#193C9D',
-            'circle-radius': [
-              'step',
-              ['get', 'point_count'],
-              20,
-              100,
-              30,
-              750,
-              40,
-            ],
-          },
-        });
-
-        existingMap.addLayer({
-          id: 'cluster-count',
-          type: 'symbol',
-          source: 'markers',
-          filter: ['has', 'point_count'],
-          layout: {
-            'text-field': '{point_count_abbreviated}',
-            'text-font': ['Open Sans SemiBold', 'Arial Unicode MS Bold'],
-            'text-size': 22,
-          },
-          paint: {
-            'text-color': '#FFFFFF',
-          },
-        });
-
-        existingMap.addLayer({
-          id: 'unclustered',
-          type: 'circle',
-          source: 'markers',
-          filter: ['!', ['has', 'point_count']],
-          paint: {
-            'circle-color': '#11b4da',
-            'circle-radius': 4,
-          },
-        });
-
-
-
-        // const markers: mapboxgl.Marker[] = [];
-        // for (const obj of objects.slice(0, 100)) {
-          // const marker = new mapboxgl.Marker({
-            // anchor: 'bottom',
-          // });
-          // marker.setLngLat(obj.objectPoint);
-          // marker.addTo(existingMap);
-          // markers.push(marker);
-        // }
-      });
     });
   }
 
