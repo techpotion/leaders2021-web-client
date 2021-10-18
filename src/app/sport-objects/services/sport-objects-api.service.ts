@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { SportObject } from '../models/sport-object';
+import { SportObjectsService } from '../services/sport-objects.service';
 
 
 @Injectable({
@@ -14,11 +15,13 @@ export class SportObjectsApiService {
 
   constructor(
     private readonly http: HttpClient,
+    private readonly sportObjectUtils: SportObjectsService,
   ) { }
 
-  public getDensity(): Observable<GeoJSON.FeatureCollection> {
-    return this.http.get<{ geoJson: string }>('/GetGeoJsonSportsObjects').pipe(
-      map(dto => JSON.parse(dto.geoJson) as GeoJSON.FeatureCollection),
+  public getObjectsGeoJson(
+  ): Observable<GeoJSON.FeatureCollection<GeoJSON.Point, { id: number }>> {
+    return this.getObjects().pipe(
+      map(objects => this.sportObjectUtils.convertToGeoJson(objects)),
     );
   }
 

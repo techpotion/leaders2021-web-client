@@ -38,7 +38,7 @@ export class MapPageComponent {
         );
       }
       if (mode === 'sport-heatmap') {
-        return this.sportObjectsApi.getDensity().pipe(
+        return this.sportObjectsApi.getObjectsGeoJson().pipe(
           map(source => [this.createSportObjectHeatmap(source)]),
         );
       }

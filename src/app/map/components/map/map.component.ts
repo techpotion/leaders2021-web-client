@@ -20,6 +20,7 @@ import { Heatmap } from '../../models/heatmap';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 import { MapService } from '../../services/map.service';
+import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
 
 
 mapboxgl.accessToken = environment.map.token;
@@ -44,6 +45,7 @@ export class MapComponent implements AfterViewInit {
 
   constructor(
     public readonly mapUtils: MapService,
+    public readonly sportObjectApi: SportObjectsApiService,
   ) { }
 
   // #region Lifecycle hooks
@@ -91,6 +93,72 @@ export class MapComponent implements AfterViewInit {
         callback();
       }
       this.loadCallbacks = [];
+
+      void this.sportObjectApi.getObjectsGeoJson().toPromise().then(featureCollection => {
+        existingMap.addSource('markers', {
+          type: 'geojson',
+          data: featureCollection,
+          cluster: true,
+          clusterRadius: 100,
+        });
+
+        existingMap.addLayer({
+          id: 'clusters',
+          type: 'circle',
+          source: 'markers',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': '#193C9D',
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              20,
+              100,
+              30,
+              750,
+              40,
+            ],
+          },
+        });
+
+        existingMap.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'markers',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['Open Sans SemiBold', 'Arial Unicode MS Bold'],
+            'text-size': 22,
+          },
+          paint: {
+            'text-color': '#FFFFFF',
+          },
+        });
+
+        existingMap.addLayer({
+          id: 'unclustered',
+          type: 'circle',
+          source: 'markers',
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-color': '#11b4da',
+            'circle-radius': 4,
+          },
+        });
+
+
+
+        // const markers: mapboxgl.Marker[] = [];
+        // for (const obj of objects.slice(0, 100)) {
+          // const marker = new mapboxgl.Marker({
+            // anchor: 'bottom',
+          // });
+          // marker.setLngLat(obj.objectPoint);
+          // marker.addTo(existingMap);
+          // markers.push(marker);
+        // }
+      });
     });
   }
 
