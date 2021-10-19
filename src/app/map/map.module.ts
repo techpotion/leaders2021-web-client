@@ -8,6 +8,8 @@ import { MapComponent } from './components/map/map.component';
 import { MapPageComponent } from './components/map-page/map-page.component';
 import { MapToggleComponent } from './components/map-toggle/map-toggle.component';
 
+import { ComponentRenderService } from '../shared/services/component-render.service';
+
 
 @NgModule({
   declarations: [
@@ -21,6 +23,9 @@ import { MapToggleComponent } from './components/map-toggle/map-toggle.component
     CommonModule,
     MapRoutingModule,
     SharedModule,
+  ],
+  providers: [
+    ComponentRenderService,
   ],
 })
 export class MapModule { }

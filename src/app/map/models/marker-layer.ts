@@ -1,5 +1,11 @@
-export interface MarkerLayer {
-  data: GeoJSON.FeatureCollection<GeoJSON.Point, { id: number | string }>;
+import { Subscription } from 'rxjs';
+import mapboxgl from 'mapbox-gl';
+
+
+export interface MarkerLayerSource {
+  data: GeoJSON.FeatureCollection;
+  // eslint-disable-next-line
+  idMethod: (obj: any) => number | string;
   image: {
     source: string;
     anchor: mapboxgl.Anchor;
@@ -9,4 +15,10 @@ export interface MarkerLayer {
     background: string;
     color: string;
   };
+}
+
+export interface MarkerLayer {
+  id: string;
+  markers: Map<string, mapboxgl.Marker>;
+  renderSubscription?: Subscription;
 }

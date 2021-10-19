@@ -19,7 +19,7 @@ export class SportObjectsApiService {
   ) { }
 
   public getObjectsGeoJson(
-  ): Observable<GeoJSON.FeatureCollection<GeoJSON.Point, { id: number }>> {
+  ): Observable<GeoJSON.FeatureCollection<GeoJSON.Point, SportObject>> {
     return this.getObjects().pipe(
       map(objects => this.sportObjectUtils.convertToGeoJson(objects)),
     );

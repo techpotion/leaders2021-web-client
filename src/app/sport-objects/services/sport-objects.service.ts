@@ -12,8 +12,8 @@ export class SportObjectsService {
 
   public convertToGeoJson(
     objects: SportObject[],
-  ): GeoJSON.FeatureCollection<GeoJSON.Point, { id: number }> {
-    const features: GeoJSON.Feature<GeoJSON.Point, { id: number }>[] = [];
+  ): GeoJSON.FeatureCollection<GeoJSON.Point, SportObject> {
+    const features: GeoJSON.Feature<GeoJSON.Point, SportObject>[] = [];
     for (const obj of objects) {
       features.push({
         type: 'Feature' as const,
@@ -24,14 +24,12 @@ export class SportObjectsService {
             obj.objectPoint.lat,
           ],
         },
-        properties: {
-          id: obj.objectId,
-        },
+        properties: obj,
       });
     }
 
     const featureCollection:
-    GeoJSON.FeatureCollection<GeoJSON.Point, { id: number }> = {
+    GeoJSON.FeatureCollection<GeoJSON.Point, SportObject> = {
       type: 'FeatureCollection' as const,
       features,
     };

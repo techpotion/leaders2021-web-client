@@ -4,9 +4,12 @@ import mapboxgl from 'mapbox-gl';
 import _ from 'lodash';
 
 import { Heatmap } from '../models/heatmap';
-import { MarkerLayer } from '../models/marker-layer';
+import { MarkerLayer, MarkerLayerSource } from '../models/marker-layer';
 import { isNotNil } from '../../shared/utils/is-not-nil';
 
+
+// eslint-disable-next-line This is constant
+const CLUSTER_RADIUSES = [ 20, 100, 30, 750, 40 ];
 
 @Injectable({
   providedIn: 'root',
@@ -19,9 +22,9 @@ export class MapService {
 
   public addMarkerLayer(
     map: mapboxgl.Map,
-    layer: MarkerLayer,
+    layer: MarkerLayerSource,
     id: string,
-  ): Map<string, mapboxgl.Marker> {
+  ): MarkerLayer {
     map.addSource(id, {
       type: 'geojson',
       data: layer.data,
@@ -39,9 +42,7 @@ export class MapService {
         'circle-radius': [
           'step',
           ['get', 'point_count'],
-          20, 100,
-          30, 750,
-          50,
+          ...CLUSTER_RADIUSES,
         ],
       },
     });
@@ -61,10 +62,14 @@ export class MapService {
       },
     });
 
-    return this.createMarkersMap(layer);
+    return {
+      id, markers: this.createMarkersMap(layer),
+    };
   }
 
-  private createMarkersMap(layer: MarkerLayer): Map<string, mapboxgl.Marker> {
+  private createMarkersMap(
+    layer: MarkerLayerSource,
+  ): Map<string, mapboxgl.Marker> {
     const markers = new Map<string, mapboxgl.Marker>();
 
     for (const feature of layer.data.features) {
@@ -76,23 +81,63 @@ export class MapService {
         element,
         anchor: layer.image.anchor,
       });
-      marker.setLngLat(feature.geometry.coordinates as [number, number]);
-      markers.set(feature.properties.id.toString(), marker);
+      marker.setLngLat(
+        (feature.geometry as GeoJSON.Point).coordinates as [number, number],
+      );
+      markers.set(layer.idMethod(feature.properties).toString(), marker);
     }
 
     return markers;
   }
 
-  public getShownMarkerIds(map: mapboxgl.Map, id: string): string[] {
+  private getShownMarkerIds(
+    map: mapboxgl.Map,
+    id: string,
+    // eslint-disable-next-line
+    idMethod: (obj: any) => string | number,
+  ): string[] {
     return map.querySourceFeatures(id)
       .filter(feature => !feature.properties?.cluster)
-      .map(feature => feature.properties?.id.toString());
+      .map(feature => idMethod(feature.properties).toString());
   }
 
-  public removeMarkerLayer(map: mapboxgl.Map, id: string): void {
-    this.removeLayer(map, `${id}-cluster-background`);
-    this.removeLayer(map, `${id}-cluster-count`);
-    this.removeSource(map, id);
+  public renderLayer(
+    map: mapboxgl.Map,
+    id: string,
+    // eslint-disable-next-line
+    idMethod: (obj: any) => string | number,
+    markers: Map<string, mapboxgl.Marker>,
+  ): void {
+    const shownMarkerIds = this.getShownMarkerIds(map, id, idMethod);
+
+    for (const marker of markers.values()) {
+      marker.remove();
+    }
+
+    for (const id of shownMarkerIds) {
+      const marker = markers.get(id);
+      if (!marker) { continue; }
+      marker.addTo(map);
+    }
+  }
+
+  public removeMarkerLayer(map: mapboxgl.Map, layer: MarkerLayer): void {
+    this.removeLayer(map, `${layer.id}-cluster-background`);
+    this.removeLayer(map, `${layer.id}-cluster-count`);
+    this.removeSource(map, layer.id);
+
+    for (const marker of layer.markers.values()) {
+      marker.remove();
+    }
+    if (layer.renderSubscription) {
+      layer.renderSubscription.unsubscribe();
+    }
+  }
+
+  public removeMarkerLayers(map: mapboxgl.Map, layers: MarkerLayer[]): void {
+    for (const layer of layers) {
+      this.removeMarkerLayer(map, layer);
+    }
   }
 
   // #endregion

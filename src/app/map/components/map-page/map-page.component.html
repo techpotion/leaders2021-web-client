@@ -1,27 +1,34 @@
 <tp-map class="map"
-    [heatmaps]="heatmaps | async">
-</tp-map>
+    [heatmaps]="heatmaps | async"
+    [markerLayerSources]="markerLayers | async"
+></tp-map>
 
 <div class="toggle-container">
-    <tp-map-toggle
-        lightIcon="assets/light/polygon.svg"
-        darkIcon="assets/dark/polygon.svg"    
-    > </tp-map-toggle>
+    <!-- <tp-map-toggle -->
+        <!-- lightIcon="assets/light/polygon.svg" -->
+        <!-- darkIcon="assets/dark/polygon.svg"     -->
+    <!-- > </tp-map-toggle> -->
 
     <div class="layers-toggles">
+        <!-- <tp-map-toggle -->
+            <!-- lightIcon="assets/light/layers.svg" -->
+            <!-- darkIcon="assets/dark/layers.svg"     -->
+        <!-- > </tp-map-toggle> -->
         <tp-map-toggle
-            lightIcon="assets/light/layers.svg"
-            darkIcon="assets/dark/layers.svg"    
+            [isPressed]="!!(mapModeSubject | async)?.includes('marker')"
+            (pressChange)="onTogglePress($event, 'marker')"
+            lightIcon="assets/light/marker.svg"
+            darkIcon="assets/dark/marker.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
-            [isPressed]="(mapModeSubject | async) === 'population-heatmap'"
-            (pressChange)="onPopulationTogglePress($event)"
+            [isPressed]="!!(mapModeSubject | async)?.includes('population-heatmap')"
+            (pressChange)="onTogglePress($event, 'population-heatmap')"
             lightIcon="assets/light/population.svg"
             darkIcon="assets/dark/population.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
-            [isPressed]="(mapModeSubject | async) === 'sport-heatmap'"
-            (pressChange)="onSportObjectsTogglePress($event)"
+            [isPressed]="!!(mapModeSubject | async)?.includes('sport-heatmap')"
+            (pressChange)="onTogglePress($event, 'sport-heatmap')"
             lightIcon="assets/light/runner.svg"
             darkIcon="assets/dark/runner.svg"    
         > </tp-map-toggle>
@@ -29,5 +36,5 @@
 </div>
 
 <tp-loading-spinner class="loading-spinner"
-                    [ngClass]="{ 'shown': loadingSubject | async }">
+                    [ngClass]="{ 'shown': loadingShown | async }">
 </tp-loading-spinner>
