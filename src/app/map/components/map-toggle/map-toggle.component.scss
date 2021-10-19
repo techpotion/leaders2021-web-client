@@ -9,7 +9,6 @@
   border-radius: 25px;
 
   background: var(--color-theme-white-1000);
-  box-shadow: var(--shadow-default);
 
   transition: var(--transition-default);
 
@@ -21,7 +20,6 @@
 
   &.pressed {
     background: var(--color-theme-primary-1000);
-    box-shadow: var(--shadow-2x);
   }
 
   &.disabled {

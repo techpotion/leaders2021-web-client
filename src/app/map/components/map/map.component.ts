@@ -8,7 +8,7 @@ import {
 
 import _ from 'lodash';
 import mapboxgl from 'mapbox-gl';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
@@ -16,10 +16,13 @@ import { environment } from '../../../../environments/environment';
 import { LatLng } from '../../models/lat-lng';
 import { MapZoom } from '../../models/map-zoom';
 import { Heatmap } from '../../models/heatmap';
+import { MarkerLayer, MarkerLayerSource } from '../../models/marker-layer';
 
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 import { MapService } from '../../services/map.service';
+// import { ComponentRenderService } from
+// '../../../shared/services/component-render.service';
 
 
 mapboxgl.accessToken = environment.map.token;
@@ -44,6 +47,8 @@ export class MapComponent implements AfterViewInit {
 
   constructor(
     public readonly mapUtils: MapService,
+    // public readonly componentRenderer:
+    // ComponentRenderService<SportObjectBriefInfoComponent>,
   ) { }
 
   // #region Lifecycle hooks
@@ -86,6 +91,8 @@ export class MapComponent implements AfterViewInit {
     existingMap.on('move', () =>
       this.centerSubject.next(existingMap.getCenter()));
 
+    existingMap.on('render', () => this.renderEvent.next());
+
     existingMap.on('load', () => {
       for (const callback of this.loadCallbacks) {
         callback();
@@ -94,7 +101,63 @@ export class MapComponent implements AfterViewInit {
     });
   }
 
+  public readonly renderEvent = new Subject<void>();
+
   public loadCallbacks: (() => void)[] = [];
+
+  // #endregion
+
+
+  // #region Marker layer
+
+  // TODO: popups
+  // for (const [id, obj] of objects.entries()) {
+  // const popupContent = this.componentRenderer.injectComponent(
+  // SportObjectBriefInfoComponent,
+  // c => { c.obj = obj; },
+  // );
+  // const popup = new mapboxgl.Popup();
+  // popup.setDOMContent(popupContent);
+
+  // const marker = markers.get(id);
+  // if (!marker) { continue; }
+  // popup.setLngLat(marker.getLngLat());
+  // marker.setPopup(popup);
+  // }
+  private markerLayers: MarkerLayer[] = [];
+
+  @Input()
+  public set markerLayerSources(sources: MarkerLayerSource[] | null) {
+    const updateSources = sources ?? [];
+
+    if (!this.map || !this.map.loaded()) {
+      this.loadCallbacks.push(() => this.updateMarkerLayers(updateSources));
+      return;
+    }
+
+    this.updateMarkerLayers(updateSources);
+  }
+
+  private updateMarkerLayers(sources: MarkerLayerSource[]): void {
+    if (!this.map || !this.map.loaded()) {
+      throw new Error('Cannot update marker layers: map is not loaded');
+    }
+    const loadedMap = this.map;
+
+    this.mapUtils.removeMarkerLayers(loadedMap, this.markerLayers);
+    this.markerLayers = [];
+
+    sources.forEach((source, index) => {
+      const id = `marker-layer${index}`;
+      const layer = this.mapUtils.addMarkerLayer(loadedMap, source, id);
+      layer.renderSubscription = this.renderEvent.subscribe(
+        () => this.mapUtils.renderLayer(
+          loadedMap, id, source.idMethod, layer.markers,
+        ),
+      );
+      this.markerLayers.push(layer);
+    });
+  }
 
   // #endregion
 

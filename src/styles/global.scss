@@ -1,3 +1,6 @@
+// Import to fix bug with flying markers
+@import 'mapbox-gl/dist/mapbox-gl.css';
+
 body {
   margin: 0;
 }

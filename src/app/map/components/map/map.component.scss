@@ -5,5 +5,11 @@
     .mapboxgl-control-container {
       display: none;
     }
+
+    .marker {
+      width: 30px;
+
+      cursor: pointer;
+    }
   }
 }

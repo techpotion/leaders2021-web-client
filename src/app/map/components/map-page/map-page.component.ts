@@ -1,15 +1,29 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  OnDestroy,
+} from '@angular/core';
 
-import { of, BehaviorSubject, Observable } from 'rxjs';
-import { map, tap, switchMap } from 'rxjs/operators';
+import {
+  of,
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  Subject,
+  Subscription,
+} from 'rxjs';
+import { filter, map, tap, switchMap, pairwise } from 'rxjs/operators';
+import _ from 'lodash';
 
 import { PopulationApiService } from '../../../population/services/population-api.service';
 import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
 
 import { Heatmap } from '../../models/heatmap';
+import { MarkerLayerSource } from '../../models/marker-layer';
+import { SportObject } from '../../../sport-objects/models/sport-object';
 
 
-type MapMode = 'default' | 'population-heatmap' | 'sport-heatmap';
+type MapMode = 'marker' | 'population-heatmap' | 'sport-heatmap';
 
 @Component({
   selector: 'tp-map-page',
@@ -17,45 +31,152 @@ type MapMode = 'default' | 'population-heatmap' | 'sport-heatmap';
   styleUrls: ['./map-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapPageComponent {
+export class MapPageComponent implements OnDestroy {
 
   constructor(
     public readonly populationApi: PopulationApiService,
     public readonly sportObjectsApi: SportObjectsApiService,
-  ) { }
+  ) {
+    this.subscriptions.push(
+      ...this.subscribeOnMapModeChange(),
+    );
+  }
 
-  public readonly loadingSubject = new BehaviorSubject<boolean>(false);
+  public readonly subscriptions: Subscription[] = [];
 
-  public readonly mapModeSubject = new BehaviorSubject<MapMode>('default');
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private readonly loadingSubject =
+  new BehaviorSubject<{
+    heatmap: boolean;
+    marker: boolean;
+  }>({
+    heatmap: false,
+    marker: false,
+  });
+
+  public readonly loadingShown = this.loadingSubject.pipe(
+    map(loading => loading.heatmap || loading.marker),
+  );
+
+
+  private readonly mapModeAdd = new Subject<MapMode>();
+
+  private readonly mapModeRemove = new Subject<MapMode>();
+
+  public readonly mapModeSubject = new BehaviorSubject<MapMode[]>([]);
+
+  private subscribeOnMapModeChange(): Subscription[] {
+    const removeSub = this.mapModeRemove.subscribe(mode => {
+      const newModes = this.mapModeSubject.value.filter(
+        existingMode => mode !== existingMode,
+      );
+      this.mapModeSubject.next(newModes);
+    });
+
+    const addSub = this.mapModeAdd.subscribe(mode => {
+      if (this.mapModeSubject.value.includes(mode)) {
+        return;
+      }
+      const newModes = [ ...this.mapModeSubject.value ];
+      newModes.push(mode);
+      this.mapModeSubject.next(newModes);
+    });
+
+    return [removeSub, addSub];
+  }
 
   public readonly heatmaps: Observable<Heatmap[] | null>
   = this.mapModeSubject.pipe(
-    tap(() => this.loadingSubject.next(true)),
-    switchMap(mode => {
-      if (mode === 'population-heatmap') {
-        return this.populationApi.getDensity().pipe(
-          map(source => [this.createPopulationHeatmap(source)]),
+    pairwise(),
+    filter(([prev, curr]) =>
+      _.difference(prev, curr).includes('population-heatmap')
+      || _.difference(curr, prev).includes('population-heatmap')
+      || _.difference(prev, curr).includes('sport-heatmap')
+      || _.difference(curr, prev).includes('sport-heatmap'),
+    ),
+    tap(() => {
+      const currentLoadingState = { ...this.loadingSubject.value };
+      currentLoadingState.heatmap = true;
+      this.loadingSubject.next(currentLoadingState);
+    }),
+    switchMap(([, curr]) => {
+      const heatmapObservables: Observable<Heatmap>[] = [];
+      if (curr.includes('population-heatmap')) {
+        heatmapObservables.push(
+          this.populationApi.getDensity().pipe(
+            map(source => this.createPopulationHeatmap(source)),
+          ),
         );
       }
-      if (mode === 'sport-heatmap') {
-        return this.sportObjectsApi.getDensity().pipe(
-          map(source => [this.createSportObjectHeatmap(source)]),
+      if (curr.includes('sport-heatmap')) {
+        heatmapObservables.push(
+          this.sportObjectsApi.getObjectsGeoJson().pipe(
+            map(source => this.createSportObjectHeatmap(source)),
+          ),
+        );
+      }
+      if (!heatmapObservables.length) {
+        return of(null);
+      }
+      return combineLatest<Heatmap[]>(heatmapObservables);
+    }),
+    tap(() => {
+      const currentLoadingState = { ...this.loadingSubject.value };
+      currentLoadingState.heatmap = false;
+      this.loadingSubject.next(currentLoadingState);
+    }),
+  );
+
+  public readonly markerLayers:
+  Observable<MarkerLayerSource[] | null>
+  = this.mapModeSubject.pipe(
+    pairwise(),
+    filter(([prev, curr]) =>
+      _.difference(prev, curr).includes('marker')
+      || _.difference(curr, prev).includes('marker'),
+    ),
+    tap(() => {
+      const currentLoadingState = { ...this.loadingSubject.value };
+      currentLoadingState.marker = true;
+      this.loadingSubject.next(currentLoadingState);
+    }),
+    switchMap(([prev, curr]) => {
+      if (_.difference(curr, prev).includes('marker')) {
+        return this.sportObjectsApi.getObjectsGeoJson().pipe(
+          map(source => [this.createSportObjectMarkerLayer(source)]),
         );
       }
       return of(null);
     }),
-    tap(() => this.loadingSubject.next(false)),
+    tap(() => {
+      const currentLoadingState = { ...this.loadingSubject.value };
+      currentLoadingState.marker = false;
+      this.loadingSubject.next(currentLoadingState);
+    }),
   );
 
-  public onPopulationTogglePress(pressed: boolean): void {
-    const mapModeUpdate = pressed ? 'population-heatmap' : 'default';
-    this.mapModeSubject.next(mapModeUpdate);
+  public onTogglePress(pressed: boolean, mode: MapMode): void {
+    if (pressed) {
+      this.mapModeAdd.next(mode);
+    } else {
+      this.mapModeRemove.next(mode);
+    }
   }
 
-  public onSportObjectsTogglePress(pressed: boolean): void {
-    const mapModeUpdate = pressed ? 'sport-heatmap' : 'default';
-    this.mapModeSubject.next(mapModeUpdate);
-  }
+  public readonly isMarkerTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('marker')),
+  );
+
+  public readonly isPopulationTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('population-heatmap')),
+  );
+
+  public readonly isSportObjectsTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('sport-heatmap')),
+  );
 
   private createPopulationHeatmap(
     geojson: GeoJSON.FeatureCollection,
@@ -90,6 +211,24 @@ export class MapPageComponent {
         { zoom: 16, radius: 128 },
         { zoom: 18, radius: 512 },
       ],
+    };
+  }
+
+  private createSportObjectMarkerLayer(
+    geojson: GeoJSON.FeatureCollection<GeoJSON.Point, SportObject>,
+  ): MarkerLayerSource {
+    return {
+      data: geojson,
+      idMethod: (obj: SportObject) => obj.objectId,
+      image: {
+        source: 'assets/marker.svg',
+        anchor: 'bottom',
+      },
+      className: 'marker',
+      cluster: {
+        background: '#193C9D',
+        color: '#FFFFFF',
+      },
     };
   }
 

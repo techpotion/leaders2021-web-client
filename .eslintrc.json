@@ -114,7 +114,10 @@
         "@typescript-eslint/no-empty-function": ["error", { "allow": [ "constructors" ]}],
         "@typescript-eslint/no-invalid-void-type": "error",
         "@typescript-eslint/no-loss-of-precision": "error",
-        "@typescript-eslint/no-magic-numbers": ["error", { "ignore": [-1, 0, 1] }],
+        "@typescript-eslint/no-magic-numbers": ["error", {
+          "ignore": [-1, 0, 1],
+          "ignoreEnums": true
+        }],
         "@typescript-eslint/no-require-imports": "error",
         "@typescript-eslint/no-throw-literal": "error",
         "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
