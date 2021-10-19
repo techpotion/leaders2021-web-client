@@ -15,19 +15,19 @@
             <!-- darkIcon="assets/dark/layers.svg"     -->
         <!-- > </tp-map-toggle> -->
         <tp-map-toggle
-            [isPressed]="!!(mapModeSubject | async)?.includes('marker')"
+            [isPressed]="isMarkerTogglePressed | async"
             (pressChange)="onTogglePress($event, 'marker')"
             lightIcon="assets/light/marker.svg"
             darkIcon="assets/dark/marker.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
-            [isPressed]="!!(mapModeSubject | async)?.includes('population-heatmap')"
+            [isPressed]="isPopulationTogglePressed | async"
             (pressChange)="onTogglePress($event, 'population-heatmap')"
             lightIcon="assets/light/population.svg"
             darkIcon="assets/dark/population.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
-            [isPressed]="!!(mapModeSubject | async)?.includes('sport-heatmap')"
+            [isPressed]="isSportObjectsTogglePressed | async"
             (pressChange)="onTogglePress($event, 'sport-heatmap')"
             lightIcon="assets/light/runner.svg"
             darkIcon="assets/dark/runner.svg"    

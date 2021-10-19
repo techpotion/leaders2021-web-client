@@ -8,7 +8,8 @@ import { MarkerLayer, MarkerLayerSource } from '../models/marker-layer';
 import { isNotNil } from '../../shared/utils/is-not-nil';
 
 
-// eslint-disable-next-line This is constant
+// This is constant
+// eslint-disable-next-line
 const CLUSTER_RADIUSES = [ 20, 100, 30, 750, 40 ];
 
 @Injectable({

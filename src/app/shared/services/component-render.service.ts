@@ -33,6 +33,7 @@ export class ComponentRenderService<T> {
 
     this.application.attachView(createdComponent.hostView);
 
+    // eslint-disable-next-line
     return createdComponent.location.nativeElement;
   }
 

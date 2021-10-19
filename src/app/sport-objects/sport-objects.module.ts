@@ -7,7 +7,7 @@ import { SportObjectBriefInfoComponent } from './components/sport-object-brief-i
 
 @NgModule({
   declarations: [
-    SportObjectBriefInfoComponent
+    SportObjectBriefInfoComponent,
   ],
   imports: [
     CommonModule,

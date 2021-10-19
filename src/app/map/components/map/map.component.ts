@@ -21,7 +21,8 @@ import { MarkerLayer, MarkerLayerSource } from '../../models/marker-layer';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 import { MapService } from '../../services/map.service';
-// import { ComponentRenderService } from '../../../shared/services/component-render.service';
+// import { ComponentRenderService } from
+// '../../../shared/services/component-render.service';
 
 
 mapboxgl.accessToken = environment.map.token;
@@ -46,7 +47,8 @@ export class MapComponent implements AfterViewInit {
 
   constructor(
     public readonly mapUtils: MapService,
-    // public readonly componentRenderer: ComponentRenderService<SportObjectBriefInfoComponent>,
+    // public readonly componentRenderer:
+    // ComponentRenderService<SportObjectBriefInfoComponent>,
   ) { }
 
   // #region Lifecycle hooks

@@ -166,6 +166,18 @@ export class MapPageComponent implements OnDestroy {
     }
   }
 
+  public readonly isMarkerTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('marker')),
+  );
+
+  public readonly isPopulationTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('population-heatmap')),
+  );
+
+  public readonly isSportObjectsTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('sport-heatmap')),
+  );
+
   private createPopulationHeatmap(
     geojson: GeoJSON.FeatureCollection,
   ): Heatmap {
