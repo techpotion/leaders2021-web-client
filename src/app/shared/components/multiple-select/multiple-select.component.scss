@@ -1,3 +1,5 @@
+@import '../../../../styles/mixins';
+
 :host {
   display: inline-block;
   width: 350px;
@@ -6,28 +8,143 @@
     display: flex;
     align-items: center;
 
+    box-sizing: border-box;
     width: 100%;
     height: 40px;
 
     border: 1px solid var(--color-neutral-100);
     border-radius: 4px;
 
+    color: var(--color-neutral-300);
+
     transition: var(--transition-default);
 
-    .arrow {
-      height: 8px;
+    input {
+      @extend %body-2-light-font;
 
-      opacity: .5;
+      flex-grow: 1;
 
-      transition: var(--transition-default);
+      width: 0;
+      height: 100%;
+      padding-left: 10px;
+
+      color: var(--color-theme-primary-1000);
+
+      &.hidden {
+        flex-grow: 0;
+
+        width: 0;
+        height: 0;
+
+        pointer-events: none;
+      }
     }
 
-    &:hover {
-      border-color: var(--color-theme-primary-600);
+    .current-value {
+      @extend %body-2-light-font;
+
+      display: flex;
+      flex-grow: 1;
+      gap: 3px;
+      align-items: center;
+
+      height: 100%;
+      padding-left: 10px;
+
+      b {
+        @extend %body-2-semibold-font;
+      }
+    }
+
+    .arrow-container {
+      display: flex;
+      align-items: center;
+
+      height: 100%;
+      padding: 0 17px;
 
       .arrow {
-        opacity: 1;
+        height: 8px;
+        padding: 0 2px;
+
+        opacity: .5;
+
+        transition: var(--transition-default);
       }
+    }
+
+    &.opened {
+      border-radius: 4px 4px 0 0;
+
+      .arrow {
+        transform: rotate(180deg);
+      }
+    }
+
+    &:hover,
+    &.opened {
+      border-color: var(--color-theme-primary-600);
+
+      color: var(--color-theme-primary-1000);
+
+      .arrow-container {
+        .arrow {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  .variants {
+    display: flex;
+    flex-direction: column;
+
+    max-height: 0;
+    border-radius: 0 0 10px 10px;
+
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    transition: var(--transition-default);
+
+    .variant {
+      @extend %body-1-regular-font;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      box-sizing: border-box;
+      width: 100%;
+      padding: 6px 10px;
+
+      color: var(--color-theme-primary-1000);
+
+      background: var(--color-theme-white-1000);
+
+      transition: var(--transition-default);
+
+      .checkbox {
+        margin: 10px;
+      }
+
+      &:hover {
+        background: var(--color-surface-secondary);
+      }
+
+      &.hidden {
+        display: none;
+      }
+    }
+
+    &.opened {
+      height: auto;
+      max-height: 350px;
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 }

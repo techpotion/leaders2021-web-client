@@ -1,7 +1,44 @@
-<div class="input-container">
-    <span class="current-value"></span>
-    <input type="text">
-    <img src="assets/arrow.svg" class="arrow">
+<div class="input-container"
+     [ngClass]="{ 'opened': isOpened | async }">
+    <span class="current-value"
+        *ngIf="!(isOpened | async)"
+        (click)="toggleSelect()">
+        <ng-container *ngIf="!!(allVariantsSelected | async); else selectedCount">
+            Все
+        </ng-container>
+
+        <ng-template #selectedCount>
+            Выбрано значений: <b>{{ variantsSelectedCount | async }}</b>
+        </ng-template>
+    </span>
+
+    <input type="text" #searchInput 
+           [ngClass]="{ 'hidden': !(isOpened | async) }"
+           [formControl]="searchControl">
+
+    <div class="arrow-container"
+        (click)="toggleSelect()">
+        <img src="assets/arrow.svg" class="arrow">
+    </div>
 </div>
 
-<tp-checkbox></tp-checkbox>
+<div class="variants"
+     [ngClass]="{ 'opened': isOpened | async }">
+    <div class="variant"
+        (click)="selectAll()">
+        Все
+        <tp-checkbox class="checkbox"
+            [value]="!!(allVariantsSelected | async)">
+        </tp-checkbox>
+    </div>
+
+    <div class="variant"
+        *ngFor="let variant of variantsSubject | async; index as i"
+        (click)="selectVariant(i, !variant.selected)"
+        [ngClass]="{ 'hidden': !variant.shown }">
+        {{ variant.name }}
+        <tp-checkbox class="checkbox"
+            [value]="variant.selected">
+        </tp-checkbox>
+    </div>
+</div>
