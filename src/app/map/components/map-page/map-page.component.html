@@ -3,37 +3,36 @@
     [markerLayerSources]="markerLayers | async"
 ></tp-map>
 
-<div class="toggle-container">
-    <!-- <tp-map-toggle -->
-        <!-- lightIcon="assets/light/polygon.svg" -->
-        <!-- darkIcon="assets/dark/polygon.svg"     -->
-    <!-- > </tp-map-toggle> -->
+<div class="top-controls">
+    <tp-map-filter-bar class="filter-bar">
+    </tp-map-filter-bar>
 
     <div class="layers-toggles">
         <!-- <tp-map-toggle -->
-            <!-- lightIcon="assets/light/layers.svg" -->
-            <!-- darkIcon="assets/dark/layers.svg"     -->
+        <!-- lightIcon="assets/light/layers.svg" -->
+        <!-- darkIcon="assets/dark/layers.svg"     -->
         <!-- > </tp-map-toggle> -->
         <tp-map-toggle
-            [isPressed]="!!(isMarkerTogglePressed | async)"
-            (pressChange)="onTogglePress($event, 'marker')"
-            lightIcon="assets/light/marker.svg"
-            darkIcon="assets/dark/marker.svg"    
+                [isPressed]="!!(isMarkerTogglePressed | async)"
+                (pressChange)="onTogglePress($event, 'marker')"
+                lightIcon="assets/light/marker.svg"
+                darkIcon="assets/dark/marker.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
-            [isPressed]="!!(isPopulationTogglePressed | async)"
-            (pressChange)="onTogglePress($event, 'population-heatmap')"
-            lightIcon="assets/light/population.svg"
-            darkIcon="assets/dark/population.svg"    
+                [isPressed]="!!(isPopulationTogglePressed | async)"
+                (pressChange)="onTogglePress($event, 'population-heatmap')"
+                lightIcon="assets/light/population.svg"
+                darkIcon="assets/dark/population.svg"    
         > </tp-map-toggle>
         <tp-map-toggle
-            [isPressed]="!!(isSportObjectsTogglePressed | async)"
-            (pressChange)="onTogglePress($event, 'sport-heatmap')"
-            lightIcon="assets/light/runner.svg"
-            darkIcon="assets/dark/runner.svg"    
+                [isPressed]="!!(isSportObjectsTogglePressed | async)"
+                (pressChange)="onTogglePress($event, 'sport-heatmap')"
+                lightIcon="assets/light/runner.svg"
+                darkIcon="assets/dark/runner.svg"    
         > </tp-map-toggle>
     </div>
 </div>
+
 
 <tp-loading-spinner class="loading-spinner"
                     [ngClass]="{ 'shown': loadingShown | async }">
