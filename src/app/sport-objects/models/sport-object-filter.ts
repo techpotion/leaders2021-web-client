@@ -15,7 +15,7 @@ export interface SportObjectFilterRequest {
 }
 
 export function isFilterRequestEmpty(
-  request: SportObjectFilterRequest
+  request: SportObjectFilterRequest,
 ): boolean {
   return !request.availabilities?.length
     && !request.departamentalOrganizationIds?.length
@@ -31,13 +31,12 @@ export function areFilterRequestsEqual(
   request: SportObjectFilterRequest,
   other: SportObjectFilterRequest,
 ): boolean {
-  console.log(request, other);
   return _.isEqual(request, other)
   && (_.isEqual(request.availabilities, other.availabilities)
     || _.isEqual(request.departamentalOrganizationIds,
-      other.departamentalOrganizationIds)
+                 other.departamentalOrganizationIds)
     || _.isEqual(request.departamentalOrganizationNames,
-      other.departamentalOrganizationNames)
+                 other.departamentalOrganizationNames)
     || _.isEqual(request.objectIds, other.objectIds)
     || _.isEqual(request.objectNames, other.objectNames)
     || _.isEqual(request.sportAreaNames, other.sportAreaNames)

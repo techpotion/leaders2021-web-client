@@ -15,7 +15,6 @@ import {
 } from 'rxjs';
 import {
   filter,
-  distinctUntilChanged,
   map,
   tap,
   startWith,
@@ -34,7 +33,6 @@ import { SportObject } from '../../../sport-objects/models/sport-object';
 import {
   SportObjectFilterRequest,
   isFilterRequestEmpty,
-  areFilterRequestsEqual,
 } from '../../../sport-objects/models/sport-object-filter';
 
 

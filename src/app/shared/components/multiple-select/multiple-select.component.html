@@ -13,7 +13,7 @@
     </span>
 
     <input type="text" #searchInput 
-           [ngClass]="{ 'hidden': !(isOpened | async) }"
+           [ngClass]="{ 'hidden': (isOpened | async) === null || (isOpened | async) === false }"
            [formControl]="searchControl">
 
     <div class="arrow-container"

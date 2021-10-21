@@ -12,7 +12,7 @@ import {
 import { FormControl } from '@angular/forms';
 
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { distinctUntilChanged, debounceTime, map } from 'rxjs/operators';
+import { distinctUntilChanged, debounceTime, filter, map } from 'rxjs/operators';
 
 
 const INPUT_DEBOUNCE_TIME = 300;
@@ -31,6 +31,7 @@ export class CompletionInputComponent implements OnDestroy {
   ) {
     this.subscriptions.push(
       this.subscribeFocus(),
+      this.subscribeClearInput(),
     );
   }
 
@@ -120,6 +121,12 @@ export class CompletionInputComponent implements OnDestroy {
 
   public search(): void {
     this.searchChange.next(this.inputControl.value);
+  }
+
+  public subscribeClearInput(): Subscription {
+    return this.inputControl.valueChanges.pipe(
+      filter((value: string) => !value.length),
+    ).subscribe(() => this.search());
   }
 
   // #endregion
