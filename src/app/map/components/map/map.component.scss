@@ -12,4 +12,12 @@
       cursor: pointer;
     }
   }
+
+  &.polygon-draw {
+    ::ng-deep {
+      .mapboxgl-canvas-container {
+        cursor: crosshair;
+      }
+    }
+  }
 }

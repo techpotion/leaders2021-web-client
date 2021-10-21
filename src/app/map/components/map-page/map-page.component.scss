@@ -17,14 +17,21 @@
 
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 20px;
 
       margin-top: 25px;
       margin-right: 40px;
 
-      border-radius: 25px;
+      .marker-toggles,
+      .heatmap-toggles {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
 
-      background: var(--color-background);
+        border-radius: 25px;
+
+        background: var(--color-background);
+      }
     }
   }
 

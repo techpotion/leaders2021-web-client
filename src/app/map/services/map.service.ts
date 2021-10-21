@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 
 import mapboxgl from 'mapbox-gl';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import _ from 'lodash';
 
 import { Heatmap } from '../models/heatmap';
 import { MarkerLayer, MarkerLayerSource } from '../models/marker-layer';
 import { isNotNil } from '../../shared/utils/is-not-nil';
+import * as drawStyles from '../models/polygon-styles';
 
 
 // This is constant
@@ -18,6 +20,30 @@ const CLUSTER_RADIUSES = [ 20, 100, 30, 750, 40 ];
 export class MapService {
 
   constructor() { }
+
+
+  // #region Polygon draw
+
+  public addPolygonDraw(map: mapboxgl.Map): MapboxDraw {
+    const draw = new MapboxDraw({
+      defaultMode: 'draw_polygon',
+      styles: [
+        drawStyles.polygonFill,
+        drawStyles.polygonStroke,
+        drawStyles.drawLine,
+        drawStyles.midPoint,
+        drawStyles.vertexPointStroke,
+        drawStyles.vertexPoint,
+        drawStyles.drawVertexPointStroke,
+        drawStyles.drawVertexPoint,
+      ],
+    });
+    map.addControl(draw);
+    return draw;
+  }
+
+  // #endregion
+
 
   // #region Marker layer
 

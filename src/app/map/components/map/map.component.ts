@@ -2,13 +2,17 @@ import {
   AfterViewInit,
   Component,
   ChangeDetectionStrategy,
+  EventEmitter,
   Input,
+  OnDestroy,
   Output,
 } from '@angular/core';
 
 import _ from 'lodash';
 import mapboxgl from 'mapbox-gl';
-import { BehaviorSubject, Subject } from 'rxjs';
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
@@ -18,7 +22,6 @@ import { MapZoom } from '../../models/map-zoom';
 import { Heatmap } from '../../models/heatmap';
 import { MarkerLayer, MarkerLayerSource } from '../../models/marker-layer';
 
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 import { MapService } from '../../services/map.service';
 // import { ComponentRenderService } from
@@ -43,13 +46,20 @@ const EVENT_DEBOUNCE_TIME = 300;
   styleUrls: ['./map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     public readonly mapUtils: MapService,
     // public readonly componentRenderer:
     // ComponentRenderService<SportObjectBriefInfoComponent>,
-  ) { }
+  ) {
+    this.subscriptions.push(
+      this.subscribeOnPolygonDrawDelete(),
+    );
+  }
+
+  private readonly subscriptions: Subscription[] = [];
+
 
   // #region Lifecycle hooks
 
@@ -67,6 +77,10 @@ export class MapComponent implements AfterViewInit {
     this.map.addControl(new MapboxLanguage());
 
     this.subscribeOnMapEvents();
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   // #endregion
@@ -99,11 +113,69 @@ export class MapComponent implements AfterViewInit {
       }
       this.loadCallbacks = [];
     });
+
+    existingMap.on('draw.delete', () => this.polygonDrawDelete.emit());
+    existingMap.on('draw.create', () => this.polygonDrawCreate.emit());
+    existingMap.on('draw.modechange', (event: MapboxDraw.DrawModeChageEvent) => {
+      this.polygonDrawMode.next(event.mode);
+    });
   }
 
   public readonly renderEvent = new Subject<void>();
 
   public loadCallbacks: (() => void)[] = [];
+
+  // #endregion
+
+
+  // #region Polygon draw
+
+  private polygonDraw?: MapboxDraw;
+
+  public readonly polygonDrawMode =
+  new BehaviorSubject<MapboxDraw.DrawMode | undefined>(undefined);
+
+  @Input()
+  public set polygonDrawEnabled(value: boolean) {
+    if (!this.map || !this.map.loaded()) {
+      this.loadCallbacks.push(() => this.enablePolygonDraw(value));
+      return;
+    }
+    this.enablePolygonDraw(value);
+  }
+
+  private removePolygonDraw(map: mapboxgl.Map): void {
+    if (this.polygonDraw) {
+      map.removeControl(this.polygonDraw);
+    }
+  }
+
+  private enablePolygonDraw(enabled: boolean): void {
+    if (!this.map || !this.map.loaded()) {
+      throw new Error('Cannot update polygon draw: map is not loaded');
+    }
+    const loadedMap = this.map;
+
+    this.removePolygonDraw(loadedMap);
+    if (enabled) {
+      this.polygonDraw = this.mapUtils.addPolygonDraw(loadedMap);
+      this.polygonDrawMode.next(this.polygonDraw.getMode());
+    } else {
+      this.polygonDraw = undefined;
+      this.polygonDrawMode.next(undefined);
+    }
+  }
+
+  public readonly polygonDrawDelete = new EventEmitter<void>();
+
+  public readonly polygonDrawCreate = new EventEmitter<void>();
+
+  private subscribeOnPolygonDrawDelete(): Subscription {
+    return this.polygonDrawDelete.subscribe(() => {
+      this.polygonDraw?.changeMode('draw_polygon');
+      this.polygonDrawMode.next('draw_polygon');
+    });
+  }
 
   // #endregion
 

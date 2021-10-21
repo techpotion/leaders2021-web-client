@@ -36,7 +36,10 @@ import {
 } from '../../../sport-objects/models/sport-object-filter';
 
 
-type MapMode = 'marker' | 'population-heatmap' | 'sport-heatmap';
+type MapMode = 'marker'
+  | 'population-heatmap'
+  | 'sport-heatmap'
+  | 'polygon-draw';
 
 @Component({
   selector: 'tp-map-page',
@@ -122,11 +125,16 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   public onTogglePress(pressed: boolean, mode: MapMode): void {
     if (pressed) {
+      this.onMapModeAdd(mode);
       this.mapModeAdd.next(mode);
     } else {
       this.mapModeRemove.next(mode);
     }
   }
+
+  public readonly isPolygonDrawTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('polygon-draw')),
+  );
 
   public readonly isMarkerTogglePressed = this.mapModeSubject.pipe(
     map(modes => modes.includes('marker')),
@@ -139,6 +147,14 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public readonly isSportObjectsTogglePressed = this.mapModeSubject.pipe(
     map(modes => modes.includes('sport-heatmap')),
   );
+
+  private onMapModeAdd(mode: MapMode): void {
+    if (mode === 'polygon-draw') {
+      this.mapModeRemove.next('marker');
+    } else if (mode === 'marker') {
+      this.mapModeRemove.next('polygon-draw');
+    }
+  }
 
   // #endregion
 
