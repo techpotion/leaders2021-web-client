@@ -174,6 +174,7 @@ export class MultipleSelectComponent implements OnDestroy {
   @Output()
   public readonly variantsSelect = this.variantsSubject.pipe(
     skip(1),
+    map(variants => variants.filter(variant => variant.selected)),
     map(variants => variants.map(variant => {
       if (!variant.index) { return variant.name; }
       return { name: variant.name, index: variant.index };

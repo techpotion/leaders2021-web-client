@@ -13,7 +13,15 @@ import {
   Subject,
   Subscription,
 } from 'rxjs';
-import { filter, map, tap, switchMap, pairwise } from 'rxjs/operators';
+import {
+  filter,
+  distinctUntilChanged,
+  map,
+  tap,
+  startWith,
+  switchMap,
+  pairwise,
+} from 'rxjs/operators';
 import _ from 'lodash';
 
 import { PopulationApiService } from '../../../population/services/population-api.service';
@@ -23,6 +31,11 @@ import { SportObjectFilterService } from '../../../sport-objects/services/sport-
 import { Heatmap } from '../../models/heatmap';
 import { MarkerLayerSource } from '../../models/marker-layer';
 import { SportObject } from '../../../sport-objects/models/sport-object';
+import {
+  SportObjectFilterRequest,
+  isFilterRequestEmpty,
+  areFilterRequestsEqual,
+} from '../../../sport-objects/models/sport-object-filter';
 
 
 type MapMode = 'marker' | 'population-heatmap' | 'sport-heatmap';
@@ -215,22 +228,49 @@ export class MapPageComponent implements OnDestroy, OnInit {
   // #endregion
 
 
+  // #region Marker filters
+
+  public readonly markerFilterSources = combineLatest([
+    this.sportObjectsFilter.createDepartmentalOrganizationNamesFilter(),
+    this.sportObjectsFilter.createSportKindsFilter(),
+    this.sportObjectsFilter.createSportAreaNamesFilter(),
+    this.sportObjectsFilter.createSportAreaTypesFilter(),
+    of(this.sportObjectsFilter.createSportObjectAvailabilityFilter()),
+  ]);
+
+  public readonly nameVariants = this.sportObjectsApi.getObjectNames();
+
+  public readonly filterRequest =
+  new BehaviorSubject<SportObjectFilterRequest>({});
+
+  // #endregion
+
+
   // #region Markers
 
-  public readonly markerLayers:
-  Observable<MarkerLayerSource[] | null>
-  = this.mapModeSubject.pipe(
-    pairwise(),
-    filter(([prev, curr]) =>
-      _.difference(prev, curr).includes('marker')
-      || _.difference(curr, prev).includes('marker'),
+  public readonly markerLayers: Observable<MarkerLayerSource[] | null> =
+  combineLatest([
+    this.mapModeSubject.pipe(
+      pairwise(),
+      filter(([prev, curr]) =>
+        _.difference(prev, curr).includes('marker')
+        || _.difference(curr, prev).includes('marker'),
+      ),
+      startWith([this.mapModeSubject.value, this.mapModeSubject.value]),
     ),
+    this.filterRequest,
+  ]).pipe(
     tap(() => {
       const currentLoadingState = { ...this.loadingSubject.value };
       currentLoadingState.marker = true;
       this.loadingSubject.next(currentLoadingState);
     }),
-    switchMap(([prev, curr]) => {
+    switchMap(([[prev, curr], filter]) => {
+      if (!isFilterRequestEmpty(filter)) {
+        return this.sportObjectsApi.getFilteredObjectsGeoJson(filter).pipe(
+          map(source => [this.createSportObjectMarkerLayer(source)]),
+        );
+      }
       if (_.difference(curr, prev).includes('marker')) {
         return this.sportObjectsApi.getObjectsGeoJson().pipe(
           map(source => [this.createSportObjectMarkerLayer(source)]),
@@ -262,19 +302,6 @@ export class MapPageComponent implements OnDestroy, OnInit {
       },
     };
   }
-
-  // #endregion
-
-
-  // #region Marker filters
-
-  public readonly markerFilterSources = combineLatest([
-    this.sportObjectsFilter.createDepartmentalOrganizationNamesFilter(),
-    this.sportObjectsFilter.createSportKindsFilter(),
-    this.sportObjectsFilter.createSportAreaNamesFilter(),
-    this.sportObjectsFilter.createSportAreaTypesFilter(),
-    of(this.sportObjectsFilter.createSportObjectAvailabilityFilter()),
-  ]);
 
   // #endregion
 

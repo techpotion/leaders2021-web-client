@@ -76,17 +76,24 @@
     }
 
     .remove-button {
-      height: 21px;
       padding: 13px;
 
-      transition: var(--transition-default);
+      img {
+        height: 21px;
+
+        transition: var(--transition-default);
+      }
 
       &:hover {
-        filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
+        img {
+          filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
+        }
       }
 
       &:active {
-        filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+        img {
+          filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+        }
       }
     }
 

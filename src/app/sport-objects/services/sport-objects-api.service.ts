@@ -32,9 +32,26 @@ export class SportObjectsApiService {
     );
   }
 
+  public getFilteredObjectsGeoJson(
+    request: SportObjectFilterRequest,
+  ): Observable<GeoJSON.FeatureCollection<GeoJSON.Point, SportObject>> {
+    return this.getFilteredObjects(request).pipe(
+      map(objects => this.sportObjectUtils.convertToGeoJson(objects)),
+    );
+  }
+
+
   public getDepartmentalOrganizationNames(): Observable<string[]> {
     return this.http.get<{ names: string[]; listStats: { count: number } }>(
       '/ListDepartmentalOrganizationsNames',
+    ).pipe(
+      map(dto => dto.names),
+    );
+  }
+
+  public getObjectNames(): Observable<string[]> {
+    return this.http.get<{ names: string[]; listStats: { count: number } }>(
+      '/ListObjectsNames',
     ).pipe(
       map(dto => dto.names),
     );

@@ -1,7 +1,9 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  EventEmitter,
   Input,
+  Output,
 } from '@angular/core';
 
 import {
@@ -30,6 +32,9 @@ export class SportObjectFilterBarComponent {
   }
 
   @Input()
+  public nameVariants: string[] = [];
+
+  @Input()
   public filterSources: SportObjectFilterSource[] = [];
 
   public request: SportObjectFilterRequest = {};
@@ -38,9 +43,47 @@ export class SportObjectFilterBarComponent {
     filters: (string | EnumSelectVariant)[],
     name: FilterApiName,
   ): void {
-    const requestFilters = filters.map(filter => typeof filter === 'string' ? filter : filter.index);
-    this.request[name] = requestFilters as number[] & string[];
-    console.log(this.request);
+    const filterSource = this.filterSources.find(source =>
+      source.apiName === name);
+    if (!filterSource) {
+      throw new Error('Wrong API filter name.');
+    }
+
+    const formattedFilters = filters.map(
+      filter => typeof filter === 'string' ? filter : filter.index,
+    );
+    const purifiedFilters = filters.length === filterSource.variants.length
+      ? []
+      : formattedFilters;
+
+    this.request[name] = purifiedFilters as number[] & string[];
+  }
+
+  public onNameSearch(name: string): void {
+    if (!name.length) {
+      this.applyFilterRequest();
+      return;
+    }
+
+    const request: SportObjectFilterRequest = {
+      objectNames: [name],
+    };
+    this.filterRequest.emit(request);
+  }
+
+  public applyFilterRequest(): void {
+    this.filterRequest.emit(this.request);
+  }
+
+  @Output()
+  public readonly filterRequest =
+  new EventEmitter<SportObjectFilterRequest>();
+
+  public clearFilters(): void {
+    for (const source of this.filterSources) {
+      source.variants = [ ...(source.variants as string[]) ];
+    }
+    this.applyFilterRequest();
   }
 
 }

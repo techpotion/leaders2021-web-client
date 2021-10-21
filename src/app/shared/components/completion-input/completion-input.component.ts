@@ -16,7 +16,7 @@ import { distinctUntilChanged, debounceTime, map } from 'rxjs/operators';
 
 
 const INPUT_DEBOUNCE_TIME = 300;
-const COMPLETION_VARIANTS_COUNT = 5;
+const COMPLETION_VARIANTS_COUNT = 3;
 
 @Component({
   selector: 'tp-completion-input',
@@ -119,7 +119,6 @@ export class CompletionInputComponent implements OnDestroy {
   public readonly searchChange = new EventEmitter<string>();
 
   public search(): void {
-    if (!(this.inputControl.value as string).length) { return; }
     this.searchChange.next(this.inputControl.value);
   }
 

@@ -5,7 +5,9 @@
 
 <div class="top-controls">
     <tp-sport-object-filter-bar class="filter-bar"
-        [filterSources]="(markerFilterSources | async) || []">
+        [filterSources]="(markerFilterSources | async) || []"
+        [nameVariants]="(nameVariants | async) || []"
+        (filterRequest)="filterRequest.next($event)">
     </tp-sport-object-filter-bar>
 
     <div class="layers-toggles">

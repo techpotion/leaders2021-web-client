@@ -1,6 +1,8 @@
 <div class="top-container">
     <tp-completion-input
-        class="completion-input">
+        class="completion-input"
+        [variants]="nameVariants"
+        (searchChange)="onNameSearch($event)">
     </tp-completion-input>
 
     <button class="toggle-filters-button"
@@ -28,11 +30,13 @@
         </tp-multiple-select>
     </div>
 
-    <img class="remove-button"
-         src="assets/bin.svg"
-         alt="remove filters">
+    <button class="remove-button"
+        (click)="clearFilters()">
+        <img src="assets/bin.svg" alt="remove filters">
+    </button>
 
-    <button class="filter-button">
+    <button class="filter-button"
+        (click)="applyFilterRequest()">
         Отфильтровать объекты
     </button>
 </div>
