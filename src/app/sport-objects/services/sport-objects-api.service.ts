@@ -5,7 +5,10 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { SportObject } from '../models/sport-object';
-import { SportObjectFilterRequest } from '../models/sport-object-filter';
+import {
+  SimpleSportObjectFilterRequest,
+  SportObjectFilterRequest,
+} from '../models/sport-object-filter';
 import { SportObjectsService } from '../services/sport-objects.service';
 
 
@@ -84,14 +87,18 @@ export class SportObjectsApiService {
   // #endregion
 
   public getObjectsGeoJson(
+    filter?: SimpleSportObjectFilterRequest,
   ): Observable<GeoJSON.FeatureCollection<GeoJSON.Point, SportObject>> {
-    return this.getObjects().pipe(
+    return this.getObjects(filter).pipe(
       map(objects => this.sportObjectUtils.convertToGeoJson(objects)),
     );
   }
 
-  public getObjects(): Observable<SportObject[]> {
-    return this.http.post<{ sportsObjects: SportObject[] }>('/ListSportsObjects', {}).pipe(
+  public getObjects(
+    filter?: SimpleSportObjectFilterRequest,
+  ): Observable<SportObject[]> {
+    const body = filter ?? {};
+    return this.http.post<{ sportsObjects: SportObject[] }>('/ListSportsObjects', body).pipe(
       map(dto => dto.sportsObjects),
     );
   }

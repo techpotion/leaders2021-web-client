@@ -9,6 +9,7 @@ import {
 import {
   SportObjectFilterSource,
   SportObjectFilterRequest,
+  SportObjectFilterType,
   FilterApiName,
 } from '../../models/sport-object-filter';
 
@@ -56,7 +57,7 @@ export class SportObjectFilterBarComponent {
       ? []
       : formattedFilters;
 
-    this.request[name] = purifiedFilters as number[] & string[];
+    this.request[name] = purifiedFilters as SportObjectFilterType;
   }
 
   public onNameSearch(name: string): void {

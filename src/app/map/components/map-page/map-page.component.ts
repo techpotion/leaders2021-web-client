@@ -28,6 +28,7 @@ import { SportObjectsApiService } from '../../../sport-objects/services/sport-ob
 import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
 
 import { Heatmap } from '../../models/heatmap';
+import { LatLng } from '../../models/lat-lng';
 import { MarkerLayerSource } from '../../models/marker-layer';
 import { SportObject } from '../../../sport-objects/models/sport-object';
 import {
@@ -36,7 +37,10 @@ import {
 } from '../../../sport-objects/models/sport-object-filter';
 
 
-type MapMode = 'marker' | 'population-heatmap' | 'sport-heatmap';
+type MapMode = 'marker'
+| 'population-heatmap'
+| 'sport-heatmap'
+| 'polygon-draw';
 
 @Component({
   selector: 'tp-map-page',
@@ -122,11 +126,16 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   public onTogglePress(pressed: boolean, mode: MapMode): void {
     if (pressed) {
+      this.onMapModeAdd(mode);
       this.mapModeAdd.next(mode);
     } else {
       this.mapModeRemove.next(mode);
     }
   }
+
+  public readonly isPolygonDrawTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('polygon-draw')),
+  );
 
   public readonly isMarkerTogglePressed = this.mapModeSubject.pipe(
     map(modes => modes.includes('marker')),
@@ -139,6 +148,14 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public readonly isSportObjectsTogglePressed = this.mapModeSubject.pipe(
     map(modes => modes.includes('sport-heatmap')),
   );
+
+  private onMapModeAdd(mode: MapMode): void {
+    if (mode === 'polygon-draw') {
+      this.mapModeRemove.next('marker');
+    } else if (mode === 'marker') {
+      this.mapModeRemove.next('polygon-draw');
+    }
+  }
 
   // #endregion
 
@@ -226,6 +243,14 @@ export class MapPageComponent implements OnDestroy, OnInit {
   // #endregion
 
 
+  // #region Polygon selection
+
+  public readonly polygonSelection =
+  new BehaviorSubject<LatLng[] | undefined>(undefined);
+
+  // #endregion
+
+
   // #region Marker filters
 
   public readonly markerFilterSources = combineLatest([
@@ -257,23 +282,40 @@ export class MapPageComponent implements OnDestroy, OnInit {
       startWith([this.mapModeSubject.value, this.mapModeSubject.value]),
     ),
     this.filterRequest,
+    this.polygonSelection,
   ]).pipe(
     tap(() => {
       const currentLoadingState = { ...this.loadingSubject.value };
       currentLoadingState.marker = true;
       this.loadingSubject.next(currentLoadingState);
     }),
-    switchMap(([[prev, curr], filter]) => {
+    switchMap(([[prev, curr], filter, polygon]) => {
       if (!isFilterRequestEmpty(filter)) {
-        return this.sportObjectsApi.getFilteredObjectsGeoJson(filter).pipe(
+        const polygonizedFilter = { ...filter };
+        if (polygon) {
+          polygonizedFilter.polygon = { points: polygon };
+        }
+        return this.sportObjectsApi.getFilteredObjectsGeoJson(
+          polygonizedFilter,
+        ).pipe(
           map(source => [this.createSportObjectMarkerLayer(source)]),
         );
       }
+
       if (_.difference(curr, prev).includes('marker')) {
         return this.sportObjectsApi.getObjectsGeoJson().pipe(
           map(source => [this.createSportObjectMarkerLayer(source)]),
         );
       }
+
+      if (polygon) {
+        return this.sportObjectsApi.getObjectsGeoJson(
+          { polygon: { points: polygon } },
+        ).pipe(
+          map(source => [this.createSportObjectMarkerLayer(source)]),
+        );
+      }
+
       return of(null);
     }),
     tap(() => {
