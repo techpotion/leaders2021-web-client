@@ -22,9 +22,9 @@ export interface SimpleSportObjectFilterRequest {
 }
 
 export type SportObjectFilterType = number[]
-  & string[]
-  & SportObjectAvailability[]
-  & { points: LatLng[] };
+& string[]
+& SportObjectAvailability[]
+& { points: LatLng[] };
 
 export function isFilterRequestEmpty(
   request: SportObjectFilterRequest,
