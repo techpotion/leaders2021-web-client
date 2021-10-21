@@ -1,6 +1,8 @@
 @import '../../../../styles/mixins';
 
 :host {
+  position: relative;
+
   display: inline-block;
   width: 350px;
 
@@ -35,6 +37,7 @@
 
         width: 0;
         height: 0;
+        padding: 0;
 
         pointer-events: none;
       }
@@ -51,8 +54,20 @@
       height: 100%;
       padding-left: 10px;
 
+      user-select: none;
+
       b {
         @extend %body-2-semibold-font;
+      }
+
+      &.hidden {
+        flex-grow: 0;
+
+        width: 0;
+        height: 0;
+        padding: 0;
+
+        overflow: hidden;
       }
     }
 
@@ -96,9 +111,13 @@
   }
 
   .variants {
+    position: absolute;
+    z-index: 1;
+
     display: flex;
     flex-direction: column;
 
+    width: 100%;
     max-height: 0;
     border-radius: 0 0 10px 10px;
 

@@ -1,7 +1,7 @@
 <div class="input-container"
      [ngClass]="{ 'opened': isOpened | async }">
     <span class="current-value"
-        *ngIf="!(isOpened | async)"
+       [ngClass]="{ 'hidden': isOpened | async }"
         (click)="toggleSelect()">
         <ng-container *ngIf="!!(allVariantsSelected | async); else selectedCount">
             Все

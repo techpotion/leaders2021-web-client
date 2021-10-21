@@ -17,10 +17,25 @@
   line-height: 22px;
 }
 
+%body-1-medium-font {
+  @extend %body-font;
+
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 22px;
+}
+
 %body-2-light-font {
   @extend %body-font;
 
   font-weight: 300;
+  font-size: 16px;
+  line-height: 19px;
+}
+
+%body-2-regular-font {
+  @extend %body-font;
+
   font-size: 16px;
   line-height: 19px;
 }

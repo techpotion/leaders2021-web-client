@@ -11,14 +11,19 @@ import {
 import { FormControl } from '@angular/forms';
 
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { map, distinctUntilChanged } from 'rxjs/operators';
+import { map, debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import _ from 'lodash';
 
+import { EnumSelectVariant } from '../../models/enum-select-variant';
+
+
+const SEARCH_INPUT_DEBOUNCE_TIME = 300;
 
 interface SelectVariant {
   name: string;
   selected: boolean;
   shown: boolean;
+  index?: number;
 }
 
 @Component({
@@ -68,12 +73,16 @@ export class MultipleSelectComponent implements OnDestroy {
   }
 
   public subscribeSearchChange(): Subscription {
-    return this.searchControl.valueChanges.subscribe(query => {
+    return this.searchControl.valueChanges.pipe(
+      debounceTime(SEARCH_INPUT_DEBOUNCE_TIME),
+      distinctUntilChanged(),
+    ).subscribe((query: string) => {
       const currentValue = [ ...this.variantsSubject.value ];
-      const isEmptyQuery = !(query as string).length;
+      const isEmptyQuery = !query.length;
 
       for (const variant of currentValue) {
-        const shownValue = isEmptyQuery || variant.name.includes(query);
+        const shownValue = isEmptyQuery
+          || variant.name.toLowerCase().includes(query.toLowerCase());
         variant.shown = shownValue;
       }
 
@@ -94,7 +103,7 @@ export class MultipleSelectComponent implements OnDestroy {
 
   @HostListener('document:click', ['$event'])
   public onClickOutside(event: Event): void {
-    // esling-disable-next-line
+    // eslint-disable-next-line
     if (!this.el.nativeElement.contains(event.target)) {
       this.isOpened.next(false);
     }
@@ -108,9 +117,20 @@ export class MultipleSelectComponent implements OnDestroy {
   public readonly variantsSubject = new BehaviorSubject<SelectVariant[]>([]);
 
   @Input()
-  public set variants(value: string[]) {
-    const selectVariants = value.map(
-      name => ({ name, selected: true, shown: true }),
+  public set variants(value: (string | EnumSelectVariant)[]) {
+    const enumVariants = value.map(variant => {
+      const index = typeof variant === 'string' ? undefined : variant.index;
+      const name = typeof variant === 'string' ? variant : variant.name;
+      return { index, name };
+    });
+
+    const selectVariants = enumVariants.map(
+      variant => ({
+        name: variant.name,
+        index: variant.index,
+        selected: true,
+        shown: true,
+      }),
     );
     this.variantsSubject.next(selectVariants);
   }
@@ -153,7 +173,11 @@ export class MultipleSelectComponent implements OnDestroy {
 
   @Output()
   public readonly variantsSelect = this.variantsSubject.pipe(
-    map(variants => variants.map(variant => variant.name)),
+    skip(1),
+    map(variants => variants.map(variant => {
+      if (!variant.index) { return variant.name; }
+      return { name: variant.name, index: variant.index };
+    })),
     distinctUntilChanged((prev, curr) => _.isEqual(prev, curr)),
   );
 

@@ -1,0 +1,22 @@
+<div class="filters-container">
+    <div class="filter"
+        *ngFor="let filter of filterSources">
+
+        <span class="name">
+            {{ filter.name }}
+        </span>
+
+        <tp-multiple-select class="select"
+            [variants]="filter.variants"
+            (variantsSelect)="onChange($event, filter.apiName)">
+        </tp-multiple-select>
+    </div>
+
+    <img class="remove-button"
+         src="assets/bin.svg"
+         alt="remove filters">
+
+    <button class="filter-button">
+        Отфильтровать объекты
+    </button>
+</div>

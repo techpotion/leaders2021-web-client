@@ -4,8 +4,9 @@
 ></tp-map>
 
 <div class="top-controls">
-    <tp-map-filter-bar class="filter-bar">
-    </tp-map-filter-bar>
+    <tp-sport-object-filter-bar class="filter-bar"
+        [filterSources]="(markerFilterSources | async) || []">
+    </tp-sport-object-filter-bar>
 
     <div class="layers-toggles">
         <!-- <tp-map-toggle -->
