@@ -1,11 +1,14 @@
 @import '../../../../styles/mixins';
 
 :host {
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 30px;
 
   box-sizing: border-box;
   width: 100%;
   padding: 30px;
+  padding-bottom: 0;
   border-radius: 0 0 30px 30px;
 
   background: var(--color-theme-white-1000);
@@ -13,6 +16,9 @@
 
   .top-container {
     display: flex;
+    gap: 30px;
+
+    width: 100%;
 
     .completion-input {
       flex-grow: 1;
@@ -48,7 +54,10 @@
     gap: 20px 40px;
     align-items: flex-end;
 
-    transition: var(--transition-default);
+    max-height: 1000px;
+    margin-bottom: 30px;
+
+    transition: max-height var(--transition-default), opacity calc(2 * var(--transition-default));
 
     .filter {
       display: flex;
@@ -107,8 +116,11 @@
     }
 
     &.hidden {
-      height: 0;
+      max-height: 0;
+      margin: 0;
       overflow: hidden;
+
+      opacity: 0;
     }
   }
 }
