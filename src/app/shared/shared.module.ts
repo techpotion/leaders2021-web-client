@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 import { MultipleSelectComponent } from './components/multiple-select/multiple-select.component';
 import { CheckboxComponent } from './components/checkbox/checkbox.component';
+import { CompletionInputComponent } from './components/completion-input/completion-input.component';
 
 
 @NgModule({
@@ -12,10 +13,12 @@ import { CheckboxComponent } from './components/checkbox/checkbox.component';
     LoadingSpinnerComponent,
     MultipleSelectComponent,
     CheckboxComponent,
+    CompletionInputComponent,
   ],
   exports: [
     LoadingSpinnerComponent,
     MultipleSelectComponent,
+    CompletionInputComponent,
   ],
   imports: [
     CommonModule,

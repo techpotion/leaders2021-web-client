@@ -1,4 +1,20 @@
-<div class="filters-container">
+<div class="top-container">
+    <tp-completion-input
+        class="completion-input">
+    </tp-completion-input>
+
+    <button class="toggle-filters-button"
+        (click)="toggleFilters()"
+        [ngClass]="{ 'close': areFiltersOpened }">
+        <img [src]="areFiltersOpened
+                    ? 'assets/light/filter.svg'
+                    : 'assets/dark/filter.svg'"
+             alt="toggle filters">
+    </button>
+</div>
+
+<div class="filters-container"
+     [ngClass]="{ 'hidden': !areFiltersOpened }">
     <div class="filter"
         *ngFor="let filter of filterSources">
 

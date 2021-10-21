@@ -23,6 +23,12 @@ export class SportObjectFilterBarComponent {
 
   constructor() { }
 
+  public areFiltersOpened = false;
+
+  public toggleFilters(): void {
+    this.areFiltersOpened = !this.areFiltersOpened;
+  }
+
   @Input()
   public filterSources: SportObjectFilterSource[] = [];
 
