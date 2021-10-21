@@ -114,8 +114,21 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.loadCallbacks = [];
     });
 
-    existingMap.on('draw.delete', () => this.polygonDrawDelete.emit());
-    existingMap.on('draw.create', () => this.polygonDrawCreate.emit());
+    existingMap.on('draw.delete', () => {
+      this.polygonDrawDelete.emit();
+      this.onPolygonChange();
+    });
+
+    existingMap.on('draw.create', (event: MapboxDraw.DrawCreateEvent) =>
+      this.onPolygonChange(
+        event.features[0] as GeoJSON.Feature<GeoJSON.Polygon>,
+      ));
+
+    existingMap.on('draw.update', (event: MapboxDraw.DrawUpdateEvent) =>
+      this.onPolygonChange(
+        event.features[0] as GeoJSON.Feature<GeoJSON.Polygon>,
+      ));
+
     existingMap.on('draw.modechange', (event: MapboxDraw.DrawModeChageEvent) => {
       this.polygonDrawMode.next(event.mode);
     });
@@ -161,20 +174,42 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.polygonDraw = this.mapUtils.addPolygonDraw(loadedMap);
       this.polygonDrawMode.next(this.polygonDraw.getMode());
     } else {
+      this.polygonDrawChange.emit(undefined);
       this.polygonDraw = undefined;
       this.polygonDrawMode.next(undefined);
     }
   }
 
+  @Output()
   public readonly polygonDrawDelete = new EventEmitter<void>();
 
-  public readonly polygonDrawCreate = new EventEmitter<void>();
+  @Output()
+  public readonly polygonDrawChange =
+  new EventEmitter<LatLng[] | undefined>();
 
   private subscribeOnPolygonDrawDelete(): Subscription {
     return this.polygonDrawDelete.subscribe(() => {
       this.polygonDraw?.changeMode('draw_polygon');
       this.polygonDrawMode.next('draw_polygon');
     });
+  }
+
+  private onPolygonChange(
+    polygon?: GeoJSON.Feature<GeoJSON.Polygon>,
+  ): void {
+    if (!polygon) {
+      this.polygonDrawChange.emit(undefined);
+      return;
+    }
+
+    const latLngPolygon = polygon.geometry.coordinates[0].map(
+      coords => ({
+        lat: coords[1],
+        lng: coords[0],
+      }),
+    );
+
+    this.polygonDrawChange.emit(latLngPolygon);
   }
 
   // #endregion
@@ -202,7 +237,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public set markerLayerSources(sources: MarkerLayerSource[] | null) {
     const updateSources = sources ?? [];
 
-    if (!this.map || !this.map.loaded()) {
+    if (!this.map) {
       this.loadCallbacks.push(() => this.updateMarkerLayers(updateSources));
       return;
     }
@@ -211,7 +246,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateMarkerLayers(sources: MarkerLayerSource[]): void {
-    if (!this.map || !this.map.loaded()) {
+    if (!this.map) {
       throw new Error('Cannot update marker layers: map is not loaded');
     }
     const loadedMap = this.map;
@@ -242,7 +277,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public set heatmaps(sources: Heatmap[] | null) {
     const updateSources = sources ?? [];
 
-    if (!this.map || !this.map.loaded()) {
+    if (!this.map) {
       this.loadCallbacks.push(() => this.updateHeatmaps(updateSources));
       return;
     }
@@ -251,7 +286,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateHeatmaps(sources: Heatmap[]): void {
-    if (!this.map || !this.map.loaded()) {
+    if (!this.map) {
       throw new Error('Cannot update heatmaps: map is not loaded');
     }
     const loadedMap = this.map;

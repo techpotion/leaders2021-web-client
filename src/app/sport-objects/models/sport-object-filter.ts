@@ -2,17 +2,29 @@ import _ from 'lodash';
 
 import { SportObjectAvailability } from './sport-object';
 import { EnumSelectVariant } from '../../shared/models/enum-select-variant';
+import { LatLng } from '../../map/models/lat-lng';
 
-export interface SportObjectFilterRequest {
+export type SportObjectFilterRequest = SimpleSportObjectFilterRequest & {
   objectIds?: number[];
+  sportAreaNames?: string[];
+  sportAreaTypes?: string[];
+  sportKinds?: string[];
+};
+
+export interface SimpleSportObjectFilterRequest {
   objectNames?: string[];
   departamentalOrganizationIds?: number[];
   departamentalOrganizationNames?: string[];
-  sportAreaNames?: string[];
-  sportAreaTypes?: string[];
   availabilities?: SportObjectAvailability[];
-  sportKinds?: string[];
+  polygon?: {
+    points: LatLng[];
+  };
 }
+
+export type SportObjectFilterType = number[]
+  & string[]
+  & SportObjectAvailability[]
+  & { points: LatLng[] };
 
 export function isFilterRequestEmpty(
   request: SportObjectFilterRequest,
