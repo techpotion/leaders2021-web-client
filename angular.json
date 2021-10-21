@@ -52,7 +52,8 @@
             ],
             "styles": [
               "src/styles/global.scss",
-              "src/styles/variables.scss"
+              "src/styles/variables.scss",
+              "src/styles/mixins.scss"
             ],
             "scripts": []
           },
@@ -121,7 +122,8 @@
             ],
             "styles": [
               "src/styles/global.scss",
-              "src/styles/variables.scss"
+              "src/styles/variables.scss",
+              "src/styles/mixins.scss"
             ],
             "scripts": []
           }

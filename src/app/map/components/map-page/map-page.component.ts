@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  OnInit,
   OnDestroy,
 } from '@angular/core';
 
@@ -12,15 +13,27 @@ import {
   Subject,
   Subscription,
 } from 'rxjs';
-import { filter, map, tap, switchMap, pairwise } from 'rxjs/operators';
+import {
+  filter,
+  map,
+  tap,
+  startWith,
+  switchMap,
+  pairwise,
+} from 'rxjs/operators';
 import _ from 'lodash';
 
 import { PopulationApiService } from '../../../population/services/population-api.service';
 import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
+import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
 
 import { Heatmap } from '../../models/heatmap';
 import { MarkerLayerSource } from '../../models/marker-layer';
 import { SportObject } from '../../../sport-objects/models/sport-object';
+import {
+  SportObjectFilterRequest,
+  isFilterRequestEmpty,
+} from '../../../sport-objects/models/sport-object-filter';
 
 
 type MapMode = 'marker' | 'population-heatmap' | 'sport-heatmap';
@@ -31,11 +44,12 @@ type MapMode = 'marker' | 'population-heatmap' | 'sport-heatmap';
   styleUrls: ['./map-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapPageComponent implements OnDestroy {
+export class MapPageComponent implements OnDestroy, OnInit {
 
   constructor(
     public readonly populationApi: PopulationApiService,
     public readonly sportObjectsApi: SportObjectsApiService,
+    public readonly sportObjectsFilter: SportObjectFilterService,
   ) {
     this.subscriptions.push(
       ...this.subscribeOnMapModeChange(),
@@ -44,9 +58,23 @@ export class MapPageComponent implements OnDestroy {
 
   public readonly subscriptions: Subscription[] = [];
 
+
+  // #region Life cycle hooks
+
   public ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
+
+  private readonly initSubject = new Subject<void>();
+
+  public ngOnInit(): void {
+    this.initSubject.next();
+  }
+
+  // #endregion
+
+
+  // #region Loading spinners
 
   private readonly loadingSubject =
   new BehaviorSubject<{
@@ -61,6 +89,10 @@ export class MapPageComponent implements OnDestroy {
     map(loading => loading.heatmap || loading.marker),
   );
 
+  // #endregion
+
+
+  // #region Map mode
 
   private readonly mapModeAdd = new Subject<MapMode>();
 
@@ -87,6 +119,31 @@ export class MapPageComponent implements OnDestroy {
 
     return [removeSub, addSub];
   }
+
+  public onTogglePress(pressed: boolean, mode: MapMode): void {
+    if (pressed) {
+      this.mapModeAdd.next(mode);
+    } else {
+      this.mapModeRemove.next(mode);
+    }
+  }
+
+  public readonly isMarkerTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('marker')),
+  );
+
+  public readonly isPopulationTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('population-heatmap')),
+  );
+
+  public readonly isSportObjectsTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('sport-heatmap')),
+  );
+
+  // #endregion
+
+
+  // #region Heatmaps
 
   public readonly heatmaps: Observable<Heatmap[] | null>
   = this.mapModeSubject.pipe(
@@ -130,54 +187,6 @@ export class MapPageComponent implements OnDestroy {
     }),
   );
 
-  public readonly markerLayers:
-  Observable<MarkerLayerSource[] | null>
-  = this.mapModeSubject.pipe(
-    pairwise(),
-    filter(([prev, curr]) =>
-      _.difference(prev, curr).includes('marker')
-      || _.difference(curr, prev).includes('marker'),
-    ),
-    tap(() => {
-      const currentLoadingState = { ...this.loadingSubject.value };
-      currentLoadingState.marker = true;
-      this.loadingSubject.next(currentLoadingState);
-    }),
-    switchMap(([prev, curr]) => {
-      if (_.difference(curr, prev).includes('marker')) {
-        return this.sportObjectsApi.getObjectsGeoJson().pipe(
-          map(source => [this.createSportObjectMarkerLayer(source)]),
-        );
-      }
-      return of(null);
-    }),
-    tap(() => {
-      const currentLoadingState = { ...this.loadingSubject.value };
-      currentLoadingState.marker = false;
-      this.loadingSubject.next(currentLoadingState);
-    }),
-  );
-
-  public onTogglePress(pressed: boolean, mode: MapMode): void {
-    if (pressed) {
-      this.mapModeAdd.next(mode);
-    } else {
-      this.mapModeRemove.next(mode);
-    }
-  }
-
-  public readonly isMarkerTogglePressed = this.mapModeSubject.pipe(
-    map(modes => modes.includes('marker')),
-  );
-
-  public readonly isPopulationTogglePressed = this.mapModeSubject.pipe(
-    map(modes => modes.includes('population-heatmap')),
-  );
-
-  public readonly isSportObjectsTogglePressed = this.mapModeSubject.pipe(
-    map(modes => modes.includes('sport-heatmap')),
-  );
-
   private createPopulationHeatmap(
     geojson: GeoJSON.FeatureCollection,
   ): Heatmap {
@@ -214,6 +223,66 @@ export class MapPageComponent implements OnDestroy {
     };
   }
 
+  // #endregion
+
+
+  // #region Marker filters
+
+  public readonly markerFilterSources = combineLatest([
+    this.sportObjectsFilter.createDepartmentalOrganizationNamesFilter(),
+    this.sportObjectsFilter.createSportKindsFilter(),
+    this.sportObjectsFilter.createSportAreaNamesFilter(),
+    this.sportObjectsFilter.createSportAreaTypesFilter(),
+    of(this.sportObjectsFilter.createSportObjectAvailabilityFilter()),
+  ]);
+
+  public readonly nameVariants = this.sportObjectsApi.getObjectNames();
+
+  public readonly filterRequest =
+  new BehaviorSubject<SportObjectFilterRequest>({});
+
+  // #endregion
+
+
+  // #region Markers
+
+  public readonly markerLayers: Observable<MarkerLayerSource[] | null> =
+  combineLatest([
+    this.mapModeSubject.pipe(
+      pairwise(),
+      filter(([prev, curr]) =>
+        _.difference(prev, curr).includes('marker')
+        || _.difference(curr, prev).includes('marker'),
+      ),
+      startWith([this.mapModeSubject.value, this.mapModeSubject.value]),
+    ),
+    this.filterRequest,
+  ]).pipe(
+    tap(() => {
+      const currentLoadingState = { ...this.loadingSubject.value };
+      currentLoadingState.marker = true;
+      this.loadingSubject.next(currentLoadingState);
+    }),
+    switchMap(([[prev, curr], filter]) => {
+      if (!isFilterRequestEmpty(filter)) {
+        return this.sportObjectsApi.getFilteredObjectsGeoJson(filter).pipe(
+          map(source => [this.createSportObjectMarkerLayer(source)]),
+        );
+      }
+      if (_.difference(curr, prev).includes('marker')) {
+        return this.sportObjectsApi.getObjectsGeoJson().pipe(
+          map(source => [this.createSportObjectMarkerLayer(source)]),
+        );
+      }
+      return of(null);
+    }),
+    tap(() => {
+      const currentLoadingState = { ...this.loadingSubject.value };
+      currentLoadingState.marker = false;
+      this.loadingSubject.next(currentLoadingState);
+    }),
+  );
+
   private createSportObjectMarkerLayer(
     geojson: GeoJSON.FeatureCollection<GeoJSON.Point, SportObject>,
   ): MarkerLayerSource {
@@ -231,5 +300,7 @@ export class MapPageComponent implements OnDestroy {
       },
     };
   }
+
+  // #endregion
 
 }

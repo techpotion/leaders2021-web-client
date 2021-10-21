@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { MapRoutingModule } from './map-routing.module';
 import { SharedModule } from '../shared/shared.module';
+import { SportObjectsModule } from '../sport-objects/sport-objects.module';
 
 import { MapComponent } from './components/map/map.component';
 import { MapPageComponent } from './components/map-page/map-page.component';
@@ -23,6 +24,7 @@ import { ComponentRenderService } from '../shared/services/component-render.serv
     CommonModule,
     MapRoutingModule,
     SharedModule,
+    SportObjectsModule,
   ],
   providers: [
     ComponentRenderService,

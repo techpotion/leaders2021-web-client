@@ -1,0 +1,133 @@
+@import '../../../../styles/mixins';
+
+:host {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 30px;
+
+  box-sizing: border-box;
+  width: 100%;
+  padding: 30px;
+  padding-bottom: 0;
+  border-radius: 0 0 30px 30px;
+
+  background: var(--color-theme-white-1000);
+  box-shadow: var(--shadow-2x);
+
+  .top-container {
+    display: flex;
+    gap: 30px;
+
+    width: 100%;
+
+    .completion-input {
+      flex-grow: 1;
+    }
+
+    .toggle-filters-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 60px;
+      height: 50px;
+      border-radius: 4px;
+
+      background: var(--color-theme-white-1000);
+      box-shadow: var(--shadow-default);
+
+      transition: var(--transition-default);
+
+      &:hover {
+        box-shadow: var(--shadow-input-active);
+      }
+
+      &.close {
+        background: var(--color-theme-primary-1000);
+      }
+    }
+  }
+
+  .filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 40px;
+    align-items: flex-end;
+
+    max-height: 1000px;
+    margin-bottom: 30px;
+
+    transition: max-height var(--transition-default), opacity calc(2 * var(--transition-default));
+
+    .filter {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .name {
+        @extend %body-2-regular-font;
+
+        color: var(--color-theme-primary-1000);
+      }
+
+      .select {
+        width: 270px;
+      }
+    }
+
+    .remove-button {
+      padding: 13px;
+
+      img {
+        height: 21px;
+
+        transition: var(--transition-default);
+      }
+
+      &:hover {
+        img {
+          filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
+        }
+      }
+
+      &:active {
+        img {
+          filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+        }
+      }
+    }
+
+    .filter-button {
+      @extend %body-2-regular-font;
+
+      display: flex;
+      align-items: center;
+
+      height: 50px;
+      padding: 0 15px;
+      border-radius: 4px;
+
+      color: var(--color-theme-white-1000);
+
+      background: var(--color-theme-primary-1000);
+
+      transition: var(--transition-default);
+
+      &:hover {
+        background: #153FB8;
+      }
+
+      &:active {
+        background: var(--color-theme-primary-1100);
+      }
+    }
+
+    &.hidden {
+      max-height: 0;
+      margin: 0;
+      overflow: hidden;
+
+      opacity: 0;
+    }
+  }
+}
