@@ -26,15 +26,6 @@ export class SportObjectBriefInfoComponent implements OnInit {
   }
 
   @Input()
-  public obj?: SportObject = {
-    objectId: 1,
-    objectName: 'sdfsfsgfdg',
-    objectAddress: 'dfsjgfsijgifdjg',
-    objectPoint: { lat: 0, lng: 0 },
-    departmentalOrganizationId: 1,
-    departmentalOrganizationName: 'dfkglsfjglkfdjg',
-    availability: 1,
-    objectSumSquare: 1,
-  };
+  public obj?: SportObject;
 
 }

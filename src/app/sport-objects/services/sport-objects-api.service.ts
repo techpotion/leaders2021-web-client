@@ -98,7 +98,9 @@ export class SportObjectsApiService {
     filter?: SimpleSportObjectFilterRequest,
   ): Observable<SportObject[]> {
     const body = filter ?? {};
-    return this.http.post<{ sportsObjects: SportObject[] }>('/ListSportsObjects', body).pipe(
+    return this.http.post<{ sportsObjects: SportObject[] }>(
+      '/ListSportsObjects', body,
+    ).pipe(
       map(dto => dto.sportsObjects),
     );
   }

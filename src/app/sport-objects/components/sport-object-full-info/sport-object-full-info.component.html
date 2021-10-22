@@ -1,0 +1,57 @@
+<div class="shadow-container" *ngIf="obj">
+    <div class="content">
+        <div class="title-container">
+            <h1 class="name">{{ obj.objectName }}</h1>
+            <span class="address">{{ obj.objectAddress }}</span>
+        </div>
+
+        <div class="info-container">
+            <div class="left-container">
+                <div class="department">
+                    <h2 class="info-title">Ведомственная организация</h2>
+                    <span class="info-content">
+                        {{ obj.departmentalOrganizationName }}
+                    </span>
+                </div>
+
+                <div class="availability">
+                    <h2 class="info-title">Доступность</h2>
+                    <div class="info-content"
+                        *ngIf="availabilityDecription[obj.availability.toString()] as availability">
+                        <span>
+                            {{ availability.name }}
+                        </span>
+                        <img [src]="availability.icon">
+                    </div>
+                </div>
+
+                <div class="areas">
+                    <div class="type" 
+                        *ngFor="let type of sportAreaTypes | async">
+                        <h2 class="info-title">Спортзоны</h2>
+                        <div class="info-subtitle">
+                            <span class="subtitle">type.type</span>
+                            <span class="info-count">type.names.length</span>
+                        </div>
+                        <span class="name"
+                            *ngFor="let name of type.names">
+                            {{ name }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-container">
+                <h2 class="info-title">Виды услуг</h2>
+                <span class="name"
+                    *ngFor="let kind of sportKinds | async">
+                    {{ kind }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <button class="close-button">
+        <img src="assets/cross.svg" alt="close">
+    </button>
+</div>
