@@ -24,8 +24,11 @@ import { MarkerLayer, MarkerLayerSource } from '../../models/marker-layer';
 
 
 import { MapService } from '../../services/map.service';
-// import { ComponentRenderService } from
-// '../../../shared/services/component-render.service';
+import { ComponentRenderService } from
+  '../../../shared/services/component-render.service';
+
+import { SportObjectBriefInfoComponent } from
+  '../../../sport-objects/components/sport-object-brief-info/sport-object-brief-info.component';
 
 
 mapboxgl.accessToken = environment.map.token;
@@ -50,8 +53,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     public readonly mapUtils: MapService,
-    // public readonly componentRenderer:
-    // ComponentRenderService<SportObjectBriefInfoComponent>,
+    public readonly componentRenderer:
+    ComponentRenderService<SportObjectBriefInfoComponent>,
   ) {
     this.subscriptions.push(
       this.subscribeOnPolygonDrawDelete(),
@@ -131,6 +134,17 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     existingMap.on('draw.modechange', (event: MapboxDraw.DrawModeChageEvent) => {
       this.polygonDrawMode.next(event.mode);
+    });
+
+    existingMap.on('click', (event: mapboxgl.MapMouseEvent) => {
+      const popupContent = this.componentRenderer.injectComponent(
+        SportObjectBriefInfoComponent,
+        c => c,
+      );
+      new mapboxgl.Popup({ closeButton: false })
+        .setLngLat(event.lngLat)
+        .setDOMContent(popupContent)
+        .addTo(existingMap);
     });
   }
 

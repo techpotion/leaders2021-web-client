@@ -11,6 +11,23 @@
 
       cursor: pointer;
     }
+
+    .mapboxgl-popup {
+      // stylelint-disable declaration-no-important
+      max-width: none !important;
+
+      .mapboxgl-popup-content {
+        padding: 0;
+        border-radius: 0;
+
+        background: none;
+        box-shadow: none;
+      }
+    }
+
+    .mapboxgl-popup-tip {
+      display: none;
+    }
   }
 
   &.polygon-draw {
