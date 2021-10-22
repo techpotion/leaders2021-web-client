@@ -9,6 +9,8 @@ import { MarkerLayer, MarkerLayerSource } from '../models/marker-layer';
 import { isNotNil } from '../../shared/utils/is-not-nil';
 import * as drawStyles from '../models/polygon-styles';
 
+import { ComponentRenderService } from '../../shared/services/component-render.service';
+
 
 // This is constant
 // eslint-disable-next-line
@@ -19,7 +21,10 @@ const CLUSTER_RADIUSES = [ 20, 100, 30, 750, 40 ];
 })
 export class MapService {
 
-  constructor() { }
+  constructor(
+    // eslint-disable-next-line
+    private readonly renderer: ComponentRenderService<any>,
+  ) { }
 
 
   // #region Polygon draw
@@ -89,13 +94,15 @@ export class MapService {
       },
     });
 
-    return {
-      id, markers: this.createMarkersMap(layer),
-    };
+
+    const markers = this.createMarkersMap(layer, map);
+
+    return { id, markers };
   }
 
   private createMarkersMap(
     layer: MarkerLayerSource,
+    map: mapboxgl.Map,
   ): Map<string, mapboxgl.Marker> {
     const markers = new Map<string, mapboxgl.Marker>();
 
@@ -108,9 +115,26 @@ export class MapService {
         element,
         anchor: layer.image.anchor,
       });
-      marker.setLngLat(
-        (feature.geometry as GeoJSON.Point).coordinates as [number, number],
-      );
+
+      const position =
+        (feature.geometry as GeoJSON.Point).coordinates as [number, number];
+      marker.setLngLat(position);
+
+      const popup = layer.popup;
+      if (popup) {
+        marker.getElement().addEventListener('click', (event: Event) => {
+          event.stopPropagation();
+
+          const popupContent = this.renderer.injectComponent(
+            popup.component,
+            component => popup.initMethod(component, feature.properties),
+          );
+
+          new mapboxgl.Popup({ closeButton: false, offset: 5 })
+            .setDOMContent(popupContent).setLngLat(position).addTo(map);
+        });
+      }
+
       markers.set(layer.idMethod(feature.properties).toString(), marker);
     }
 
@@ -144,6 +168,7 @@ export class MapService {
     for (const id of shownMarkerIds) {
       const marker = markers.get(id);
       if (!marker) { continue; }
+
       marker.addTo(map);
     }
   }

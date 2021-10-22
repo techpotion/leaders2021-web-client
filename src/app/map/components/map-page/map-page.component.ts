@@ -36,6 +36,9 @@ import {
   isFilterRequestEmpty,
 } from '../../../sport-objects/models/sport-object-filter';
 
+import { SportObjectBriefInfoComponent } from
+  '../../../sport-objects/components/sport-object-brief-info/sport-object-brief-info.component';
+
 
 type MapMode = 'marker'
 | 'population-heatmap'
@@ -317,6 +320,21 @@ export class MapPageComponent implements OnDestroy, OnInit {
       }
 
       return of(null);
+    }),
+    map(sources => {
+      if (!sources) { return sources; }
+      for (const source of sources) {
+        source.popup = {
+          component: SportObjectBriefInfoComponent,
+          initMethod: (
+            component: SportObjectBriefInfoComponent,
+            obj: SportObject,
+          ) => {
+            component.obj = obj;
+          },
+        };
+      }
+      return sources;
     }),
     tap(() => {
       const currentLoadingState = { ...this.loadingSubject.value };
