@@ -1,6 +1,12 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  Input,
+  OnInit,
+} from '@angular/core';
 
 import { SportObject } from '../../models/sport-object';
+
 
 @Component({
   selector: 'tp-sport-object-brief-info',
@@ -8,11 +14,18 @@ import { SportObject } from '../../models/sport-object';
   styleUrls: ['./sport-object-brief-info.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SportObjectBriefInfoComponent {
+export class SportObjectBriefInfoComponent implements OnInit {
 
   constructor() { }
 
+  public ngOnInit(): void {
+    if (!this.obj) {
+      throw new Error('Cannot initialize brief info: '
+        + 'no object passed.');
+    }
+  }
+
   @Input()
-  public obj!: SportObject;
+  public obj?: SportObject;
 
 }

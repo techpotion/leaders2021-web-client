@@ -1,11 +1,13 @@
-<h1 class="name">
-    {{ obj.objectName }}
-</h1>
+<div class="shadow-container" *ngIf="obj">
+    <h1 class="name">
+        {{ obj.objectName }}
+    </h1>
 
-<span class="department">
-    {{ obj.departmentalOrganizationName }}
-</span>
+    <span class="department">
+        {{ obj.departmentalOrganizationName }}
+    </span>
 
-<span class="address">
-    {{ obj.objectAddress }}
-</span>
+    <span class="address">
+        {{ obj.objectAddress }}
+    </span>
+</div>

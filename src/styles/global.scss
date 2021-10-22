@@ -18,3 +18,9 @@ button {
   background: transparent;
   outline: none;
 }
+
+@for $i from 1 to 6 {
+  h#{$i} {
+    margin: 0;
+  }
+}

@@ -43,7 +43,6 @@
 
     display: flex;
     gap: 25px;
-
   }
 
   .loading-spinner {
@@ -64,4 +63,11 @@
       pointer-events: auto;
     }
   }
+}
+
+.test-sport-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
 }
