@@ -38,6 +38,7 @@ import {
   SportObjectFilterRequest,
   isFilterRequestEmpty,
 } from '../../../sport-objects/models/sport-object-filter';
+import { MapEvent } from '../../models/map-event';
 
 import { SportObjectBriefInfoComponent } from
   '../../../sport-objects/components/sport-object-brief-info/sport-object-brief-info.component';
@@ -187,6 +188,13 @@ export class MapPageComponent implements OnDestroy, OnInit {
   // #endregion
 
 
+  // #region Map events
+
+  public readonly mapEvent = new BehaviorSubject<MapEvent | null>(null);
+
+  // #endregion
+
+
   // #region Heatmaps
 
   public readonly heatmaps: Observable<Heatmap[] | null>
@@ -293,12 +301,25 @@ export class MapPageComponent implements OnDestroy, OnInit {
             component.polygon = selection;
             component.analytics = analytics;
           },
+          eventHandler: (component: SportAreaBriefInfoComponent) => {
+            if (this.polygonDeleteSubscription
+              && !this.polygonDeleteSubscription.closed) {
+              this.polygonDeleteSubscription.unsubscribe();
+            }
+
+            this.polygonDeleteSubscription = component.closeInfo.subscribe(
+              () => this.mapEvent.next(
+                { event: 'clear-polygon' },
+              ));
+          },
           anchor: 'right' as mapboxgl.Anchor,
         })),
         map(popup => [popup]),
       );
     }),
   );
+
+  private polygonDeleteSubscription?: Subscription;
 
   // #endregion Popups
 

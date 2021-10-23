@@ -13,7 +13,7 @@ export class MapUtilsService {
   public getMostLeftPoint(points: LatLng[]): LatLng {
     let leftPoint = points[0];
     for (const point of points) {
-      if (point.lat < leftPoint.lat) {
+      if (point.lng < leftPoint.lng) {
         leftPoint = point;
       }
     }

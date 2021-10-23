@@ -2,6 +2,7 @@
     [heatmaps]="heatmaps | async"
     [markerLayerSources]="markerLayers | async"
     [popups]="popups | async"
+    [event]="mapEvent | async"
     [polygonDrawEnabled]="!!(isPolygonDrawTogglePressed | async)"
     (polygonDrawChange)="polygonSelection.next($event)"
 ></tp-map>

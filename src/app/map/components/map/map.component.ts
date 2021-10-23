@@ -22,6 +22,7 @@ import { MapZoom } from '../../models/map-zoom';
 import { Heatmap } from '../../models/heatmap';
 import { MarkerLayer, MarkerLayerSource } from '../../models/marker-layer';
 import { PopupSource } from '../../models/popup';
+import { MapEvent } from '../../models/map-event';
 
 
 import { MapService } from '../../services/map.service';
@@ -134,6 +135,26 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public readonly renderEvent = new Subject<void>();
 
   public loadCallbacks: (() => void)[] = [];
+
+  // #endregion
+
+
+  // #region Map events
+
+  @Input()
+  public set event(value: MapEvent | null) {
+    if (!value) {
+      return;
+    }
+
+    if (value.event === 'clear-polygon') {
+      if (this.polygonDraw) {
+        this.polygonDraw.deleteAll();
+        this.polygonDrawDelete.emit();
+        this.onPolygonChange();
+      }
+    }
+  }
 
   // #endregion
 
