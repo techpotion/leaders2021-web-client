@@ -68,21 +68,30 @@
         </div>
 
         <div class="existing" *ngSwitchCase="'existing'">
-            <div class="input-container">
-                <input class="input" type="text">
-                <img src="assets/lens.svg">
+            <div class="input-container"
+                 [ngClass]="{ 'focused': inputContainerFocus | async }">
+                <input class="search-input" type="text"
+                    (focus)="inputContainerFocus.next(true)"
+                    (blur)="inputContainerFocus.next(false)"
+                    [formControl]="searchInput">
+                <img class="search-logo" src="assets/lens.svg">
             </div>
 
             <div class="polygon-container">
-                <div class="polygon">
-                    <tp-saved-sport-polygon class="saved-polygon">
+                <div class="polygon" 
+                     *ngFor="let polygon of shownPolygons | async">
+                    <tp-saved-sport-polygon class="saved-polygon"
+                        [polygon]="polygon.polygon">
                     </tp-saved-sport-polygon>
 
                     <div class="buttons-container">
-                        <tp-radiobutton>
+                        <tp-radiobutton
+                            [enabled]="(chosenPolygonIndex | async) === polygon.index"
+                            (enabledChange)="choosePolygon(polygon.index, $event)">
                         </tp-radiobutton>
 
-                        <button class="remove-button">
+                        <button class="remove-button"
+                            (click)="removePolygon(polygon.index)">
                             <img src="assets/bin.svg" alt="remove">
                         </button>
                     </div>

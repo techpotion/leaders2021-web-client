@@ -5,6 +5,7 @@
     [event]="mapEvent | async"
     [polygonDrawEnabled]="!!(isPolygonDrawTogglePressed | async)"
     (polygonDrawChange)="polygonSelection.next($event)"
+    [polygon]="forcePolygon | async"
 ></tp-map>
 
 <div class="top-controls">
@@ -26,7 +27,8 @@
             [ngClass]="{ 'hidden': (mapContentSubject | async) != 'polygon-saving' }"
             (closeSettings)="onPolygonTogglePress(false)"
             (selectPolygon)="newPolygonName.next($event)"
-            [newPolygon]="newPolygon | async">
+            [newPolygon]="newPolygon | async"
+            (polygonChoose)="chosenPolygon.next($event)">
         </tp-sport-polygon-saving-settings>
 
         <div class="layers-toggles">

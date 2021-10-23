@@ -75,6 +75,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
     this.subscriptions.push(
       ...this.subscribeOnMapModeChange(),
       this.subscribeOnNewPolygonName(),
+      this.subscribeOnPolygonChoose(),
     );
   }
 
@@ -325,6 +326,23 @@ export class MapPageComponent implements OnDestroy, OnInit {
     map(([areas, analytics, geometry, name]) =>
       ({ geometry, name, analytics, areas })),
   );
+
+  public readonly chosenPolygon =
+  new BehaviorSubject<LatLng[] | null>(null);
+
+  public subscribeOnPolygonChoose(): Subscription {
+    return this.chosenPolygon.subscribe(polygon => {
+      if (polygon) {
+        this.onTogglePress(true, 'polygon-draw');
+        this.forcePolygon.next(polygon);
+        return;
+      }
+      this.mapEvent.next({ event: 'clear-polygon' });
+    });
+  }
+
+  public readonly forcePolygon =
+  new BehaviorSubject<LatLng[] | null>(null);
 
   // #endregion
 

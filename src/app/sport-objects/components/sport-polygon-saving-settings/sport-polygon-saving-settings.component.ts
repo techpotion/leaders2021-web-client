@@ -8,7 +8,14 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
+import {
+  filter,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  startWith,
+} from 'rxjs/operators';
 
 import { SportPolygonService } from '../../services/sport-polygon.service';
 
@@ -16,7 +23,8 @@ import { SportPolygon } from '../../models/sport-polygon';
 
 
 type SettingsMode = 'new' | 'existing';
-const DEFAULT_MODE: SettingsMode = 'new';
+const DEFAULT_MODE: SettingsMode = 'existing';
+const SEARCH_DEBOUNCE_TIME = 300;
 
 @Component({
   selector: 'tp-sport-polygon-saving-settings',
@@ -32,6 +40,7 @@ export class SportPolygonSavingSettingsComponent implements OnDestroy {
     this.subscriptions.push(
       this.subscribeOnClose(),
       this.subscribeNewPolygonInput(),
+      this.subscribeOnModeChange(),
     );
   }
 
@@ -121,6 +130,76 @@ export class SportPolygonSavingSettingsComponent implements OnDestroy {
   public clearNewPolygon(): void {
     this.newPolygonSubject.next(null);
     this.selectPolygon.next(this.newPolygonName.value);
+  }
+
+  // #endregion
+
+
+  // #region 'Existing' mode
+
+  public readonly inputContainerFocus = new BehaviorSubject<boolean>(false);
+
+  public readonly searchInput = new FormControl('');
+
+  public readonly polygons = new BehaviorSubject<SportPolygon[]>([]);
+
+  public readonly shownPolygons = combineLatest([
+    this.searchInput.valueChanges.pipe(
+      startWith(this.searchInput.value),
+      debounceTime(SEARCH_DEBOUNCE_TIME),
+      distinctUntilChanged(),
+      map(value => value as string),
+    ),
+    this.polygons,
+  ]).pipe(
+    map(([input, polygons]) => ({
+      input,
+      polygons: polygons.map((polygon, index) => ({ polygon, index })),
+    })),
+    map(({ input, polygons }) => polygons.filter(
+      polygon => polygon.polygon.name.includes(input),
+    )),
+  );
+
+  private subscribeOnModeChange(): Subscription {
+    return this.mode.pipe(
+      filter(mode => mode === 'existing'),
+    ).subscribe(() => this.polygons.next(
+      this.polygonStorage.getPolygons(),
+    ));
+  }
+
+  public removePolygon(index: number): void {
+    if (index === this.chosenPolygonIndex.value) {
+      this.chosenPolygonIndex.next(undefined);
+    }
+
+    const polygons = this.polygons.value;
+    polygons.splice(index, 1);
+    this.polygonStorage.updatePolygons(polygons);
+    this.polygons.next(this.polygonStorage.getPolygons());
+  }
+
+  public readonly chosenPolygonIndex =
+  new BehaviorSubject<number | undefined>(undefined);
+
+  @Output()
+  public readonly polygonChoose = combineLatest([
+    this.polygons,
+    this.chosenPolygonIndex,
+  ]).pipe(
+    map(([polygons, chosenIndex]) =>
+      chosenIndex === undefined
+        ? null
+        : [ ...polygons[chosenIndex].geometry ]),
+  );
+
+  public choosePolygon(index: number, selected: boolean): void {
+    if (!selected && this.chosenPolygonIndex.value === index) {
+      this.chosenPolygonIndex.next(undefined);
+      return;
+    }
+    this.chosenPolygonIndex.next(index);
   }
 
   // #endregion
