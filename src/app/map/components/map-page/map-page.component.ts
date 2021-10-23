@@ -53,7 +53,7 @@ type MapMode = 'marker'
 | 'sport-heatmap'
 | 'polygon-draw';
 
-type MapContent = 'object-info' | 'analysis';
+type MapContent = 'object-info' | 'analysis' | 'polygon-saving';
 
 @Component({
   selector: 'tp-map-page',
@@ -160,6 +160,14 @@ export class MapPageComponent implements OnDestroy, OnInit {
       this.mapModeAdd.next(mode);
     } else {
       this.mapModeRemove.next(mode);
+    }
+  }
+
+  public onPolygonTogglePress(pressed: boolean): void {
+    if (pressed) {
+      this.mapContentSubject.next('polygon-saving');
+    } else {
+      this.mapContentSubject.next(undefined);
     }
   }
 

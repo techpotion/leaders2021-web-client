@@ -10,6 +10,8 @@ import { MapPageComponent } from './components/map-page/map-page.component';
 import { MapToggleComponent } from './components/map-toggle/map-toggle.component';
 
 import { ComponentRenderService } from '../shared/services/component-render.service';
+import { PolygonSavingSettingsComponent } from './components/polygon-saving-settings/polygon-saving-settings.component';
+import { SavedPolygonComponent } from './components/saved-polygon/saved-polygon.component';
 
 
 @NgModule({
@@ -17,6 +19,8 @@ import { ComponentRenderService } from '../shared/services/component-render.serv
     MapComponent,
     MapPageComponent,
     MapToggleComponent,
+    PolygonSavingSettingsComponent,
+    SavedPolygonComponent,
   ],
   exports: [
   ],

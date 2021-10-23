@@ -1,0 +1,66 @@
+<ng-container *ngIf="polygonSubject | async as polygon">
+    <div class="name-container"
+        (click)="isOpened.next(!isOpened.value)">
+        <h1 class="name">{{ polygon.name }}</h1>
+        <img src="assets/blue-tick.svg" alt="open"
+            class="open-indicator"
+            [ngClass]="{ 'opened': isOpened | async }">
+    </div>
+
+    <div class="analytics-container"
+         [ngClass]="{ 'hidden': (isOpened | async) !== true}">
+        <div class="area-square-container">
+            <h2 class="metric-name">Площадь спортзон</h2>
+            <span class="metric-value">
+                {{ polygon.analytics.areasSquare | area }}
+                <span class="units">
+                    м<sup>2</sup>
+                </span>
+            </span>
+        </div>
+
+        <div class="area-types-container">
+            <div class="heading"
+                (click)="isAreaTypesOpened.next(!isAreaTypesOpened.value)">
+                <h2 class="metric-name">Типы спортзон</h2>
+                <img src="assets/blue-tick.svg" alt="open"
+                    class="open-indicator"
+                    [ngClass]="{ 'opened': isAreaTypesOpened | async }">
+                <span class="metric-value">
+                    {{ polygon.analytics.areaTypesAmount }}
+                </span>
+            </div>
+            <div class="content"
+                 [ngClass]="{ 'hidden': (isAreaTypesOpened | async) !== true }">
+                <div class="subelement" *ngFor="let type of areaTypes | async">
+                    <div class="subheading">
+                        <span class="submetric-name">{{ type.type }}</span>
+                        <span class="submetric-value">{{ type.names.length }}</span>
+                    </div>
+                    <div class="subcontent">
+                        <span class="element" *ngFor="let name of type.names">
+                            {{ name }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sport-kinds-container">
+            <div class="heading"
+                (click)="isSportKindsOpened.next(!isSportKindsOpened.value)">
+                <h2 class="metric-name">Виды спортивных услуг</h2>
+                <img src="assets/blue-tick.svg" alt="open"
+                    class="open-indicator"
+                    [ngClass]="{ 'opened': isSportKindsOpened | async }">
+                <span class="metric-value">{{ (sportKinds | async)?.length }}</span>
+            </div>
+            <div class="content"
+                 [ngClass]="{ 'hidden': (isSportKindsOpened | async) !== true }">
+                <span class="element" *ngFor="let kind of sportKinds | async">
+                    {{ kind }}
+                </span>
+            </div>
+        </div>
+    </div>
+</ng-container>

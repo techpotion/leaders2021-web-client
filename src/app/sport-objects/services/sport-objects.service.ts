@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 
-import { SportObject } from '../models/sport-object';
+import {
+  SportArea,
+  SportAreaType,
+  SportObject,
+} from '../models/sport-object';
 
 
 @Injectable({
@@ -35,6 +39,30 @@ export class SportObjectsService {
     };
 
     return featureCollection;
+  }
+
+  public getAreaTypes(areas: SportArea[]): SportAreaType[] {
+    const types: SportAreaType[] = [];
+    for (const area of areas) {
+      let type = types.find(type => type.type === area.sportsAreaType);
+      if (!type) {
+        type = { type: area.sportsAreaType, names: [] };
+        types.push(type);
+      }
+      type.names.push(area.sportsAreaName);
+    }
+    return types;
+  }
+
+  public getSportKinds(areas: SportArea[]): string[] {
+    const kinds: string[] = [];
+    for (const area of areas) {
+      if (kinds.includes(area.sportKind)) {
+        continue;
+      }
+      kinds.push(area.sportKind);
+    }
+    return kinds;
   }
 
 }

@@ -24,6 +24,7 @@ import { AreaPipe } from './pipes/area.pipe';
     SportObjectFilterBarComponent,
     SportObjectFullInfoComponent,
     SportAreaBriefInfoComponent,
+    AreaPipe,
   ],
   imports: [
     CommonModule,
