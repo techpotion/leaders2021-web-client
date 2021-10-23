@@ -3,11 +3,16 @@ import {
   ChangeDetectionStrategy,
   EventEmitter,
   Input,
+  OnDestroy,
   Output,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+
+import { SportPolygonService } from '../../services/sport-polygon.service';
+
+import { SportPolygon } from '../../models/sport-polygon';
 
 
 type SettingsMode = 'new' | 'existing';
@@ -19,9 +24,28 @@ const DEFAULT_MODE: SettingsMode = 'new';
   styleUrls: ['./sport-polygon-saving-settings.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SportPolygonSavingSettingsComponent {
+export class SportPolygonSavingSettingsComponent implements OnDestroy {
 
-  constructor() { }
+  constructor(
+    public readonly polygonStorage: SportPolygonService,
+  ) {
+    this.subscriptions.push(
+      this.subscribeOnClose(),
+      this.subscribeNewPolygonInput(),
+    );
+  }
+
+  private readonly subscriptions: Subscription[] = [];
+
+
+  // #region Life cycle hooks
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  // #endregion
+
 
   // #region Mode
 
@@ -37,7 +61,16 @@ export class SportPolygonSavingSettingsComponent {
 
   public onCloseClick(): void {
     this.closeSettings.emit();
+  }
+
+  public clearComponent(): void {
     this.mode.next(DEFAULT_MODE);
+    this.clearNewModeValues();
+  }
+
+  public subscribeOnClose(): Subscription {
+    return this.closeSettings.subscribe(() =>
+      this.clearComponent());
   }
 
   // #endregion
@@ -46,6 +79,49 @@ export class SportPolygonSavingSettingsComponent {
   // #region 'New' mode
 
   public readonly newPolygonName = new FormControl('');
+
+  @Output()
+  public readonly selectPolygon =
+  new BehaviorSubject<string | null>(null);
+
+  public readonly newPolygonSubject =
+  new BehaviorSubject<SportPolygon | null>(null);
+
+  @Input()
+  public set newPolygon(value: SportPolygon | null) {
+    if (!value) { return; }
+    this.newPolygonSubject.next(value);
+    this.selectPolygon.next(null);
+  }
+
+  private subscribeNewPolygonInput(): Subscription {
+    return this.selectPolygon.subscribe(name => {
+      if (name) {
+        this.newPolygonName.disable();
+      }
+    });
+  }
+
+  private clearNewModeValues(): void {
+    this.newPolygonName.reset();
+    this.selectPolygon.next(null);
+    this.newPolygonSubject.next(null);
+    this.newPolygonName.enable();
+  }
+
+  public saveNewPolygon(): void {
+    if (!this.newPolygonSubject.value) {
+      throw new Error('Cannot save polygon: '
+        + 'no polygon selected.');
+    }
+    this.polygonStorage.savePolygon(this.newPolygonSubject.value);
+    this.clearNewModeValues();
+  }
+
+  public clearNewPolygon(): void {
+    this.newPolygonSubject.next(null);
+    this.selectPolygon.next(this.newPolygonName.value);
+  }
 
   // #endregion
 

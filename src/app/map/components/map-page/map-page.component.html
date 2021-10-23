@@ -24,7 +24,9 @@
 
         <tp-sport-polygon-saving-settings class="polygon-saving"
             [ngClass]="{ 'hidden': (mapContentSubject | async) != 'polygon-saving' }"
-            (closeSettings)="mapContentSubject.next(undefined)">
+            (closeSettings)="onPolygonTogglePress(false)"
+            (selectPolygon)="newPolygonName.next($event)"
+            [newPolygon]="newPolygon | async">
         </tp-sport-polygon-saving-settings>
 
         <div class="layers-toggles">

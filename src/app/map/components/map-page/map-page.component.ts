@@ -13,6 +13,7 @@ import {
   Observable,
   Subject,
   Subscription,
+  zip,
 } from 'rxjs';
 import {
   filter,
@@ -30,6 +31,7 @@ import { SportObjectsApiService } from '../../../sport-objects/services/sport-ob
 import { SportAnalyticsApiService } from '../../../sport-objects/services/sport-analytics-api.service';
 import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
 import { MapUtilsService } from '../../services/map-utils.service';
+import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 import { Heatmap } from '../../models/heatmap';
 import { LatLng } from '../../models/lat-lng';
@@ -72,6 +74,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
   ) {
     this.subscriptions.push(
       ...this.subscribeOnMapModeChange(),
+      this.subscribeOnNewPolygonName(),
     );
   }
 
@@ -293,6 +296,36 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public readonly polygonSelection =
   new BehaviorSubject<LatLng[] | undefined>(undefined);
 
+  public readonly newPolygonName =
+  new BehaviorSubject<string | null>(null);
+
+  public subscribeOnNewPolygonName(): Subscription {
+    return this.newPolygonName.subscribe(name => {
+      this.mapEvent.next({ event: 'clear-polygon' });
+      if (name) {
+        this.onTogglePress(true, 'polygon-draw');
+      }
+    });
+  }
+
+  public readonly newPolygon = zip(
+    this.polygonSelection.pipe(
+      filter(isNotNil),
+    ),
+    this.newPolygonName.pipe(
+      filter(isNotNil),
+    ),
+  ).pipe(
+    switchMap(([points, name]) => combineLatest([
+      this.sportObjectsApi.getFilteredAreas({ polygon: { points } }),
+      this.sportAnalyticsApi.getPolygonAnalytics(points),
+      of(points),
+      of(name),
+    ])),
+    map(([areas, analytics, geometry, name]) =>
+      ({ geometry, name, analytics, areas })),
+  );
+
   // #endregion
 
 
@@ -303,6 +336,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public readonly popups = merge(
     this.forcePopups,
     this.polygonSelection.pipe(
+      filter(() => this.mapContentSubject.value !== 'polygon-saving'),
       switchMap(selection => {
         if (!selection) {
           return of(null);
