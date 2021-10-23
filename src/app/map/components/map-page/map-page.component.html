@@ -24,7 +24,7 @@
         ></tp-sport-object-full-info>
 
         <tp-sport-polygon-saving-settings class="polygon-saving"
-            [ngClass]="{ 'hidden': (mapContentSubject | async) != 'polygon-saving' }"
+            [ngClass]="{ 'hidden': (mapContentSubject | async) !== 'polygon-saving' }"
             (closeSettings)="onPolygonTogglePress(false)"
             (selectPolygon)="newPolygonName.next($event)"
             [newPolygon]="newPolygon | async"
