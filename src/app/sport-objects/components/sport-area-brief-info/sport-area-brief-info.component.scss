@@ -1,0 +1,164 @@
+@import '../../../../styles/mixins';
+
+:host {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  padding-bottom: 20px;
+  padding-left: 20px;
+  border-radius: 25px;
+
+  background: var(--color-theme-white-1000);
+  box-shadow: var(--shadow-2x);
+
+  .analytics-button {
+    @extend %body-font;
+
+    position: absolute;
+    top: 50px;
+    right: -50px;
+    z-index: 1;
+
+    display: flex;
+    gap: 5px;
+    align-items: center;
+
+    padding: 5px 15px;
+    border-radius: 15px;
+
+    color: var(--color-theme-primary-1000);
+    font-weight: 500;
+    font-size: 12px;
+
+    background: var(--color-theme-white-1000);
+    box-shadow: var(--shadow-default);
+
+    transition: var(--transition-default);
+
+    .icon {
+      width: 20px;
+      height: 23px;
+
+      background-image: url('../../../../assets/bulb.svg');
+    }
+
+    &:hover {
+      .icon {
+        background-image: url('../../../../assets/lighting-bulb.svg');
+      }
+    }
+
+    &:active {
+      background: var(--color-surface-primary);
+
+      .icon {
+        background-image: url('../../../../assets/lighting-bulb.svg');
+      }
+    }
+  }
+
+  .close-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 50px;
+    height: 50px;
+
+    img {
+      height: 12px;
+
+      opacity: .3;
+
+      transition: var(--transition-default);
+    }
+
+    &:hover {
+      img {
+        opacity: 1;
+      }
+    }
+
+    &:active {
+      img {
+        filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+      }
+    }
+  }
+
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+    margin-right: 70px;
+
+    .metric-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: flex-start;
+
+      .number {
+        @extend %body-font;
+
+        position: relative;
+
+        padding-right: 40px;
+        padding-left: 10px;
+        border-radius: 10px;
+
+        color: var(--color-theme-white-1000);
+        font-weight: 600;
+        font-size: 72px;
+
+        background: var(--color-theme-primary-1000);
+
+        .illustration {
+          position: absolute;
+          top: 3px;
+        }
+      }
+
+      .units {
+        @extend %body-2-medium-font;
+
+        color: var(--color-theme-primary-1000);
+      }
+    }
+
+    .area-types-container {
+      .number {
+        .illustration {
+          right: -65px;
+
+          height: 80px;
+        }
+      }
+    }
+
+    .sport-kinds-container {
+      .number {
+        .illustration {
+          right: -50px;
+
+          height: 80px;
+        }
+      }
+    }
+
+    .area-square-container {
+      .number {
+        .illustration {
+          top: 10px;
+          right: -60px;
+
+          height: 60px;
+        }
+      }
+    }
+  }
+}
