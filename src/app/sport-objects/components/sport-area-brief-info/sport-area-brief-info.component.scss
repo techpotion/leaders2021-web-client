@@ -8,7 +8,6 @@
   align-items: flex-end;
 
   padding-bottom: 20px;
-  padding-left: 20px;
   border-radius: 25px;
 
   background: var(--color-theme-white-1000);
@@ -95,6 +94,7 @@
     gap: 30px;
 
     margin-right: 70px;
+    margin-left: 20px;
 
     .metric-container {
       display: flex;
@@ -121,6 +121,10 @@
         .illustration {
           position: absolute;
           top: 3px;
+        }
+
+        .metric-units {
+          font-size: 30px;
         }
       }
 
@@ -159,6 +163,196 @@
 
           height: 60px;
         }
+      }
+    }
+  }
+
+  .controls-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 15px;
+    padding: 0 20px;
+
+    .input {
+      @extend %body-font;
+
+      position: fixed;
+
+      flex-grow: 1;
+
+      box-sizing: border-box;
+      width: 0;
+      max-width: none;
+      height: 30px;
+      margin: 0;
+      padding: 0;
+      border-radius: 5px;
+
+      color: var(--color-theme-primary-1000);
+      font-weight: 300;
+      font-size: 12px;
+
+      background: var(--color-theme-white-1000);
+      box-shadow: var(--shadow-default);
+
+      transition: var(--transition-default);
+
+      pointer-events: none;
+
+      &.shown {
+        position: static;
+
+        max-width: none;
+        margin-right: 5px;
+        padding: 0 15px;
+
+        pointer-events: auto;
+      }
+
+      &:hover,
+      &:focus {
+        box-shadow: var(--shadow-input-active);
+      }
+
+      &::placeholder {
+        color: var(--color-theme-primary-400);
+      }
+    }
+
+    .save-button {
+      @extend %body-font;
+
+      display: flex;
+      gap: 5px;
+      align-items: center;
+
+      color: var(--color-theme-primary-1000);
+      font-weight: 300;
+      font-size: 12px;
+
+      transition: var(--transition-default);
+
+      .icon {
+        width: 20px;
+        height: 20px;
+
+        background-image: url('../../../../assets/in-square/plus.svg');
+
+        &.saving {
+          background-image: url('../../../../assets/in-square/tick.svg');
+        }
+      }
+
+      span {
+        width: 0;
+        overflow: hidden;
+
+        transition: var(--transition-default);
+
+        &.shown {
+          width: 70px;
+        }
+      }
+
+      &:disabled {
+        opacity: .2;
+      }
+
+      &:active {
+        &:not(:disabled) {
+          filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+        }
+      }
+
+      &:hover {
+        &:not(:disabled) {
+          filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
+        }
+      }
+    }
+
+    .close-input-button {
+      position: fixed;
+
+      width: 0;
+      padding: 0;
+      overflow: hidden;
+
+      transition: var(--transition-default);
+
+      img {
+        width: 12px;
+
+        opacity: .3;
+
+        transition: var(--transition-default);
+        transition: width 0;
+      }
+
+      &:hover {
+        img {
+          opacity: 1;
+        }
+      }
+
+      &:active {
+        img {
+          filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+        }
+      }
+
+      &.shown {
+        position: static;
+
+        width: auto;
+        padding: 3px;
+      }
+    }
+
+    .clear-button {
+      @extend %body-font;
+
+      display: flex;
+      gap: 5px;
+      align-items: center;
+
+      width: 0;
+      overflow: hidden;
+
+      color: var(--color-theme-primary-1000);
+      font-weight: 300;
+      font-size: 12px;
+
+      transition: var(--transition-default);
+
+      .icon {
+        width: 26px;
+        height: 26px;
+
+        background-image: url('../../../../assets/polygon-remove/default.svg');
+      }
+
+      span {
+        width: 70px;
+      }
+
+      &:hover,
+      &:active {
+        filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
+      }
+
+      &:active {
+        .icon {
+          background-image: url('../../../../assets/polygon-remove/pressed.svg');
+        }
+      }
+
+      &.shown {
+        width: auto;
       }
     }
   }

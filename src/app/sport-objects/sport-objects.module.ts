@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { SportObjectsRoutingModule } from './sport-objects-routing.module';
 import { SharedModule } from '../shared/shared.module';
@@ -28,6 +29,7 @@ import { AreaPipe } from './pipes/area.pipe';
     CommonModule,
     SportObjectsRoutingModule,
     SharedModule,
+    ReactiveFormsModule,
   ],
 })
 export class SportObjectsModule { }

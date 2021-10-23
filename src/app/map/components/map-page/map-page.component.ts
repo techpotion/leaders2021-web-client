@@ -9,6 +9,7 @@ import {
   of,
   BehaviorSubject,
   combineLatest,
+  merge,
   Observable,
   Subject,
   Subscription,
@@ -39,6 +40,7 @@ import {
   isFilterRequestEmpty,
 } from '../../../sport-objects/models/sport-object-filter';
 import { MapEvent } from '../../models/map-event';
+import { PopupSource } from '../../models/popup';
 
 import { SportObjectBriefInfoComponent } from
   '../../../sport-objects/components/sport-object-brief-info/sport-object-brief-info.component';
@@ -288,38 +290,47 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   // #region Popups
 
-  public readonly popups = this.polygonSelection.pipe(
-    switchMap(selection => {
-      if (!selection) {
-        return of(null);
-      }
-      return this.sportAnalyticsApi.getPolygonAnalytics(selection).pipe(
-        map(analytics => ({
-          position: this.mapUtils.getMostLeftPoint(selection),
-          component: SportAreaBriefInfoComponent,
-          initMethod: (component: SportAreaBriefInfoComponent) => {
-            component.polygon = selection;
-            component.analytics = analytics;
-          },
-          eventHandler: (component: SportAreaBriefInfoComponent) => {
-            if (this.polygonDeleteSubscription
-              && !this.polygonDeleteSubscription.closed) {
-              this.polygonDeleteSubscription.unsubscribe();
-            }
+  private readonly forcePopups = new BehaviorSubject<PopupSource[]>([]);
 
-            this.polygonDeleteSubscription = component.closeInfo.subscribe(
-              () => this.mapEvent.next(
-                { event: 'clear-polygon' },
-              ));
-          },
-          anchor: 'right' as mapboxgl.Anchor,
-        })),
-        map(popup => [popup]),
-      );
-    }),
+  public readonly popups = merge(
+    this.forcePopups,
+    this.polygonSelection.pipe(
+      switchMap(selection => {
+        if (!selection) {
+          return of(null);
+        }
+        return this.sportAnalyticsApi.getPolygonAnalytics(selection).pipe(
+          map(analytics => ({
+            position: this.mapUtils.getMostLeftPoint(selection),
+            component: SportAreaBriefInfoComponent,
+            initMethod: (component: SportAreaBriefInfoComponent) => {
+              component.polygon = selection;
+              component.analytics = analytics;
+            },
+            eventHandler: (component: SportAreaBriefInfoComponent) => {
+              if (this.polygonSubscriptions.length) {
+                this.polygonSubscriptions.forEach(sub => sub.unsubscribe());
+                this.polygonSubscriptions = [];
+              }
+
+              this.polygonSubscriptions.push(
+                component.clearSelection.subscribe(() => this.mapEvent.next(
+                  { event: 'clear-polygon' },
+                )),
+                component.closeInfo.subscribe(() =>
+                  this.forcePopups.next([])),
+              );
+            },
+            anchor: 'right' as mapboxgl.Anchor,
+            closeOnClick: false,
+          })),
+          map(popup => [popup]),
+        );
+      }),
+    ),
   );
 
-  private polygonDeleteSubscription?: Subscription;
+  private polygonSubscriptions: Subscription[] = [];
 
   // #endregion Popups
 

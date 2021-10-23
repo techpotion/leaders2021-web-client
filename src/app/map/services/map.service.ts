@@ -294,6 +294,9 @@ export class MapService {
     if (source.anchor) {
       popupOptions.anchor = source.anchor;
     }
+    if (source.closeOnClick !== undefined) {
+      popupOptions.closeOnClick = source.closeOnClick;
+    }
     return new mapboxgl.Popup(popupOptions)
       .setDOMContent(popupContent).setLngLat(source.position).addTo(map);
   }

@@ -10,4 +10,5 @@ export interface PopupSource {
   // eslint-disable-next-line
   eventHandler?: (component: any) => void;
   anchor?: mapboxgl.Anchor;
+  closeOnClick?: boolean;
 }
