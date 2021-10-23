@@ -9,9 +9,11 @@ import {
   of,
   BehaviorSubject,
   combineLatest,
+  merge,
   Observable,
   Subject,
   Subscription,
+  zip,
 } from 'rxjs';
 import {
   filter,
@@ -29,6 +31,7 @@ import { SportObjectsApiService } from '../../../sport-objects/services/sport-ob
 import { SportAnalyticsApiService } from '../../../sport-objects/services/sport-analytics-api.service';
 import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
 import { MapUtilsService } from '../../services/map-utils.service';
+import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 import { Heatmap } from '../../models/heatmap';
 import { LatLng } from '../../models/lat-lng';
@@ -39,6 +42,7 @@ import {
   isFilterRequestEmpty,
 } from '../../../sport-objects/models/sport-object-filter';
 import { MapEvent } from '../../models/map-event';
+import { PopupSource } from '../../models/popup';
 
 import { SportObjectBriefInfoComponent } from
   '../../../sport-objects/components/sport-object-brief-info/sport-object-brief-info.component';
@@ -51,7 +55,7 @@ type MapMode = 'marker'
 | 'sport-heatmap'
 | 'polygon-draw';
 
-type MapContent = 'object-info' | 'analysis';
+type MapContent = 'object-info' | 'analysis' | 'polygon-saving';
 
 @Component({
   selector: 'tp-map-page',
@@ -70,6 +74,8 @@ export class MapPageComponent implements OnDestroy, OnInit {
   ) {
     this.subscriptions.push(
       ...this.subscribeOnMapModeChange(),
+      this.subscribeOnNewPolygonName(),
+      this.subscribeOnPolygonChoose(),
     );
   }
 
@@ -158,6 +164,14 @@ export class MapPageComponent implements OnDestroy, OnInit {
       this.mapModeAdd.next(mode);
     } else {
       this.mapModeRemove.next(mode);
+    }
+  }
+
+  public onPolygonTogglePress(pressed: boolean): void {
+    if (pressed) {
+      this.mapContentSubject.next('polygon-saving');
+    } else {
+      this.mapContentSubject.next(undefined);
     }
   }
 
@@ -283,43 +297,100 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public readonly polygonSelection =
   new BehaviorSubject<LatLng[] | undefined>(undefined);
 
+  public readonly newPolygonName =
+  new BehaviorSubject<string | null>(null);
+
+  public subscribeOnNewPolygonName(): Subscription {
+    return this.newPolygonName.subscribe(name => {
+      this.mapEvent.next({ event: 'clear-polygon' });
+      if (name) {
+        this.onTogglePress(true, 'polygon-draw');
+      }
+    });
+  }
+
+  public readonly newPolygon = zip(
+    this.polygonSelection.pipe(
+      filter(isNotNil),
+    ),
+    this.newPolygonName.pipe(
+      filter(isNotNil),
+    ),
+  ).pipe(
+    switchMap(([points, name]) => combineLatest([
+      this.sportObjectsApi.getFilteredAreas({ polygon: { points } }),
+      this.sportAnalyticsApi.getPolygonAnalytics(points),
+      of(points),
+      of(name),
+    ])),
+    map(([areas, analytics, geometry, name]) =>
+      ({ geometry, name, analytics, areas })),
+  );
+
+  public readonly chosenPolygon =
+  new BehaviorSubject<LatLng[] | null>(null);
+
+  public subscribeOnPolygonChoose(): Subscription {
+    return this.chosenPolygon.subscribe(polygon => {
+      if (polygon) {
+        this.onTogglePress(true, 'polygon-draw');
+        this.forcePolygon.next(polygon);
+        return;
+      }
+      this.mapEvent.next({ event: 'clear-polygon' });
+    });
+  }
+
+  public readonly forcePolygon =
+  new BehaviorSubject<LatLng[] | null>(null);
+
   // #endregion
 
 
   // #region Popups
 
-  public readonly popups = this.polygonSelection.pipe(
-    switchMap(selection => {
-      if (!selection) {
-        return of(null);
-      }
-      return this.sportAnalyticsApi.getPolygonAnalytics(selection).pipe(
-        map(analytics => ({
-          position: this.mapUtils.getMostLeftPoint(selection),
-          component: SportAreaBriefInfoComponent,
-          initMethod: (component: SportAreaBriefInfoComponent) => {
-            component.polygon = selection;
-            component.analytics = analytics;
-          },
-          eventHandler: (component: SportAreaBriefInfoComponent) => {
-            if (this.polygonDeleteSubscription
-              && !this.polygonDeleteSubscription.closed) {
-              this.polygonDeleteSubscription.unsubscribe();
-            }
+  private readonly forcePopups = new BehaviorSubject<PopupSource[]>([]);
 
-            this.polygonDeleteSubscription = component.closeInfo.subscribe(
-              () => this.mapEvent.next(
-                { event: 'clear-polygon' },
-              ));
-          },
-          anchor: 'right' as mapboxgl.Anchor,
-        })),
-        map(popup => [popup]),
-      );
-    }),
+  public readonly popups = merge(
+    this.forcePopups,
+    this.polygonSelection.pipe(
+      filter(() => this.mapContentSubject.value !== 'polygon-saving'),
+      switchMap(selection => {
+        if (!selection) {
+          return of(null);
+        }
+        return this.sportAnalyticsApi.getPolygonAnalytics(selection).pipe(
+          map(analytics => ({
+            position: this.mapUtils.getMostLeftPoint(selection),
+            component: SportAreaBriefInfoComponent,
+            initMethod: (component: SportAreaBriefInfoComponent) => {
+              component.polygon = selection;
+              component.analytics = analytics;
+            },
+            eventHandler: (component: SportAreaBriefInfoComponent) => {
+              if (this.polygonSubscriptions.length) {
+                this.polygonSubscriptions.forEach(sub => sub.unsubscribe());
+                this.polygonSubscriptions = [];
+              }
+
+              this.polygonSubscriptions.push(
+                component.clearSelection.subscribe(() => this.mapEvent.next(
+                  { event: 'clear-polygon' },
+                )),
+                component.closeInfo.subscribe(() =>
+                  this.forcePopups.next([])),
+              );
+            },
+            anchor: 'right' as mapboxgl.Anchor,
+            closeOnClick: false,
+          })),
+          map(popup => [popup]),
+        );
+      }),
+    ),
   );
 
-  private polygonDeleteSubscription?: Subscription;
+  private polygonSubscriptions: Subscription[] = [];
 
   // #endregion Popups
 

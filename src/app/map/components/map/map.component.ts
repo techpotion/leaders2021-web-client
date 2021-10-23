@@ -168,11 +168,43 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   @Input()
   public set polygonDrawEnabled(value: boolean) {
-    if (!this.map || !this.map.loaded()) {
+    if (!this.map) {
       this.loadCallbacks.push(() => this.enablePolygonDraw(value));
       return;
     }
     this.enablePolygonDraw(value);
+  }
+
+  @Input()
+  public set polygon(value: LatLng[] | null) {
+    if (!this.map) {
+      this.loadCallbacks.push(() => this.setPolygon(value));
+      return;
+    }
+    this.setPolygon(value);
+  }
+
+  private setPolygon(polygon: LatLng[] | null): void {
+    if (!this.polygonDraw && !polygon) {
+      return;
+    }
+
+    if (!this.polygonDraw) {
+      throw new Error('Polygon draw is disabled.'
+        + 'Enable before polygon setting.');
+    }
+
+    if (!polygon) {
+      this.polygonDraw.deleteAll();
+      this.polygonDrawDelete.emit();
+      this.onPolygonChange();
+      return;
+    }
+
+    this.polygonDraw.set({
+      type: 'FeatureCollection',
+      features: [this.mapUtils.convertToGeoJsonPolygon(polygon)],
+    });
   }
 
   private removePolygonDraw(map: mapboxgl.Map): void {
@@ -182,7 +214,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private enablePolygonDraw(enabled: boolean): void {
-    if (!this.map || !this.map.loaded()) {
+    if (!this.map) {
       throw new Error('Cannot update polygon draw: map is not loaded');
     }
     const loadedMap = this.map;

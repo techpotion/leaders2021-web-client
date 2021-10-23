@@ -1,0 +1,137 @@
+@import '../../../../styles/mixins';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  color: var(--color-theme-primary-1000);
+
+  .open-indicator {
+    width: 14px;
+
+    transition: var(--transition-default);
+
+    &.opened {
+      transform: rotate(180deg);
+    }
+  }
+
+  .name-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+
+    .name {
+      @extend %body-1-semibold-font;
+    }
+  }
+
+  .hidden {
+    // stylelint-disable-next-line
+    display: none !important;
+  }
+
+  .analytics-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    transition: var(--transition-default);
+
+    .metric-name,
+    .submetric-name {
+      @extend %body-1-medium-font;
+    }
+
+    .metric-value {
+      @extend %headline-3-font;
+
+      padding: 4px 10px;
+      border-radius: 6px;
+
+      background: #F0F4FF;
+
+      .units {
+        font-size: 14px;
+      }
+    }
+
+    .submetric-value {
+      @extend %body-font;
+
+      padding: 8px;
+      border-radius: 6px;
+
+      font-size: 14px;
+
+      background: #F0F4FF;
+    }
+
+    .element {
+      @extend %body-2-regular-font;
+    }
+
+    .area-square-container {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .area-types-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .heading {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        transition: var(--transition-default);
+
+        .subelement {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          .subheading {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+          }
+
+          .subcontent {
+            display: flex;
+            flex-direction: column;
+          }
+        }
+      }
+    }
+
+    .sport-kinds-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .heading {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+
+        transition: var(--transition-default);
+      }
+    }
+  }
+}

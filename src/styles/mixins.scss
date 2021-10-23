@@ -25,6 +25,14 @@
   line-height: 22px;
 }
 
+%body-1-semibold-font {
+  @extend %body-font;
+
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 22px;
+}
+
 %body-2-light-font {
   @extend %body-font;
 
@@ -54,6 +62,19 @@
   font-weight: 600;
   font-size: 16px;
   line-height: 19px;
+}
+
+%headline-1-font {
+  @extend %body-font;
+
+  font-weight: 600;
+  font-size: 48px;
+}
+
+%headline-2-font {
+  @extend %body-font;
+
+  font-size: 36px;
 }
 
 %headline-3-font {

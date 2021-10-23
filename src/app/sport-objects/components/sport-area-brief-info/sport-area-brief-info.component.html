@@ -1,6 +1,6 @@
 <ng-container *ngIf="analytics">
     <button class="close-button"
-        (click)="close()">
+        (click)="closeInfo.next()">
         <img src="assets/cross.svg">
     </button>
 
@@ -35,13 +35,49 @@
 
         <div class="area-square-container metric-container">
             <span class="number">
-                {{ analytics.areasSquare | area }}
+                {{ analytics.areasSquare | area }} 
+                <span class="metric-units">
+                    м<sup>2</sup>
+                </span>
                 <img class="illustration"
                     src="assets/illustrations/polygon.svg">
             </span>
             <span class="units">
-                м<sup>2</sup> площадь спортзон
+                площадь спортзон
             </span>
         </div>
+    </div>
+
+    <div class="controls-container">
+        <input type="text"
+            class="input"
+            placeholder="Название слоя"
+            [formControl]="selectionNameInput"
+            [ngClass]="{ 'shown': saveInputOpened | async }">
+
+        <button class="save-button"
+            (click)="onSaveClick()"
+            [disabled]="(savedState | async) === 'saved'">
+            <div class="icon"
+                 [ngClass]="{ 'saving': (savedState | async)  === 'saving' }"></div>
+            <span [ngClass]="{ 'shown': (saveInputOpened | async) !== true }">
+                сохранить участок
+            </span>
+        </button>
+
+        <button class="close-input-button"
+            [ngClass]="{ 'shown': saveInputOpened | async }"
+            (click)="onCloseInputClick()">
+            <img src="assets/cross.svg" alt="close">
+        </button>
+
+        <button class="clear-button"
+            [ngClass]="{ 'shown': (saveInputOpened | async) !== true }"
+            (click)="clearSelection.emit()">
+            <div class="icon"></div>
+            <span>
+                отменить выделение
+            </span>
+        </button>
     </div>
 </ng-container>

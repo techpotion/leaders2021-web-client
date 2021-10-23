@@ -8,6 +8,7 @@ import { Heatmap } from '../models/heatmap';
 import { MarkerLayer, MarkerLayerSource } from '../models/marker-layer';
 import { PopupSource } from '../models/popup';
 import * as drawStyles from '../models/polygon-styles';
+import { LatLng } from '../models/lat-lng';
 
 import { ComponentRenderService } from '../../shared/services/component-render.service';
 import { isNotNil } from '../../shared/utils/is-not-nil';
@@ -294,6 +295,9 @@ export class MapService {
     if (source.anchor) {
       popupOptions.anchor = source.anchor;
     }
+    if (source.closeOnClick !== undefined) {
+      popupOptions.closeOnClick = source.closeOnClick;
+    }
     return new mapboxgl.Popup(popupOptions)
       .setDOMContent(popupContent).setLngLat(source.position).addTo(map);
   }
@@ -330,6 +334,19 @@ export class MapService {
     if (map.getSource(id)) {
       map.removeSource(id);
     }
+  }
+
+  public convertToGeoJsonPolygon(polygon: LatLng[]): GeoJSON.Feature {
+    return {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          polygon.map(({ lat, lng }) => [lng, lat]),
+        ],
+      },
+    };
   }
 
 }

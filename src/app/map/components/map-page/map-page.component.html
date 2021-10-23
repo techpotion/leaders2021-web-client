@@ -5,6 +5,7 @@
     [event]="mapEvent | async"
     [polygonDrawEnabled]="!!(isPolygonDrawTogglePressed | async)"
     (polygonDrawChange)="polygonSelection.next($event)"
+    [polygon]="forcePolygon | async"
 ></tp-map>
 
 <div class="top-controls">
@@ -22,7 +23,22 @@
             (infoClose)="mapContentSubject.next(undefined)"
         ></tp-sport-object-full-info>
 
+        <tp-sport-polygon-saving-settings class="polygon-saving"
+            [ngClass]="{ 'hidden': (mapContentSubject | async) !== 'polygon-saving' }"
+            (closeSettings)="onPolygonTogglePress(false)"
+            (selectPolygon)="newPolygonName.next($event)"
+            [newPolygon]="newPolygon | async"
+            (polygonChoose)="chosenPolygon.next($event)">
+        </tp-sport-polygon-saving-settings>
+
         <div class="layers-toggles">
+            <tp-map-toggle
+                    [isPressed]="(mapContentSubject | async) === 'polygon-saving'"
+                    (pressChange)="onPolygonTogglePress($event)"
+                    lightIcon="assets/light/layers.svg"
+                    darkIcon="assets/dark/layers.svg"    
+            > </tp-map-toggle>
+
             <div class="marker-toggles">
                 <tp-map-toggle
                         [isPressed]="!!(isPolygonDrawTogglePressed | async)"
@@ -37,6 +53,7 @@
                         darkIcon="assets/dark/marker.svg"    
                 > </tp-map-toggle>
             </div>
+
             <div class="heatmap-toggles">
                 <tp-map-toggle
                         [isPressed]="!!(isPopulationTogglePressed | async)"
