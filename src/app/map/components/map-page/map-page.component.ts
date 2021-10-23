@@ -22,11 +22,13 @@ import {
   pairwise,
 } from 'rxjs/operators';
 import _ from 'lodash';
+import mapboxgl from 'mapbox-gl';
 
 import { PopulationApiService } from '../../../population/services/population-api.service';
 import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
 import { SportAnalyticsApiService } from '../../../sport-objects/services/sport-analytics-api.service';
 import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
+import { MapUtilsService } from '../../services/map-utils.service';
 
 import { Heatmap } from '../../models/heatmap';
 import { LatLng } from '../../models/lat-lng';
@@ -59,6 +61,7 @@ type MapContent = 'object-info' | 'analysis';
 export class MapPageComponent implements OnDestroy, OnInit {
 
   constructor(
+    public readonly mapUtils: MapUtilsService,
     public readonly populationApi: PopulationApiService,
     public readonly sportAnalyticsApi: SportAnalyticsApiService,
     public readonly sportObjectsApi: SportObjectsApiService,
@@ -284,12 +287,13 @@ export class MapPageComponent implements OnDestroy, OnInit {
       }
       return this.sportAnalyticsApi.getPolygonAnalytics(selection).pipe(
         map(analytics => ({
-          position: selection[0],
+          position: this.mapUtils.getMostLeftPoint(selection),
           component: SportAreaBriefInfoComponent,
           initMethod: (component: SportAreaBriefInfoComponent) => {
             component.polygon = selection;
             component.analytics = analytics;
           },
+          anchor: 'right' as mapboxgl.Anchor,
         })),
         map(popup => [popup]),
       );

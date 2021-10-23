@@ -287,7 +287,14 @@ export class MapService {
       },
     );
 
-    return new mapboxgl.Popup({ closeButton: false })
+    const popupOptions: mapboxgl.PopupOptions = {
+      closeButton: false,
+      offset: 10,
+    };
+    if (source.anchor) {
+      popupOptions.anchor = source.anchor;
+    }
+    return new mapboxgl.Popup(popupOptions)
       .setDOMContent(popupContent).setLngLat(source.position).addTo(map);
   }
 
