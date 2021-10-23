@@ -6,6 +6,7 @@ import { LoadingSpinnerComponent } from './components/loading-spinner/loading-sp
 import { MultipleSelectComponent } from './components/multiple-select/multiple-select.component';
 import { CheckboxComponent } from './components/checkbox/checkbox.component';
 import { CompletionInputComponent } from './components/completion-input/completion-input.component';
+import { RadiobuttonComponent } from './components/radiobutton/radiobutton.component';
 
 
 @NgModule({
@@ -14,11 +15,13 @@ import { CompletionInputComponent } from './components/completion-input/completi
     MultipleSelectComponent,
     CheckboxComponent,
     CompletionInputComponent,
+    RadiobuttonComponent,
   ],
   exports: [
     LoadingSpinnerComponent,
     MultipleSelectComponent,
     CompletionInputComponent,
+    RadiobuttonComponent,
   ],
   imports: [
     CommonModule,

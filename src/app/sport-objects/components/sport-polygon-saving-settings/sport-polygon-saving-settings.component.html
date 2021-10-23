@@ -1,7 +1,8 @@
 <div class="top-container">
     <h1 class="title">Работа со слоями</h1>
 
-    <button class="close-button">
+    <button class="close-button"
+        (click)="onCloseClick()">
         <img src="assets/cross.svg" alt="close">
     </button>
 </div>
@@ -23,7 +24,8 @@
         <div class="new" *ngSwitchCase="'new'">
             <div class="top-container">
                 <input class="input" type="text"
-                    placeholder="Название слоя">
+                    placeholder="Название слоя"
+                    [formControl]="newPolygonName">
 
                 <button class="add">
                     <span class="plus"> + </span>
@@ -31,8 +33,8 @@
                 </button>
 
                 <div class="current-polygon">
-                    <tp-saved-polygon class="saved-polygon">
-                    </tp-saved-polygon>
+                    <tp-saved-sport-polygon class="saved-polygon">
+                    </tp-saved-sport-polygon>
 
                     <button class="erase-button">
                         <img src="assets/bin.svg" alt="erase">
@@ -55,10 +57,13 @@
 
             <div class="polygon-container">
                 <div class="polygon">
-                    <tp-saved-polygon class="saved-polygon">
-                    </tp-saved-polygon>
+                    <tp-saved-sport-polygon class="saved-polygon">
+                    </tp-saved-sport-polygon>
 
                     <div class="buttons-container">
+                        <tp-radiobutton>
+                        </tp-radiobutton>
+
                         <button class="remove-button">
                             <img src="assets/bin.svg" alt="remove">
                         </button>

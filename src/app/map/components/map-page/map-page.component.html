@@ -22,9 +22,10 @@
             (infoClose)="mapContentSubject.next(undefined)"
         ></tp-sport-object-full-info>
 
-        <tp-polygon-saving-settings class="polygon-saving"
-            [ngClass]="{ 'hidden': (mapContentSubject | async) != 'polygon-saving' }">
-        </tp-polygon-saving-settings>
+        <tp-sport-polygon-saving-settings class="polygon-saving"
+            [ngClass]="{ 'hidden': (mapContentSubject | async) != 'polygon-saving' }"
+            (closeSettings)="mapContentSubject.next(undefined)">
+        </tp-sport-polygon-saving-settings>
 
         <div class="layers-toggles">
             <tp-map-toggle
