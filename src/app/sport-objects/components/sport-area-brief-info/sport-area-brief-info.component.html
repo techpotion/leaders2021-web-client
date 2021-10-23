@@ -1,0 +1,47 @@
+<ng-container *ngIf="analytics">
+    <button class="close-button"
+        (click)="close()">
+        <img src="assets/cross.svg">
+    </button>
+
+    <button class="analytics-button"
+        (click)="openFullInfo()">
+        <div class="icon"></div>
+        Аналитика
+    </button>
+
+    <div class="content-container">
+        <div class="area-types-container metric-container">
+            <span class="number">
+                {{ analytics.areaTypesAmount }}
+                <img class="illustration" 
+                     src="assets/illustrations/runner.svg">
+            </span>
+            <span class="units">
+                видов спортзон
+            </span>
+        </div>
+
+        <div class="sport-kinds-container metric-container">
+            <span class="number">
+                {{ analytics.sportsAmount }}
+                <img class="illustration"
+                     src="assets/illustrations/ball.svg">
+            </span>
+            <span class="units">
+                типов услуг
+            </span>
+        </div>
+
+        <div class="area-square-container metric-container">
+            <span class="number">
+                {{ analytics.areasSquare | area }}
+                <img class="illustration"
+                    src="assets/illustrations/polygon.svg">
+            </span>
+            <span class="units">
+                м<sup>2</sup> площадь спортзон
+            </span>
+        </div>
+    </div>
+</ng-container>

@@ -6,10 +6,11 @@ import _ from 'lodash';
 
 import { Heatmap } from '../models/heatmap';
 import { MarkerLayer, MarkerLayerSource } from '../models/marker-layer';
-import { isNotNil } from '../../shared/utils/is-not-nil';
+import { PopupSource } from '../models/popup';
 import * as drawStyles from '../models/polygon-styles';
 
 import { ComponentRenderService } from '../../shared/services/component-render.service';
+import { isNotNil } from '../../shared/utils/is-not-nil';
 
 
 // This is constant
@@ -266,6 +267,56 @@ export class MapService {
   }
 
   // #endregion
+
+
+  // #region Popups
+
+  public addPopup(map: mapboxgl.Map, source: PopupSource): mapboxgl.Popup {
+    const popupContent = this.renderer.injectComponent(
+      source.component,
+      component => {
+        const initMethod = source.initMethod;
+        if (initMethod) {
+          initMethod(component);
+        }
+
+        const eventHandler = source.eventHandler;
+        if (eventHandler) {
+          eventHandler(component);
+        }
+      },
+    );
+
+    const popupOptions: mapboxgl.PopupOptions = {
+      closeButton: false,
+      offset: 10,
+    };
+    if (source.anchor) {
+      popupOptions.anchor = source.anchor;
+    }
+    return new mapboxgl.Popup(popupOptions)
+      .setDOMContent(popupContent).setLngLat(source.position).addTo(map);
+  }
+
+  public addPopups(
+    map: mapboxgl.Map,
+    sources: PopupSource[],
+  ): mapboxgl.Popup[] {
+    return sources.map(source => this.addPopup(map, source));
+  }
+
+  public removePopup(popup: mapboxgl.Popup): void {
+    popup.remove();
+  }
+
+  public removePopups(popups: mapboxgl.Popup[]): void {
+    for (const popup of popups) {
+      this.removePopup(popup);
+    }
+  }
+
+  // #endregion
+
 
   public removeLayer(map: mapboxgl.Map, id: string): void {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

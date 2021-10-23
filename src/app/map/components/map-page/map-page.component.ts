@@ -22,10 +22,13 @@ import {
   pairwise,
 } from 'rxjs/operators';
 import _ from 'lodash';
+import mapboxgl from 'mapbox-gl';
 
 import { PopulationApiService } from '../../../population/services/population-api.service';
 import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
+import { SportAnalyticsApiService } from '../../../sport-objects/services/sport-analytics-api.service';
 import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
+import { MapUtilsService } from '../../services/map-utils.service';
 
 import { Heatmap } from '../../models/heatmap';
 import { LatLng } from '../../models/lat-lng';
@@ -35,9 +38,12 @@ import {
   SportObjectFilterRequest,
   isFilterRequestEmpty,
 } from '../../../sport-objects/models/sport-object-filter';
+import { MapEvent } from '../../models/map-event';
 
 import { SportObjectBriefInfoComponent } from
   '../../../sport-objects/components/sport-object-brief-info/sport-object-brief-info.component';
+import { SportAreaBriefInfoComponent } from
+  '../../../sport-objects/components/sport-area-brief-info/sport-area-brief-info.component';
 
 
 type MapMode = 'marker'
@@ -56,7 +62,9 @@ type MapContent = 'object-info' | 'analysis';
 export class MapPageComponent implements OnDestroy, OnInit {
 
   constructor(
+    public readonly mapUtils: MapUtilsService,
     public readonly populationApi: PopulationApiService,
+    public readonly sportAnalyticsApi: SportAnalyticsApiService,
     public readonly sportObjectsApi: SportObjectsApiService,
     public readonly sportObjectsFilter: SportObjectFilterService,
   ) {
@@ -180,6 +188,13 @@ export class MapPageComponent implements OnDestroy, OnInit {
   // #endregion
 
 
+  // #region Map events
+
+  public readonly mapEvent = new BehaviorSubject<MapEvent | null>(null);
+
+  // #endregion
+
+
   // #region Heatmaps
 
   public readonly heatmaps: Observable<Heatmap[] | null>
@@ -269,6 +284,44 @@ export class MapPageComponent implements OnDestroy, OnInit {
   new BehaviorSubject<LatLng[] | undefined>(undefined);
 
   // #endregion
+
+
+  // #region Popups
+
+  public readonly popups = this.polygonSelection.pipe(
+    switchMap(selection => {
+      if (!selection) {
+        return of(null);
+      }
+      return this.sportAnalyticsApi.getPolygonAnalytics(selection).pipe(
+        map(analytics => ({
+          position: this.mapUtils.getMostLeftPoint(selection),
+          component: SportAreaBriefInfoComponent,
+          initMethod: (component: SportAreaBriefInfoComponent) => {
+            component.polygon = selection;
+            component.analytics = analytics;
+          },
+          eventHandler: (component: SportAreaBriefInfoComponent) => {
+            if (this.polygonDeleteSubscription
+              && !this.polygonDeleteSubscription.closed) {
+              this.polygonDeleteSubscription.unsubscribe();
+            }
+
+            this.polygonDeleteSubscription = component.closeInfo.subscribe(
+              () => this.mapEvent.next(
+                { event: 'clear-polygon' },
+              ));
+          },
+          anchor: 'right' as mapboxgl.Anchor,
+        })),
+        map(popup => [popup]),
+      );
+    }),
+  );
+
+  private polygonDeleteSubscription?: Subscription;
+
+  // #endregion Popups
 
 
   // #region Marker filters

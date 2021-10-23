@@ -21,6 +21,8 @@ import { LatLng } from '../../models/lat-lng';
 import { MapZoom } from '../../models/map-zoom';
 import { Heatmap } from '../../models/heatmap';
 import { MarkerLayer, MarkerLayerSource } from '../../models/marker-layer';
+import { PopupSource } from '../../models/popup';
+import { MapEvent } from '../../models/map-event';
 
 
 import { MapService } from '../../services/map.service';
@@ -133,6 +135,26 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public readonly renderEvent = new Subject<void>();
 
   public loadCallbacks: (() => void)[] = [];
+
+  // #endregion
+
+
+  // #region Map events
+
+  @Input()
+  public set event(value: MapEvent | null) {
+    if (!value) {
+      return;
+    }
+
+    if (value.event === 'clear-polygon') {
+      if (this.polygonDraw) {
+        this.polygonDraw.deleteAll();
+        this.polygonDrawDelete.emit();
+        this.onPolygonChange();
+      }
+    }
+  }
 
   // #endregion
 
@@ -283,6 +305,37 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.mapUtils.addHeatmap(loadedMap, source, id);
       this.heatmapIds.push(id);
     });
+  }
+
+  // #endregion
+
+
+  // #region Popups
+
+  private popupsOnMap: mapboxgl.Popup[] = [];
+
+  @Input()
+  public set popups(sources: PopupSource[] | null) {
+    const updateSources = sources ?? [];
+
+    if (!this.map) {
+      this.loadCallbacks.push(() => this.updatePopups(updateSources));
+      return;
+    }
+
+    this.updatePopups(updateSources);
+  }
+
+  private updatePopups(sources: PopupSource[]): void {
+    if (!this.map) {
+      throw new Error('Cannot update popups: map is not loaded');
+    }
+    const loadedMap = this.map;
+
+    this.mapUtils.removePopups(this.popupsOnMap);
+    this.popupsOnMap = [];
+
+    this.popupsOnMap = this.mapUtils.addPopups(loadedMap, sources);
   }
 
   // #endregion
