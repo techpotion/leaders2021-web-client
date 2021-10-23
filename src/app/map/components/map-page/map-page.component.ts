@@ -30,7 +30,7 @@ import { SportObjectFilterService } from '../../../sport-objects/services/sport-
 import { Heatmap } from '../../models/heatmap';
 import { LatLng } from '../../models/lat-lng';
 import { MarkerLayerSource } from '../../models/marker-layer';
-import { SportObject } from '../../../sport-objects/models/sport-object';
+import { SportObject, SportArea } from '../../../sport-objects/models/sport-object';
 import {
   SportObjectFilterRequest,
   isFilterRequestEmpty,
@@ -44,6 +44,8 @@ type MapMode = 'marker'
 | 'population-heatmap'
 | 'sport-heatmap'
 | 'polygon-draw';
+
+type MapContent = 'object-info' | 'analysis';
 
 @Component({
   selector: 'tp-map-page',
@@ -95,6 +97,21 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public readonly loadingShown = this.loadingSubject.pipe(
     map(loading => loading.heatmap || loading.marker),
   );
+
+  // #endregion
+
+
+  // #region Map content
+
+  public readonly mapContentSubject =
+  new BehaviorSubject<MapContent | undefined>(undefined);
+
+  public readonly fullInfoObject = new BehaviorSubject<{
+    obj: SportObject;
+    areas: SportArea[];
+  } | undefined>(undefined);
+
+  public fullInfoObjectSubscription?: Subscription;
 
   // #endregion
 
@@ -331,6 +348,25 @@ export class MapPageComponent implements OnDestroy, OnInit {
             obj: SportObject,
           ) => {
             component.obj = obj;
+          },
+          eventHandler: (
+            component: SportObjectBriefInfoComponent,
+            obj: SportObject,
+          ) => {
+            if (this.fullInfoObjectSubscription
+              && !this.fullInfoObjectSubscription.closed) {
+              this.fullInfoObjectSubscription.unsubscribe();
+            }
+
+            this.fullInfoObjectSubscription = component.openFull.pipe(
+              switchMap(objectId => this.sportObjectsApi.getFilteredAreas({
+                objectIds: [objectId],
+              })),
+              map(areas => ({ obj, areas })),
+            ).subscribe(obj => {
+              this.mapContentSubject.next('object-info');
+              this.fullInfoObject.next(obj);
+            });
           },
         };
       }

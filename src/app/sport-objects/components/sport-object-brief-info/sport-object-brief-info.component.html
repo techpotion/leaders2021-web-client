@@ -1,5 +1,6 @@
 <div class="shadow-container" *ngIf="obj">
-    <h1 class="name">
+    <h1 class="name"
+        (click)="openFullInfo()">
         {{ obj.objectName }}
     </h1>
 

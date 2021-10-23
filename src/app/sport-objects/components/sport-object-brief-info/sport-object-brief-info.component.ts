@@ -1,7 +1,9 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  EventEmitter,
   Input,
+  Output,
   OnInit,
 } from '@angular/core';
 
@@ -27,5 +29,16 @@ export class SportObjectBriefInfoComponent implements OnInit {
 
   @Input()
   public obj?: SportObject;
+
+  @Output()
+  public readonly openFull = new EventEmitter<number>();
+
+  public openFullInfo(): void {
+    if (!this.obj) {
+      throw new Error('Cannot open full info: '
+        + 'no object passed.');
+    }
+    this.openFull.next(this.obj.objectId);
+  }
 
 }

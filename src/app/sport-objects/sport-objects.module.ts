@@ -17,6 +17,7 @@ import { SportObjectFullInfoComponent } from './components/sport-object-full-inf
   ],
   exports: [
     SportObjectFilterBarComponent,
+    SportObjectFullInfoComponent,
   ],
   imports: [
     CommonModule,

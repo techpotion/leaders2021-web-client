@@ -127,10 +127,20 @@ export class MapService {
 
           const popupContent = this.renderer.injectComponent(
             popup.component,
-            component => popup.initMethod(component, feature.properties),
+            component => {
+              const initMethod = popup.initMethod;
+              if (initMethod) {
+                initMethod(component, feature.properties);
+              }
+
+              const eventHandler = popup.eventHandler;
+              if (eventHandler) {
+                eventHandler(component, feature.properties);
+              }
+            },
           );
 
-          new mapboxgl.Popup({ closeButton: false, offset: 5 })
+          new mapboxgl.Popup({ closeButton: false, offset: 42 })
             .setDOMContent(popupContent).setLngLat(position).addTo(map);
         });
       }

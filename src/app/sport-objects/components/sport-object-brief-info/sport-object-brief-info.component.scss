@@ -22,6 +22,20 @@
       @extend %body-2-semibold-font;
 
       color: var(--color-theme-primary-1000);
+
+      cursor: pointer;
+
+      transition: var(--transition-default);
+
+      user-select: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &:active {
+        color: var(--color-theme-primary-1100);
+      }
     }
 
     .department {

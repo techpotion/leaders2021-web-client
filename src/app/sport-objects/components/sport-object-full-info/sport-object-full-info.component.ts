@@ -1,8 +1,9 @@
 import {
   Component,
-  OnInit,
-  Input,
   ChangeDetectionStrategy,
+  EventEmitter,
+  Input,
+  Output,
 } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs';
@@ -21,16 +22,9 @@ import {
   styleUrls: ['./sport-object-full-info.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SportObjectFullInfoComponent implements OnInit {
+export class SportObjectFullInfoComponent {
 
   constructor() { }
-
-  public ngOnInit(): void {
-    if (!this.obj) {
-      throw new Error('Cannot initialize full info: '
-        + 'no object passed.');
-    }
-  }
 
   @Input()
   public obj?: SportObject;
@@ -55,8 +49,9 @@ export class SportObjectFullInfoComponent implements OnInit {
   );
 
   @Input()
-  public set sportAreas(value: SportArea[]) {
-    this.sportAreasSubject.next(value);
+  public set sportAreas(value: SportArea[] | undefined) {
+    const updateValue = value ?? [];
+    this.sportAreasSubject.next(updateValue);
   }
 
   private getAreaTypes(areas: SportArea[]): SportAreaType[] {
@@ -95,5 +90,8 @@ export class SportObjectFullInfoComponent implements OnInit {
       icon: 'assets/availability/walking.svg',
     },
   };
+
+  @Output()
+  public readonly close = new EventEmitter<void>();
 
 }

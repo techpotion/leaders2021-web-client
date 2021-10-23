@@ -21,7 +21,9 @@ export interface MarkerLayerSource {
     // eslint-disable-next-line
     component: any;
     // eslint-disable-next-line
-    initMethod: (component: any, obj: any) => void;
+    initMethod?: (component: any, obj: any) => void;
+    // eslint-disable-next-line
+    eventHandler?: (component: any, obj: any) => void;
   };
 }
 
