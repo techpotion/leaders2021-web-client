@@ -47,3 +47,10 @@
   font-size: 16px;
   line-height: 19px;
 }
+
+%headline-3-font {
+  @extend %body-font;
+
+  font-weight: 600;
+  font-size: 24px;
+}

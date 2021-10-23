@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { SportObject } from '../models/sport-object';
+import { SportObject, SportArea } from '../models/sport-object';
 import {
   SimpleSportObjectFilterRequest,
   SportObjectFilterRequest,
@@ -28,6 +28,17 @@ export class SportObjectsApiService {
     request: SportObjectFilterRequest,
   ): Observable<SportObject[]> {
     return this.http.post<{ sportsObjects: SportObject[] }>(
+      '/ListSportsObjectsFromDetailed',
+      request,
+    ).pipe(
+      map(dto => dto.sportsObjects),
+    );
+  }
+
+  public getFilteredAreas(
+    request: SportObjectFilterRequest,
+  ): Observable<SportArea[]> {
+    return this.http.post<{ sportsObjects: SportArea[] }>(
       '/ListSportsObjectsDetailed',
       request,
     ).pipe(
@@ -98,7 +109,9 @@ export class SportObjectsApiService {
     filter?: SimpleSportObjectFilterRequest,
   ): Observable<SportObject[]> {
     const body = filter ?? {};
-    return this.http.post<{ sportsObjects: SportObject[] }>('/ListSportsObjects', body).pipe(
+    return this.http.post<{ sportsObjects: SportObject[] }>(
+      '/ListSportsObjects', body,
+    ).pipe(
       map(dto => dto.sportsObjects),
     );
   }

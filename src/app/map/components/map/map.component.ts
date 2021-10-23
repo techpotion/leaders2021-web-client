@@ -24,8 +24,6 @@ import { MarkerLayer, MarkerLayerSource } from '../../models/marker-layer';
 
 
 import { MapService } from '../../services/map.service';
-// import { ComponentRenderService } from
-// '../../../shared/services/component-render.service';
 
 
 mapboxgl.accessToken = environment.map.token;
@@ -50,8 +48,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     public readonly mapUtils: MapService,
-    // public readonly componentRenderer:
-    // ComponentRenderService<SportObjectBriefInfoComponent>,
   ) {
     this.subscriptions.push(
       this.subscribeOnPolygonDrawDelete(),
@@ -217,20 +213,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   // #region Marker layer
 
-  // TODO: popups
-  // for (const [id, obj] of objects.entries()) {
-  // const popupContent = this.componentRenderer.injectComponent(
-  // SportObjectBriefInfoComponent,
-  // c => { c.obj = obj; },
-  // );
-  // const popup = new mapboxgl.Popup();
-  // popup.setDOMContent(popupContent);
-
-  // const marker = markers.get(id);
-  // if (!marker) { continue; }
-  // popup.setLngLat(marker.getLngLat());
-  // marker.setPopup(popup);
-  // }
   private markerLayers: MarkerLayer[] = [];
 
   @Input()
@@ -256,7 +238,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     sources.forEach((source, index) => {
       const id = `marker-layer${index}`;
+
       const layer = this.mapUtils.addMarkerLayer(loadedMap, source, id);
+
       layer.renderSubscription = this.renderEvent.subscribe(
         () => this.mapUtils.renderLayer(
           loadedMap, id, source.idMethod, layer.markers,

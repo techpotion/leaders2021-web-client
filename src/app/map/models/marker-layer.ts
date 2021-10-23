@@ -15,10 +15,19 @@ export interface MarkerLayerSource {
     background: string;
     color: string;
   };
+  popup?: {
+    // eslint-disable-next-line
+    component: any;
+    // eslint-disable-next-line
+    initMethod?: (component: any, obj: any) => void;
+    // eslint-disable-next-line
+    eventHandler?: (component: any, obj: any) => void;
+  };
 }
 
 export interface MarkerLayer {
   id: string;
   markers: Map<string, mapboxgl.Marker>;
+  popups?: Map<string, mapboxgl.Popup>;
   renderSubscription?: Subscription;
 }

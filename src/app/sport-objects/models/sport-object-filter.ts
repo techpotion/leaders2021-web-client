@@ -4,12 +4,14 @@ import { SportObjectAvailability } from './sport-object';
 import { EnumSelectVariant } from '../../shared/models/enum-select-variant';
 import { LatLng } from '../../map/models/lat-lng';
 
-export type SportObjectFilterRequest = SimpleSportObjectFilterRequest & {
+
+export interface SportObjectFilterRequest
+  extends SimpleSportObjectFilterRequest {
   objectIds?: number[];
   sportAreaNames?: string[];
   sportAreaTypes?: string[];
   sportKinds?: string[];
-};
+}
 
 export interface SimpleSportObjectFilterRequest {
   objectNames?: string[];
