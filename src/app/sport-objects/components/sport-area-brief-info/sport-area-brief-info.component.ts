@@ -1,11 +1,15 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
 } from '@angular/core';
 
 import { PolygonSportAnalytics } from '../../models/polygon-sport-analytics';
+
+import { LatLng } from '../../../map/models/lat-lng';
 
 
 @Component({
@@ -26,16 +30,30 @@ export class SportAreaBriefInfoComponent implements OnInit {
   }
 
   @Input()
-  public analytics?: PolygonSportAnalytics = {
-    areasSquare: 15,
-    areasSquearePer100k: 0,
-    areasAmount: 0,
-    areasAmountPer100k: 0,
-    sportsAmount: 150,
-    sportsAmountPer100k: 0,
-    sportKinds: [],
-    areaTypes: [],
-    areaTypesAmount: 15,
-  };
+  public analytics?: PolygonSportAnalytics;
+
+  @Input()
+  public polygon?: LatLng[];
+
+  @Input()
+  public id = 0;
+
+  @Output()
+  public readonly openFull = new EventEmitter<LatLng[]>();
+
+  @Output()
+  public readonly closeInfo = new EventEmitter<number>();
+
+  public openFullInfo(): void {
+    if (!this.polygon) {
+      throw new Error('Cannot open full info: '
+        + 'polygon not passed.');
+    }
+    this.openFull.next(this.polygon);
+  }
+
+  public close(): void {
+    this.closeInfo.emit(this.id);
+  }
 
 }

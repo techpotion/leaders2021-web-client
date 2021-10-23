@@ -1,6 +1,6 @@
 export interface PolygonSportAnalytics {
   areasSquare: number;
-  areasSquearePer100k: number;
+  areasSquarePer100k: number;
   areasAmount: number;
   areasAmountPer100k: number;
   sportsAmount: number;

@@ -1,9 +1,11 @@
 <ng-container *ngIf="analytics">
-    <button class="close-button">
+    <button class="close-button"
+        (click)="close()">
         <img src="assets/cross.svg">
     </button>
 
-    <button class="analytics-button">
+    <button class="analytics-button"
+        (click)="openFullInfo()">
         <div class="icon"></div>
         Аналитика
     </button>
@@ -33,12 +35,12 @@
 
         <div class="area-square-container metric-container">
             <span class="number">
-                {{ analytics.areasSquare }}
+                {{ analytics.areasSquare | area }}
                 <img class="illustration"
                     src="assets/illustrations/polygon.svg">
             </span>
             <span class="units">
-                площадь спортзон
+                м<sup>2</sup> площадь спортзон
             </span>
         </div>
     </div>

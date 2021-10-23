@@ -25,6 +25,7 @@ import _ from 'lodash';
 
 import { PopulationApiService } from '../../../population/services/population-api.service';
 import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
+import { SportAnalyticsApiService } from '../../../sport-objects/services/sport-analytics-api.service';
 import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
 
 import { Heatmap } from '../../models/heatmap';
@@ -38,6 +39,8 @@ import {
 
 import { SportObjectBriefInfoComponent } from
   '../../../sport-objects/components/sport-object-brief-info/sport-object-brief-info.component';
+import { SportAreaBriefInfoComponent } from
+  '../../../sport-objects/components/sport-area-brief-info/sport-area-brief-info.component';
 
 
 type MapMode = 'marker'
@@ -57,6 +60,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   constructor(
     public readonly populationApi: PopulationApiService,
+    public readonly sportAnalyticsApi: SportAnalyticsApiService,
     public readonly sportObjectsApi: SportObjectsApiService,
     public readonly sportObjectsFilter: SportObjectFilterService,
   ) {
@@ -269,6 +273,30 @@ export class MapPageComponent implements OnDestroy, OnInit {
   new BehaviorSubject<LatLng[] | undefined>(undefined);
 
   // #endregion
+
+
+  // #region Popups
+
+  public readonly popups = this.polygonSelection.pipe(
+    switchMap(selection => {
+      if (!selection) {
+        return of(null);
+      }
+      return this.sportAnalyticsApi.getPolygonAnalytics(selection).pipe(
+        map(analytics => ({
+          position: selection[0],
+          component: SportAreaBriefInfoComponent,
+          initMethod: (component: SportAreaBriefInfoComponent) => {
+            component.polygon = selection;
+            component.analytics = analytics;
+          },
+        })),
+        map(popup => [popup]),
+      );
+    }),
+  );
+
+  // #endregion Popups
 
 
   // #region Marker filters

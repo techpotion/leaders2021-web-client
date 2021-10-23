@@ -1,6 +1,7 @@
 <tp-map class="map"
     [heatmaps]="heatmaps | async"
     [markerLayerSources]="markerLayers | async"
+    [popups]="popups | async"
     [polygonDrawEnabled]="!!(isPolygonDrawTogglePressed | async)"
     (polygonDrawChange)="polygonSelection.next($event)"
 ></tp-map>
@@ -52,9 +53,6 @@
         </div>
     </div>
 </div>
-
-<tp-sport-area-brief-info class="test">
-</tp-sport-area-brief-info>
 
 <tp-loading-spinner class="loading-spinner"
                     [ngClass]="{ 'shown': loadingShown | async }">
