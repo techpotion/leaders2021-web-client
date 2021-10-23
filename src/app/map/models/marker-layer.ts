@@ -1,5 +1,3 @@
-import { Type } from '@angular/core';
-
 import { Subscription } from 'rxjs';
 import mapboxgl from 'mapbox-gl';
 

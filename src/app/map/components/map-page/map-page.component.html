@@ -17,7 +17,7 @@
             [ngClass]="{ 'hidden': (mapContentSubject | async) !== 'object-info' }"
             [obj]="(fullInfoObject | async)?.obj"
             [sportAreas]="(fullInfoObject | async)?.areas"
-            (close)="mapContentSubject.next(undefined)"
+            (infoClose)="mapContentSubject.next(undefined)"
         ></tp-sport-object-full-info>
 
         <div class="layers-toggles">

@@ -92,6 +92,6 @@ export class SportObjectFullInfoComponent {
   };
 
   @Output()
-  public readonly close = new EventEmitter<void>();
+  public readonly infoClose = new EventEmitter<void>();
 
 }
