@@ -3,9 +3,16 @@ import {
   ChangeDetectionStrategy,
   Input,
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 
-import { BehaviorSubject } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import {
+  startWith,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+} from 'rxjs/operators';
 
 import { SportObjectsService } from '../../services/sport-objects.service';
 import { isNotNil } from '../../../shared/utils/is-not-nil';
@@ -15,6 +22,8 @@ import { FullPolygonAnalytics } from '../../models/polygon-sport-analytics';
 
 
 const SPORT_AREAS_NORM = 358;
+const PERCENT_COEFFICIENT = 100;
+const SEARCH_DEBOUNCE_TIME = 300;
 
 @Component({
   selector: 'tp-dashboard-areas-chapter',
@@ -62,10 +71,35 @@ export class DashboardAreasChapterComponent {
     )),
   );
 
-  public readonly areasAmountPercent = this.analyticsSubject.pipe(
+  public readonly areasAmount = this.analyticsSubject.pipe(
     filter(isNotNil),
     map(analytics => analytics.basicAnalytics.areasAmountPer100k),
-    map(amount => Math.floor(amount / SPORT_AREAS_NORM)),
+    map(amount => Math.floor(amount)),
   );
+
+  public readonly areasAmountPercent = this.areasAmount.pipe(
+    map(amount =>
+      Math.floor((amount * PERCENT_COEFFICIENT) / SPORT_AREAS_NORM)),
+  );
+
+
+  // #region Object search
+
+  public readonly searchControl = new FormControl('');
+
+  public readonly searchResults = combineLatest([
+    this.searchControl.valueChanges.pipe(
+      startWith(this.searchControl.value),
+      debounceTime(SEARCH_DEBOUNCE_TIME),
+      distinctUntilChanged(),
+      map(input => input as string),
+    ),
+    this.objectsSubject,
+  ]).pipe(
+    map(([input, objects]) => objects.filter(obj =>
+      obj.objectName.toLowerCase().includes(input.toLowerCase()))),
+  );
+
+  // #endregion
 
 }

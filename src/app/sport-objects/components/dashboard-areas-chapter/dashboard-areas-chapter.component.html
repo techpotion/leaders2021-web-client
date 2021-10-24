@@ -11,14 +11,18 @@
             </div>
 
             <div class="types-container">
-                <span class="type"
-                    *ngFor="let type of areaTypes | async">
-                    {{ type.type }}
-                </span>
+                <div class="types-content">
+                    <span class="type"
+                        *ngFor="let type of areaTypes | async">
+                        {{ type.type }}
+                    </span>
+                </div>
             </div>
         </div>
 
         <div class="chart-container">
+            <h1 class="chart-title">Виды спортивных зон</h1>
+
             <tp-pie-chart class="chart"
                           [data]="areaTypesChartData | async">
             </tp-pie-chart>
@@ -27,31 +31,60 @@
 
     <div class="per100k-container">
         <div class="data-container">
-            <span class="top-hint">на 100 000 человек</span>
+            <span class="top-hint">
+                на 
+                <b>100 000</b>
+                человек
+            </span>
             <div class="number-container">
                 <span class="number">
-                    {{ (analyticsSubject | async)?.basicAnalytics?.areasAmountPer100k }}
+                    {{ areasAmount | async }}
                 </span>
                 <div class="units">спортивных зон</div>
-                <img class="indicator" src="">
+                <img class="indicator" 
+                     [src]="((areasAmountPercent | async) || 0) >= 80
+                            ? 'assets/in-circle/tick.svg'
+                            : 'assets/in-circle/exclamation.svg'"
+                >
                 <span class="indicator-tooltip">
-                    
+                    {{ 
+                        ((areasAmountPercent | async) || 0) >= 80 
+                        ? 'Территория достаточно оснащена спортивными зонами'
+                        : 'Число спортивных зон слишком мало для плотности населения территории' 
+                    }}
                 </span>
             </div>
             <div class="progress-bar">
                 <div class="filler"
-                     [ngClass]="{ 'normal': (areasAmountPercent | async) || 0 >= 80}"
-                     [ngStyle]="{ 'width': (areasAmountPercent | async) || 0 + '%' }" >
+                     [ngClass]="{ 'normal': ((areasAmountPercent | async) || 0) >= 80}"
+                     [ngStyle]="{ 'width': (areasAmountPercent | async) + '%' }" >
                 </div>
             </div>
             <span class="bottom-hint">
-                {{ (areasAmountPercent | async) || 0 }}% от нормы
+                <b>{{ ((areasAmountPercent | async) || 0) }}%</b> от нормы
             </span>
         </div>
 
-        <img class="illustration" src="">
+        <img class="illustration" src="assets/illustrations/dashboard.svg">
     </div>
 </div>
 
 <div class="sport-objects-container">
+    <tp-search-input class="search-input"
+        [formControl]="searchControl">
+    </tp-search-input>
+
+    <div class="search-results">
+        <div class="sport-object" *ngFor="let obj of searchResults | async">
+            <div class="top-container">
+                <h2 class="name">{{ obj.objectName }}</h2>
+                <span class="department">{{ obj.departmentalOrganizationName }}</span>
+            </div>
+
+            <div class="address-container">
+                <img src="assets/location-marker.svg">
+                <span class="address">{{ obj.objectAddress }}</span>
+            </div>
+        </div>
+    </div>
 </div>

@@ -30,7 +30,8 @@ Chart.register(...registerables);
 })
 export class PieChartComponent implements AfterViewInit, OnDestroy {
 
-  constructor() {
+  constructor(
+  ) {
     this.subscriptions.push(
       this.subscribeOnData(),
     );
@@ -66,6 +67,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
     if (!context) {
       throw new Error('Cannot init chart: context is not loaded.');
     }
+    this.chart?.destroy();
     this.chart = new Chart(context, {
       type: 'pie',
       data: {
@@ -85,6 +87,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
         }],
       },
       options: {
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             position: 'right',
