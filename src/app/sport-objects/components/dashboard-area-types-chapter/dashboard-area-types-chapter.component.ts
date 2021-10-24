@@ -1,16 +1,13 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'tp-dashboard-area-types-chapter',
   templateUrl: './dashboard-area-types-chapter.component.html',
   styleUrls: ['./dashboard-area-types-chapter.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardAreaTypesChapterComponent implements OnInit {
+export class DashboardAreaTypesChapterComponent {
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
 
 }
