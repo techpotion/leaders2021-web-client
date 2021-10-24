@@ -1,1 +1,31 @@
-<p>dashboard-analytics-chapter works!</p>
+<div class="metrics">
+    <div class="metric-container">
+        <span class="number">
+            {{ areasCount | async }}
+        </span>
+        <span class="metric-hint">спортивных зон</span>
+    </div>
+
+    <div class="metric-container">
+        <span class="number">
+            {{ sportKindsCount | async }}
+        </span>
+        <span class="metric-hint">видов спортивных услуг</span>
+    </div>
+
+    <div class="metric-container">
+        <span class="number">
+            {{ areasSquare | async | area }}
+            <span class="units">
+                м <sup>2</sup>
+            </span>
+        </span>
+        <span class="metric-hint">площадь спортивных зон</span>
+    </div>
+</div>
+
+<div class="about-container">
+    <h1 class="title">
+        Здесь будет аналитическая сводка о выбранной территории...
+    </h1>
+</div>
