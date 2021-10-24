@@ -12,6 +12,7 @@ import { SportAreaBriefInfoComponent } from './components/sport-area-brief-info/
 import { SportPolygonSavingSettingsComponent } from './components/sport-polygon-saving-settings/sport-polygon-saving-settings.component';
 import { SavedSportPolygonComponent } from './components/saved-sport-polygon/saved-sport-polygon.component';
 import { AreaPipe } from './pipes/area.pipe';
+import { SportAreaDashboardComponent } from './components/sport-area-dashboard/sport-area-dashboard.component';
 
 
 @NgModule({
@@ -23,12 +24,14 @@ import { AreaPipe } from './pipes/area.pipe';
     SportPolygonSavingSettingsComponent,
     SavedSportPolygonComponent,
     AreaPipe,
+    SportAreaDashboardComponent,
   ],
   exports: [
     SportObjectFilterBarComponent,
     SportObjectFullInfoComponent,
     SportAreaBriefInfoComponent,
     SportPolygonSavingSettingsComponent,
+    SportAreaDashboardComponent,
   ],
   imports: [
     CommonModule,
