@@ -30,6 +30,7 @@ import { PopulationApiService } from '../../../population/services/population-ap
 import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
 import { SportAnalyticsApiService } from '../../../sport-objects/services/sport-analytics-api.service';
 import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
+import { SportPolygonApiService } from '../../../sport-objects/services/sport-polygon-api.service';
 import { MapUtilsService } from '../../services/map-utils.service';
 import { isNotNil } from '../../../shared/utils/is-not-nil';
 
@@ -54,7 +55,8 @@ import { SportAreaBriefInfoComponent } from
 type MapMode = 'marker'
 | 'population-heatmap'
 | 'sport-heatmap'
-| 'polygon-draw';
+| 'polygon-draw'
+| 'object-intersection';
 
 type MapContent = 'object-info'
 | 'analysis'
@@ -75,6 +77,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
     public readonly sportAnalyticsApi: SportAnalyticsApiService,
     public readonly sportObjectsApi: SportObjectsApiService,
     public readonly sportObjectsFilter: SportObjectFilterService,
+    public readonly sportPolygonApi: SportPolygonApiService,
   ) {
     this.subscriptions.push(
       ...this.subscribeOnMapModeChange(),
@@ -193,6 +196,10 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   public readonly isSportObjectsTogglePressed = this.mapModeSubject.pipe(
     map(modes => modes.includes('sport-heatmap')),
+  );
+
+  public readonly isObjectIntersectionTogglePressed = this.mapModeSubject.pipe(
+    map(modes => modes.includes('object-intersection')),
   );
 
   private onMapModeAdd(mode: MapMode): void {
@@ -351,6 +358,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
   // #endregion
 
 
+
   // #region Popups
 
   private readonly forcePopups = new BehaviorSubject<PopupSource[]>([]);
@@ -445,7 +453,32 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public readonly filterRequest =
   new BehaviorSubject<SportObjectFilterRequest>({});
 
+  public readonly singleAvailabilityChosen = this.filterRequest.pipe(
+    map(request => request.availabilities?.length ?? 0),
+    map(availabilityLength => availabilityLength === 1),
+  );
+
   // #endregion
+
+
+  public readonly polygonSources = combineLatest([
+    this.polygonSelection,
+    this.mapModeSubject,
+    this.filterRequest,
+  ]).pipe(
+    switchMap(([selection, mode, filter]) => {
+      if (!selection
+        || !mode.includes('object-intersection')
+        || (filter.availabilities?.length ?? 0) !== 1) {
+        return of(null);
+      }
+      return this.sportPolygonApi.getIntersections(
+        selection, filter.availabilities![0],
+      ).pipe(
+        map(geojson => [{ polygon: geojson, color: '#A0D89B', opacity: 0.5 }]),
+      );
+    }),
+  );
 
 
   // #region Markers

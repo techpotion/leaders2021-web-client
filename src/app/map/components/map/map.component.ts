@@ -21,6 +21,7 @@ import { LatLng } from '../../models/lat-lng';
 import { MapZoom } from '../../models/map-zoom';
 import { Heatmap } from '../../models/heatmap';
 import { MarkerLayer, MarkerLayerSource } from '../../models/marker-layer';
+import { PolygonLayerSource } from '../../models/polygon-layer';
 import { PopupSource } from '../../models/popup';
 import { MapEvent } from '../../models/map-event';
 
@@ -154,6 +155,43 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.onPolygonChange();
       }
     }
+  }
+
+  // #endregion
+
+
+  // #region Polygon
+
+  private polygonLayerIds: string[] = [];
+
+  @Input()
+  public set polygonLayerSources(sources: PolygonLayerSource[] | null) {
+    const updateSources = sources ?? [];
+
+    if (!this.map || !this.map.loaded()) {
+      this.loadCallbacks.push(() => this.updatePolygonLayers(updateSources));
+      return;
+    }
+
+    this.updatePolygonLayers(updateSources);
+  }
+
+  private updatePolygonLayers(sources: PolygonLayerSource[]): void {
+    if (!this.map) {
+      throw new Error('Cannot update polygon layers: map is not loaded');
+    }
+    const loadedMap = this.map;
+
+    this.mapUtils.removePolygonLayers(loadedMap, this.polygonLayerIds);
+    this.polygonLayerIds = [];
+
+    sources.forEach((source, index) => {
+      const id = `polygon-layer${index}`;
+
+      this.mapUtils.addPolygonLayer(loadedMap, source, id);
+
+      this.polygonLayerIds.push(id);
+    });
   }
 
   // #endregion
