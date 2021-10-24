@@ -1,0 +1,37 @@
+@import '../../../../styles/mixins';
+
+:host {
+  display: flex;
+  gap: 20px;
+
+  height: 30px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid var(--color-theme-primary-600);
+
+  transition: var(--transition-default);
+
+  .search-input {
+    @extend %body-2-light-font;
+
+    flex-grow: 1;
+
+    color: var(--color-theme-primary-1000);
+  }
+
+  .search-logo {
+    width: 25px;
+
+    opacity: .5;
+
+    transition: var(--transition-default);
+  }
+
+  &:hover,
+  &.focused {
+    border-color: var(--color-theme-primary-1000);
+
+    .search-logo {
+      opacity: 1;
+    }
+  }
+}

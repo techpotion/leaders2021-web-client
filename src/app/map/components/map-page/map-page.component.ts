@@ -37,6 +37,7 @@ import { Heatmap } from '../../models/heatmap';
 import { LatLng } from '../../models/lat-lng';
 import { MarkerLayerSource } from '../../models/marker-layer';
 import { SportObject, SportArea } from '../../../sport-objects/models/sport-object';
+import { FullPolygonAnalytics } from '../../../sport-objects/models/polygon-sport-analytics';
 import {
   SportObjectFilterRequest,
   isFilterRequestEmpty,
@@ -55,7 +56,10 @@ type MapMode = 'marker'
 | 'sport-heatmap'
 | 'polygon-draw';
 
-type MapContent = 'object-info' | 'analysis' | 'polygon-saving';
+type MapContent = 'object-info'
+| 'analysis'
+| 'polygon-saving'
+| 'polygon-dashboard';
 
 @Component({
   selector: 'tp-map-page',
@@ -377,8 +381,27 @@ export class MapPageComponent implements OnDestroy, OnInit {
                 component.clearSelection.subscribe(() => this.mapEvent.next(
                   { event: 'clear-polygon' },
                 )),
+
                 component.closeInfo.subscribe(() =>
                   this.forcePopups.next([])),
+
+                component.openFull.pipe(
+                  switchMap(() => combineLatest([
+                    this.sportObjectsApi.getObjects(
+                      { polygon: { points: selection } },
+                    ),
+                    this.sportAnalyticsApi.getFullPolygonAnalytics(selection),
+                    this.sportObjectsApi.getFilteredAreas(
+                      { polygon: { points: selection } },
+                    ),
+                  ])),
+                ).subscribe(([objects, analytics, areas]) => {
+                  this.dashboardObjects.next(objects);
+                  this.dashboardAnalytics.next(analytics);
+                  this.dashboardAreas.next(areas);
+                  this.mapContentSubject.next('polygon-dashboard');
+                  this.forcePopups.next([]);
+                }),
               );
             },
             anchor: 'right' as mapboxgl.Anchor,
@@ -393,6 +416,18 @@ export class MapPageComponent implements OnDestroy, OnInit {
   private polygonSubscriptions: Subscription[] = [];
 
   // #endregion Popups
+
+
+  // #region Dashboard
+
+  public readonly dashboardAnalytics =
+  new BehaviorSubject<FullPolygonAnalytics | null>(null);
+
+  public readonly dashboardObjects = new BehaviorSubject<SportObject[]>([]);
+
+  public readonly dashboardAreas = new BehaviorSubject<SportArea[]>([]);
+
+  // #endregion
 
 
   // #region Marker filters

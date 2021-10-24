@@ -137,8 +137,6 @@ export class SportPolygonSavingSettingsComponent implements OnDestroy {
 
   // #region 'Existing' mode
 
-  public readonly inputContainerFocus = new BehaviorSubject<boolean>(false);
-
   public readonly searchInput = new FormControl('');
 
   public readonly polygons = new BehaviorSubject<SportPolygon[]>([]);

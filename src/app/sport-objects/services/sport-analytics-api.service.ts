@@ -4,7 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { LatLng } from '../../map/models/lat-lng';
-import { PolygonSportAnalytics } from '../models/polygon-sport-analytics';
+import {
+  FullPolygonAnalytics,
+  PolygonSportAnalytics,
+} from '../models/polygon-sport-analytics';
 
 
 @Injectable({
@@ -21,6 +24,15 @@ export class SportAnalyticsApiService {
   ): Observable<PolygonSportAnalytics> {
     return this.http.post<PolygonSportAnalytics>(
       '/PolygonAnalytics',
+      { polygon: { points: polygon } },
+    );
+  }
+
+  public getFullPolygonAnalytics(
+    polygon: LatLng[],
+  ): Observable<FullPolygonAnalytics> {
+    return this.http.post<FullPolygonAnalytics>(
+      '/PolygonAnalyticsDashboard',
       { polygon: { points: polygon } },
     );
   }

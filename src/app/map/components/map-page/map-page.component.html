@@ -15,6 +15,14 @@
         (filterRequest)="filterRequest.next($event)">
     </tp-sport-object-filter-bar>
 
+    <tp-sport-area-dashboard class="dashboard"
+         [ngClass]="{ 'hidden': (mapContentSubject | async) !== 'polygon-dashboard' }"
+         [objects]="dashboardObjects | async"
+         [analytics]="dashboardAnalytics | async"
+         [areas]="dashboardAreas | async"
+         (closeDashboard)="mapContentSubject.next(undefined)">
+    </tp-sport-area-dashboard>
+
     <div class="map-container">
         <tp-sport-object-full-info class="object-info"
             [ngClass]="{ 'hidden': (mapContentSubject | async) !== 'object-info' }"

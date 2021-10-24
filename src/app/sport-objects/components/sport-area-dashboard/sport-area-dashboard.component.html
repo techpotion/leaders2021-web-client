@@ -1,0 +1,41 @@
+<button class="close-button"
+    (click)="closeDashboard.emit()">
+    <img src="assets/left-tick.svg" alt="close">
+</button>
+
+<div class="headings">
+    <div class="heading areas"
+        (click)="mode.next('areas')"
+        [ngClass]="{ 'selected': (mode | async) === 'areas' }">
+        Спортивные зоны
+        <hr>
+    </div>
+    <div class="heading area-types"
+        (click)="mode.next('area-types')"
+        [ngClass]="{ 'selected': (mode | async) === 'area-types' }">
+        Виды спортивных услуг и площадь спортзон
+        <hr>
+    </div>
+    <div class="heading analytics"
+        (click)="mode.next('analytics')"
+        [ngClass]="{ 'selected': (mode | async) === 'analytics' }">
+        Аналитика
+        <div class="icon"></div>
+        <hr>
+    </div>
+</div>
+
+<div class="content"
+    [ngSwitch]="mode | async">
+    <tp-dashboard-areas-chapter *ngSwitchCase="'areas'"
+        [objects]="objectsSubject | async"
+        [analytics]="analyticsSubject | async"
+        [areas]="areasSubject | async">
+    </tp-dashboard-areas-chapter>
+
+    <tp-dashboard-area-types-chapter *ngSwitchCase="'area-types'">
+    </tp-dashboard-area-types-chapter>
+
+    <tp-dashboard-analytics-chapter *ngSwitchCase="'analytics'">
+    </tp-dashboard-analytics-chapter>
+</div>

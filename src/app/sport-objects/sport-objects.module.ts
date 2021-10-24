@@ -12,6 +12,10 @@ import { SportAreaBriefInfoComponent } from './components/sport-area-brief-info/
 import { SportPolygonSavingSettingsComponent } from './components/sport-polygon-saving-settings/sport-polygon-saving-settings.component';
 import { SavedSportPolygonComponent } from './components/saved-sport-polygon/saved-sport-polygon.component';
 import { AreaPipe } from './pipes/area.pipe';
+import { SportAreaDashboardComponent } from './components/sport-area-dashboard/sport-area-dashboard.component';
+import { DashboardAreasChapterComponent } from './components/dashboard-areas-chapter/dashboard-areas-chapter.component';
+import { DashboardAreaTypesChapterComponent } from './components/dashboard-area-types-chapter/dashboard-area-types-chapter.component';
+import { DashboardAnalyticsChapterComponent } from './components/dashboard-analytics-chapter/dashboard-analytics-chapter.component';
 
 
 @NgModule({
@@ -23,12 +27,17 @@ import { AreaPipe } from './pipes/area.pipe';
     SportPolygonSavingSettingsComponent,
     SavedSportPolygonComponent,
     AreaPipe,
+    SportAreaDashboardComponent,
+    DashboardAreasChapterComponent,
+    DashboardAreaTypesChapterComponent,
+    DashboardAnalyticsChapterComponent,
   ],
   exports: [
     SportObjectFilterBarComponent,
     SportObjectFullInfoComponent,
     SportAreaBriefInfoComponent,
     SportPolygonSavingSettingsComponent,
+    SportAreaDashboardComponent,
   ],
   imports: [
     CommonModule,
