@@ -10,23 +10,15 @@
                 </span>
             </div>
 
-            <div class="types-container">
-                <div class="types-content">
-                    <span class="type"
-                        *ngFor="let type of areaTypes | async">
-                        {{ type.type }}
-                    </span>
-                </div>
-            </div>
+            <tp-dashboard-chip-list
+                [chips]="areaTypeNames | async">
+            </tp-dashboard-chip-list>
         </div>
 
-        <div class="chart-container">
-            <h1 class="chart-title">Виды спортивных зон</h1>
-
-            <tp-pie-chart class="chart"
-                          [data]="areaTypesChartData | async">
-            </tp-pie-chart>
-        </div>
+        <tp-dashboard-pie-chart class="chart"
+            title="Виды спортивных зон"
+            [data]="areaTypesChartData | async">
+        </tp-dashboard-pie-chart>
     </div>
 
     <div class="per100k-container">
