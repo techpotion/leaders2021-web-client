@@ -3,9 +3,11 @@ import { Injectable } from '@angular/core';
 import mapboxgl from 'mapbox-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import _ from 'lodash';
+// import { circle } from '@turf/turf';
 
 import { Heatmap } from '../models/heatmap';
 import { MarkerLayer, MarkerLayerSource } from '../models/marker-layer';
+import { PolygonLayerSource } from '../models/polygon-layer';
 import { PopupSource } from '../models/popup';
 import * as drawStyles from '../models/polygon-styles';
 import { LatLng } from '../models/lat-lng';
@@ -47,6 +49,38 @@ export class MapService {
     });
     map.addControl(draw);
     return draw;
+  }
+
+  public addPolygonLayer(
+    map: mapboxgl.Map,
+    layer: PolygonLayerSource,
+    id: string,
+  ): void {
+    map.addSource(id, {
+      type: 'geojson',
+      data: layer.polygon,
+    });
+
+    map.addLayer({
+      id,
+      type: 'fill',
+      source: id,
+      paint: {
+        'fill-color': layer.color,
+        'fill-opacity': layer.opacity,
+      },
+    });
+  }
+
+  public removePolygonLayer(map: mapboxgl.Map, id: string): void {
+    this.removeLayer(map, id);
+    this.removeSource(map, id);
+  }
+
+  public removePolygonLayers(map: mapboxgl.Map, ids: string[]): void {
+    for (const id of ids) {
+      this.removePolygonLayer(map, id);
+    }
   }
 
   // #endregion
@@ -95,7 +129,6 @@ export class MapService {
         'text-color': layer.cluster.color,
       },
     });
-
 
     const markers = this.createMarkersMap(layer, map);
 
@@ -177,12 +210,25 @@ export class MapService {
       marker.remove();
     }
 
+    // const polygons: GeoJSON.Feature[] = [];
     for (const id of shownMarkerIds) {
       const marker = markers.get(id);
       if (!marker) { continue; }
 
       marker.addTo(map);
     }
+
+    // TODO: marker radius
+    // polygons.push(circle([marker.getLngLat().lat, marker.getLngLat().lng],
+    // 500, { units: 'meters' })); const featureCollection = { type:
+    // 'FeatureCollection', features: polygons, } as GeoJSON.FeatureCollection;
+    // if (!map.getSource('abc')) { map.addSource('abc', { type: 'geojson',
+    // data: featureCollection, }); map.addLayer({ id:
+    // `${id}-marker-availability`, type: 'fill', source: 'abc', layout: {},
+    // paint: { 'fill-color': 'blue', 'fill-opacity': 0.6, }, }); } else {
+    // (map.getSource('abc') as
+    // mapboxgl.GeoJSONSource).setData(featureCollection); }
+
   }
 
   public removeMarkerLayer(map: mapboxgl.Map, layer: MarkerLayer): void {

@@ -6,6 +6,7 @@
     [polygonDrawEnabled]="!!(isPolygonDrawTogglePressed | async)"
     (polygonDrawChange)="polygonSelection.next($event)"
     [polygon]="forcePolygon | async"
+    [polygonLayerSources]="polygonSources | async"
 ></tp-map>
 
 <div class="top-controls">
@@ -74,6 +75,13 @@
                         (pressChange)="onTogglePress($event, 'sport-heatmap')"
                         lightIcon="assets/light/runner.svg"
                         darkIcon="assets/dark/runner.svg"    
+                > </tp-map-toggle>
+                <tp-map-toggle
+                        *ngIf="singleAvailabilityChosen | async"
+                        [isPressed]="!!(isObjectIntersectionTogglePressed | async)"
+                        (pressChange)="onTogglePress($event, 'object-intersection')"
+                        lightIcon="assets/light/intersection.svg"
+                        darkIcon="assets/dark/intersection.svg"    
                 > </tp-map-toggle>
             </div>
         </div>
