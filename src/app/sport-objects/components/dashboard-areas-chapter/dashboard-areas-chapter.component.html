@@ -1,0 +1,57 @@
+<div class="sport-areas-container">
+    <div class="top-container">
+        <div class="list-container">
+            <div class="number-container">
+                <span class="number">
+                    {{ (areaTypes | async)?.length }}
+                </span>
+                <span class="hint">
+                    видов спортивных зон
+                </span>
+            </div>
+
+            <div class="types-container">
+                <span class="type"
+                    *ngFor="let type of areaTypes | async">
+                    {{ type.type }}
+                </span>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <tp-pie-chart class="chart"
+                          [data]="areaTypesChartData | async">
+            </tp-pie-chart>
+        </div>
+    </div>
+
+    <div class="per100k-container">
+        <div class="data-container">
+            <span class="top-hint">на 100 000 человек</span>
+            <div class="number-container">
+                <span class="number">
+                    {{ (analyticsSubject | async)?.basicAnalytics?.areasAmountPer100k }}
+                </span>
+                <div class="units">спортивных зон</div>
+                <img class="indicator" src="">
+                <span class="indicator-tooltip">
+                    
+                </span>
+            </div>
+            <div class="progress-bar">
+                <div class="filler"
+                     [ngClass]="{ 'normal': (areasAmountPercent | async) || 0 >= 80}"
+                     [ngStyle]="{ 'width': (areasAmountPercent | async) || 0 + '%' }" >
+                </div>
+            </div>
+            <span class="bottom-hint">
+                {{ (areasAmountPercent | async) || 0 }}% от нормы
+            </span>
+        </div>
+
+        <img class="illustration" src="">
+    </div>
+</div>
+
+<div class="sport-objects-container">
+</div>

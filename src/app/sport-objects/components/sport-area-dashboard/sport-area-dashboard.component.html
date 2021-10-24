@@ -24,3 +24,18 @@
         <hr>
     </div>
 </div>
+
+<div class="content"
+    [ngSwitch]="mode | async">
+    <tp-dashboard-areas-chapter *ngSwitchCase="'areas'"
+        [objects]="objectsSubject | async"
+        [analytics]="analyticsSubject | async"
+        [areas]="areasSubject | async">
+    </tp-dashboard-areas-chapter>
+
+    <tp-dashboard-area-types-chapter *ngSwitchCase="'area-types'">
+    </tp-dashboard-area-types-chapter>
+
+    <tp-dashboard-analytics-chapter *ngSwitchCase="'analytics'">
+    </tp-dashboard-analytics-chapter>
+</div>

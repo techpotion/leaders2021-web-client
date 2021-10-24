@@ -68,14 +68,9 @@
         </div>
 
         <div class="existing" *ngSwitchCase="'existing'">
-            <div class="input-container"
-                 [ngClass]="{ 'focused': inputContainerFocus | async }">
-                <input class="search-input" type="text"
-                    (focus)="inputContainerFocus.next(true)"
-                    (blur)="inputContainerFocus.next(false)"
-                    [formControl]="searchInput">
-                <img class="search-logo" src="assets/lens.svg">
-            </div>
+            <tp-search-input class="search-input"
+                [formControl]="searchInput">
+            </tp-search-input>
 
             <div class="polygon-container">
                 <div class="polygon" 

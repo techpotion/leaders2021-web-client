@@ -391,10 +391,14 @@ export class MapPageComponent implements OnDestroy, OnInit {
                       { polygon: { points: selection } },
                     ),
                     this.sportAnalyticsApi.getFullPolygonAnalytics(selection),
+                    this.sportObjectsApi.getFilteredAreas(
+                      { polygon: { points: selection } },
+                    ),
                   ])),
-                ).subscribe(([objects, analytics]) => {
+                ).subscribe(([objects, analytics, areas]) => {
                   this.dashboardObjects.next(objects);
                   this.dashboardAnalytics.next(analytics);
+                  this.dashboardAreas.next(areas);
                   this.mapContentSubject.next('polygon-dashboard');
                   this.forcePopups.next([]);
                 }),
@@ -420,6 +424,8 @@ export class MapPageComponent implements OnDestroy, OnInit {
   new BehaviorSubject<FullPolygonAnalytics | null>(null);
 
   public readonly dashboardObjects = new BehaviorSubject<SportObject[]>([]);
+
+  public readonly dashboardAreas = new BehaviorSubject<SportArea[]>([]);
 
   // #endregion
 

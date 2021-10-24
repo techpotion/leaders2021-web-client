@@ -19,6 +19,7 @@
          [ngClass]="{ 'hidden': (mapContentSubject | async) !== 'polygon-dashboard' }"
          [objects]="dashboardObjects | async"
          [analytics]="dashboardAnalytics | async"
+         [areas]="dashboardAreas | async"
          (closeDashboard)="mapContentSubject.next(undefined)">
     </tp-sport-area-dashboard>
 

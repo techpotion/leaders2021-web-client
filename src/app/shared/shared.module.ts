@@ -7,6 +7,8 @@ import { MultipleSelectComponent } from './components/multiple-select/multiple-s
 import { CheckboxComponent } from './components/checkbox/checkbox.component';
 import { CompletionInputComponent } from './components/completion-input/completion-input.component';
 import { RadiobuttonComponent } from './components/radiobutton/radiobutton.component';
+import { PieChartComponent } from './components/pie-chart/pie-chart.component';
+import { SearchInputComponent } from './components/search-input/search-input.component';
 
 
 @NgModule({
@@ -16,12 +18,16 @@ import { RadiobuttonComponent } from './components/radiobutton/radiobutton.compo
     CheckboxComponent,
     CompletionInputComponent,
     RadiobuttonComponent,
+    PieChartComponent,
+    SearchInputComponent,
   ],
   exports: [
     LoadingSpinnerComponent,
     MultipleSelectComponent,
     CompletionInputComponent,
     RadiobuttonComponent,
+    PieChartComponent,
+    SearchInputComponent,
   ],
   imports: [
     CommonModule,

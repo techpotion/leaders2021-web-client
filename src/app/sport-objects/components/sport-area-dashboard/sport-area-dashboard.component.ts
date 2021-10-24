@@ -8,7 +8,7 @@ import {
 
 import { BehaviorSubject } from 'rxjs';
 
-import { SportObject } from '../../models/sport-object';
+import { SportObject, SportArea } from '../../models/sport-object';
 import { FullPolygonAnalytics } from '../../models/polygon-sport-analytics';
 
 
@@ -33,6 +33,14 @@ export class SportAreaDashboardComponent {
   public set objects(value: SportObject[] | null) {
     const updateValue = value ?? [];
     this.objectsSubject.next(updateValue);
+  }
+
+  public readonly areasSubject = new BehaviorSubject<SportArea[]>([]);
+
+  @Input()
+  public set areas(value: SportArea[] | null) {
+    const updateValue = value ?? [];
+    this.areasSubject.next(updateValue);
   }
 
   public readonly analyticsSubject =
