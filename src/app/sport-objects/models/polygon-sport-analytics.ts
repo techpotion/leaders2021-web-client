@@ -7,7 +7,7 @@ export interface PolygonSportAnalytics {
   areasAmountPer100k: number;
   sportsAmount: number;
   sportsAmountPer100k: number;
-  sportKinds: string[];
+  sportsKinds: string[];
   areaTypes: string[];
   areaTypesAmount: number;
 }

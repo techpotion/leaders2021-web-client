@@ -65,6 +65,10 @@ export class DashboardAreasChapterComponent {
     map(areas => this.sportObjectUtils.getAreaTypes(areas)),
   );
 
+  public readonly areaTypeNames = this.areaTypes.pipe(
+    map(types => types.map(type => type.type)),
+  );
+
   public readonly areaTypesChartData = this.areaTypes.pipe(
     map(areaTypes => areaTypes.map(
       type => ({ label: type.type, value: type.names.length }),

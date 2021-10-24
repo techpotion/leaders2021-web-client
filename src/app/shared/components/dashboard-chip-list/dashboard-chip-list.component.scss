@@ -1,0 +1,30 @@
+@import '../../../../styles/mixins';
+
+:host {
+  height: 100%;
+  overflow: auto;
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 7px;
+
+    .chip {
+      @extend %body-font;
+
+      padding: 8px;
+      border: 1px solid var(--color-theme-primary-600);
+      border-radius: 20px;
+
+      color: var(--color-theme-primary-1000);
+      font-size: 14px;
+    }
+  }
+}

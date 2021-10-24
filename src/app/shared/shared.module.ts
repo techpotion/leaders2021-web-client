@@ -9,7 +9,10 @@ import { CompletionInputComponent } from './components/completion-input/completi
 import { RadiobuttonComponent } from './components/radiobutton/radiobutton.component';
 import { PieChartComponent } from './components/pie-chart/pie-chart.component';
 import { SearchInputComponent } from './components/search-input/search-input.component';
+import { DashboardPieChartComponent } from './components/dashboard-pie-chart/dashboard-pie-chart.component';
+import { DashboardChipListComponent } from './components/dashboard-chip-list/dashboard-chip-list.component';
 
+import { AreaPipe } from './pipes/area.pipe';
 
 @NgModule({
   declarations: [
@@ -20,14 +23,19 @@ import { SearchInputComponent } from './components/search-input/search-input.com
     RadiobuttonComponent,
     PieChartComponent,
     SearchInputComponent,
+    DashboardPieChartComponent,
+    DashboardChipListComponent,
+    AreaPipe,
   ],
   exports: [
     LoadingSpinnerComponent,
     MultipleSelectComponent,
     CompletionInputComponent,
     RadiobuttonComponent,
-    PieChartComponent,
     SearchInputComponent,
+    DashboardPieChartComponent,
+    DashboardChipListComponent,
+    AreaPipe,
   ],
   imports: [
     CommonModule,
