@@ -11,7 +11,6 @@ import { SportObjectFullInfoComponent } from './components/sport-object-full-inf
 import { SportAreaBriefInfoComponent } from './components/sport-area-brief-info/sport-area-brief-info.component';
 import { SportPolygonSavingSettingsComponent } from './components/sport-polygon-saving-settings/sport-polygon-saving-settings.component';
 import { SavedSportPolygonComponent } from './components/saved-sport-polygon/saved-sport-polygon.component';
-import { AreaPipe } from './pipes/area.pipe';
 import { SportAreaDashboardComponent } from './components/sport-area-dashboard/sport-area-dashboard.component';
 import { DashboardAreasChapterComponent } from './components/dashboard-areas-chapter/dashboard-areas-chapter.component';
 import { DashboardAreaTypesChapterComponent } from './components/dashboard-area-types-chapter/dashboard-area-types-chapter.component';
@@ -26,7 +25,6 @@ import { DashboardAnalyticsChapterComponent } from './components/dashboard-analy
     SportAreaBriefInfoComponent,
     SportPolygonSavingSettingsComponent,
     SavedSportPolygonComponent,
-    AreaPipe,
     SportAreaDashboardComponent,
     DashboardAreasChapterComponent,
     DashboardAreaTypesChapterComponent,

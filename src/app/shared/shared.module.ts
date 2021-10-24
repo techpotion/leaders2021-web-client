@@ -12,6 +12,7 @@ import { SearchInputComponent } from './components/search-input/search-input.com
 import { DashboardPieChartComponent } from './components/dashboard-pie-chart/dashboard-pie-chart.component';
 import { DashboardChipListComponent } from './components/dashboard-chip-list/dashboard-chip-list.component';
 
+import { AreaPipe } from './pipes/area.pipe';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { DashboardChipListComponent } from './components/dashboard-chip-list/das
     SearchInputComponent,
     DashboardPieChartComponent,
     DashboardChipListComponent,
+    AreaPipe,
   ],
   exports: [
     LoadingSpinnerComponent,
@@ -33,6 +35,7 @@ import { DashboardChipListComponent } from './components/dashboard-chip-list/das
     SearchInputComponent,
     DashboardPieChartComponent,
     DashboardChipListComponent,
+    AreaPipe,
   ],
   imports: [
     CommonModule,

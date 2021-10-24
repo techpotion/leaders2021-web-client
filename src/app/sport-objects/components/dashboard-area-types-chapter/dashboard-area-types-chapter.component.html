@@ -1,1 +1,71 @@
-<p>dashboard-area-types-chapter works!</p>
+<div class="sport-kinds-container">
+    <div class="left-container">
+        <div class="count-container">
+            <div class="number-container">
+                <span class="number">{{ sportKindsCount | async }}</span>
+                <hr>
+                <div class="per100k-container">
+                    <span class="per100k-number">
+                        {{ sportKindsCountPer100k | async }}
+                    </span>
+                    <span class="per100k-hint">на 100 000 человек</span>
+                </div>
+            </div>
+
+            <span class="count-hint">
+                видов спортивных услуг
+            </span>
+        </div>
+
+        <tp-dashboard-chip-list
+            [chips]="sportKinds | async">
+        </tp-dashboard-chip-list>
+    </div>
+
+    <tp-dashboard-pie-chart class="chart"
+        title="Количество спортивных зон"
+        [data]="sportKindsChartData | async">
+    </tp-dashboard-pie-chart>
+</div>
+
+<div class="area-square-container">
+    <div class="left-container">
+        <div class="count-container">
+            <div class="number-container">
+                <span class="number">{{ areasSquare | async | area }}</span>
+                <span class="units">м<sup>2</sup></span>
+            </div>
+
+            <span class="count-hint">
+                площадь всех <b>{{ (areasSubject | async)?.length }}</b> спортзон
+            </span>
+        </div>
+
+        <div class="rating-container">
+            <div class="heading-container">
+                <span class="heading">Рейтинг спортзон по площади</span>
+                <button class="sort-button"
+                    (click)="toggleSortOrder()">
+                    <img src="assets/double-arrow.svg">
+                </button>
+            </div>
+
+            <div class="area-list">
+                <div class="area" *ngFor="let area of sortedAreas | async">
+                    <div class="left-part">
+                        <img class="icon" src="assets/marker.svg">
+                        <span class="name">{{ area.sportsAreaName }}</span>
+                    </div>
+                    <span class="square">
+                        {{ area.sportsAreaSquare }} м<sup>2</sup>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <tp-dashboard-pie-chart class="chart"
+        title="Площадь спортзон видов услуг"
+        [data]="sportKindSquares | async">
+    </tp-dashboard-pie-chart>
+</div>

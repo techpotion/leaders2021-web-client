@@ -1,0 +1,239 @@
+@import '../../../../styles/mixins';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  height: 100%;
+
+  .sport-kinds-container {
+    display: flex;
+    gap: 20px;
+
+    box-sizing: border-box;
+    height: 50%;
+    padding-top: 20px;
+
+    .left-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      box-sizing: border-box;
+      width: 50%;
+      height: 100%;
+
+      .count-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .number-container {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+
+          color: var(--color-theme-primary-1000);
+
+          .number {
+            @extend %headline-1-font;
+
+            font-size: 72px;
+          }
+
+          hr {
+            width: 3px;
+            height: 60px;
+            margin: 0;
+            border: 0;
+
+            background: var(--color-theme-primary-1000);
+          }
+
+          .per100k-container {
+            display: flex;
+            flex-direction: column;
+
+            .per100k-number {
+              @extend %headline-2-font;
+
+              font-weight: 600;
+            }
+
+            .per100k-hint {
+              @extend %body-font;
+
+              font-weight: 500;
+              font-size: 24px;
+            }
+          }
+        }
+
+        .count-hint {
+          @extend %body-2-medium-font;
+
+          padding: 0 10px;
+          border-radius: 3px;
+
+          color: var(--color-theme-white-1000);
+          line-height: 25px;
+
+          background: var(--color-theme-primary-1000);
+        }
+      }
+    }
+
+    .chart {
+      width: 50%;
+    }
+  }
+
+  .area-square-container {
+    display: flex;
+    gap: 20px;
+
+    height: 50%;
+
+    .left-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      width: 50%;
+
+      .count-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .number-container {
+          display: flex;
+          gap: 5px;
+          align-items: flex-end;
+
+          color: var(--color-theme-primary-1000);
+
+          .number {
+            @extend %headline-1-font;
+
+            font-size: 72px;
+          }
+
+          .units {
+            @extend %headline-1-font;
+
+            transform: translateY(-6px);
+          }
+        }
+
+        .count-hint {
+          @extend %body-2-medium-font;
+
+          padding: 0 10px;
+          border-radius: 3px;
+
+          color: var(--color-theme-white-1000);
+          line-height: 25px;
+
+          background: var(--color-theme-primary-1000);
+
+          b {
+            font-weight: 600;
+            font-size: 24px;
+          }
+        }
+      }
+
+      .rating-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        gap: 10px;
+
+        height: 0;
+
+        color: var(--color-theme-primary-1000);
+
+        .heading-container {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          .heading {
+            @extend %body-2-medium-font;
+          }
+
+          .sort-button {
+            padding: 5px;
+
+            img {
+              height: 9px;
+
+              transition: var(--transition-default);
+            }
+
+            &:hover {
+              img {
+                filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
+              }
+            }
+
+            &:active {
+              img {
+                filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+              }
+            }
+          }
+        }
+
+        .area-list {
+          display: flex;
+          flex-direction: column;
+          flex-grow: 1;
+          gap: 10px;
+
+          height: 0;
+          overflow: auto;
+
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+
+          &::-webkit-scrollbar {
+            display: none;
+          }
+
+          .area {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .left-part {
+              display: flex;
+              gap: 10px;
+              align-items: center;
+
+              .icon {
+                width: 20px;
+              }
+
+              .name {
+                @extend %body-2-regular-font;
+              }
+            }
+
+            .square {
+              @extend %body-2-semibold-font;
+
+              white-space: nowrap;
+            }
+          }
+        }
+      }
+    }
+
+    .chart {
+      width: 50%;
+    }
+  }
+}

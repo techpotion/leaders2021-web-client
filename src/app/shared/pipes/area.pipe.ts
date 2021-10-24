@@ -5,13 +5,14 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class AreaPipe implements PipeTransform {
 
-  public transform(value: number): string {
+  public transform(value: number | null): string {
     // eslint-disable-next-line
-    const thousands = Math.floor(value / 1000);
+    const nonNullValue = value ?? 0;
+    const thousands = Math.floor(nonNullValue / 1000);
     if (thousands) {
       return `${thousands}k`;
     }
-    return Math.floor(value).toString();
+    return Math.floor(nonNullValue).toString();
   }
 
 }

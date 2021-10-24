@@ -33,7 +33,9 @@
         [areas]="areasSubject | async">
     </tp-dashboard-areas-chapter>
 
-    <tp-dashboard-area-types-chapter *ngSwitchCase="'area-types'">
+    <tp-dashboard-area-types-chapter *ngSwitchCase="'area-types'"
+        [analytics]="analyticsSubject | async"
+        [areas]="areasSubject | async">
     </tp-dashboard-area-types-chapter>
 
     <tp-dashboard-analytics-chapter *ngSwitchCase="'analytics'">

@@ -47,6 +47,7 @@
 
             box-sizing: border-box;
             padding: 0 10px;
+            border-radius: 3px;
 
             color: var(--color-theme-white-1000);
             line-height: 24px;
@@ -106,6 +107,8 @@
 
           .units {
             @extend %body-1-medium-font;
+
+            transform: translateY(-10px);
           }
 
           .indicator-tooltip {
@@ -133,6 +136,8 @@
 
           .indicator {
             width: 28px;
+
+            transform: translateY(-10px);
 
             &:hover {
               + .indicator-tooltip {
