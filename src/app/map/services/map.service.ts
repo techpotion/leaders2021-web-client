@@ -210,7 +210,7 @@ export class MapService {
       marker.remove();
     }
 
-    const polygons: GeoJSON.Feature[] = [];
+    // const polygons: GeoJSON.Feature[] = [];
     for (const id of shownMarkerIds) {
       const marker = markers.get(id);
       if (!marker) { continue; }
@@ -218,29 +218,16 @@ export class MapService {
       marker.addTo(map);
     }
 
-      // polygons.push(circle([marker.getLngLat().lat, marker.getLngLat().lng], 500, { units: 'meters' }));
-    // const featureCollection = {
-      // type: 'FeatureCollection',
-      // features: polygons,
-    // } as GeoJSON.FeatureCollection;
-    // if (!map.getSource('abc')) {
-      // map.addSource('abc', {
-        // type: 'geojson',
-        // data: featureCollection,
-      // });
-      // map.addLayer({
-        // id: `${id}-marker-availability`,
-        // type: 'fill',
-        // source: 'abc',
-        // layout: {},
-        // paint: {
-          // 'fill-color': 'blue',
-          // 'fill-opacity': 0.6,
-        // },
-      // });
-    // } else {
-      // (map.getSource('abc') as mapboxgl.GeoJSONSource).setData(featureCollection);
-    // }
+    // TODO: marker radius
+    // polygons.push(circle([marker.getLngLat().lat, marker.getLngLat().lng],
+    // 500, { units: 'meters' })); const featureCollection = { type:
+    // 'FeatureCollection', features: polygons, } as GeoJSON.FeatureCollection;
+    // if (!map.getSource('abc')) { map.addSource('abc', { type: 'geojson',
+    // data: featureCollection, }); map.addLayer({ id:
+    // `${id}-marker-availability`, type: 'fill', source: 'abc', layout: {},
+    // paint: { 'fill-color': 'blue', 'fill-opacity': 0.6, }, }); } else {
+    // (map.getSource('abc') as
+    // mapboxgl.GeoJSONSource).setData(featureCollection); }
 
   }
 

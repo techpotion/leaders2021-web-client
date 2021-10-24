@@ -358,7 +358,6 @@ export class MapPageComponent implements OnDestroy, OnInit {
   // #endregion
 
 
-
   // #region Popups
 
   private readonly forcePopups = new BehaviorSubject<PopupSource[]>([]);
