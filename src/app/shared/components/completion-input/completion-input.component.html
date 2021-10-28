@@ -19,10 +19,14 @@
 </div>
 
 <div class="completion-container"
-     [ngClass]="{ 'shown': isOpened | async }">
-    <div class="variant"
-        *ngFor="let variant of completionVariants | async"
-        (click)="selectVariant(variant)">
-        {{ variant }}
+     *ngIf="completionVariantsShown | async as variants"
+     [@heightIncrease]>
+    <div class="variant-animation-container"
+        *ngFor="let variant of variants"
+        (click)="selectVariant(variant)"
+        [@heightIncrease]>
+        <div class="variant">
+            {{ variant }}
+        </div>
     </div>
 </div>

@@ -14,6 +14,7 @@ import {
 } from '../../models/sport-object-filter';
 
 import { EnumSelectVariant } from '../../../shared/models/enum-select-variant';
+import { createHeightIncreaseAnimation } from '../../../shared/utils/create-height-increase-animation';
 
 
 @Component({
@@ -21,6 +22,9 @@ import { EnumSelectVariant } from '../../../shared/models/enum-select-variant';
   templateUrl: './sport-object-filter-bar.component.html',
   styleUrls: ['./sport-object-filter-bar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    createHeightIncreaseAnimation(),
+  ],
 })
 export class SportObjectFilterBarComponent {
 

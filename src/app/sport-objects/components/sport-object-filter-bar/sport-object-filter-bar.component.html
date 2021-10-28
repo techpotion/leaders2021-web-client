@@ -17,30 +17,33 @@
     </button>
 </div>
 
-<div class="filters-container"
-     [ngClass]="{ 'hidden': !areFiltersOpened }">
-    <div class="filter"
-        *ngFor="let filter of filterSources">
+<div class="animated-filter-container"
+     *ngIf="areFiltersOpened"
+     [@heightIncrease]>
+    <div class="filter-container">
+        <div class="filter"
+            *ngFor="let filter of filterSources">
 
-        <span class="name">
-            {{ filter.name }}
-        </span>
+            <span class="name">
+                {{ filter.name }}
+            </span>
 
-        <tp-multiple-select class="select"
-            [variants]="filter.variants"
-            (variantsSelect)="onChange($event, filter.apiName)">
-        </tp-multiple-select>
+            <tp-multiple-select class="select"
+                [variants]="filter.variants"
+                (variantsSelect)="onChange($event, filter.apiName)">
+            </tp-multiple-select>
+        </div>
+
+        <button class="remove-button icon-button"
+            (click)="clearFilters()">
+            <img class="icon"
+                 src="assets/bin.svg"
+                 alt="remove filters">
+        </button>
+
+        <button class="filter-button"
+            (click)="applyFilterRequest()">
+            Отфильтровать объекты
+        </button>
     </div>
-
-    <button class="remove-button icon-button"
-        (click)="clearFilters()">
-        <img class="icon"
-             src="assets/bin.svg"
-             alt="remove filters">
-    </button>
-
-    <button class="filter-button"
-        (click)="applyFilterRequest()">
-        Отфильтровать объекты
-    </button>
 </div>

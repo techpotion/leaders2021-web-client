@@ -22,23 +22,27 @@
     </div>
 </div>
 
-<div class="variants" *ngIf="isOpened | async" 
-    [@heightChange]>
-    <div class="variant"
-        (click)="selectAll()">
-        Все
-        <tp-checkbox class="checkbox"
-            [value]="!!(allVariantsSelected | async)">
-        </tp-checkbox>
-    </div>
+<cdk-virtual-scroll-viewport class="variants-viewport" 
+    *ngIf="isOpened | async" 
+    [@heightIncrease]
+    itemSize="48"
+    [minBufferPx]="variantsMaxHeight * 2"
+    [maxBufferPx]="variantsMaxHeight * 2">
+        <div class="variant"
+            (click)="selectAll()">
+            Все
+            <tp-checkbox class="checkbox"
+                [value]="!!(allVariantsSelected | async)">
+            </tp-checkbox>
+        </div>
 
-    <div class="variant"
-        *ngFor="let variant of variantsSubject | async; index as i"
-        (click)="selectVariant(i, !variant.selected)"
-        [ngClass]="{ 'hidden': !variant.shown }">
-        {{ variant.name }}
-        <tp-checkbox class="checkbox"
-            [value]="variant.selected">
-        </tp-checkbox>
-    </div>
-</div>
+        <div class="variant"
+            *cdkVirtualFor="let variant of variantsSubject | async; index as i"
+            (click)="selectVariant(i, !variant.selected)"
+            [ngClass]="{ 'hidden': !variant.shown }">
+            {{ variant.name }}
+            <tp-checkbox class="checkbox"
+                [value]="variant.selected">
+            </tp-checkbox>
+        </div>
+</cdk-virtual-scroll-viewport>

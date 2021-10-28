@@ -110,7 +110,7 @@
     }
   }
 
-  .variants {
+  .variants-viewport {
     position: absolute;
     z-index: 1;
 
@@ -118,7 +118,7 @@
     flex-direction: column;
 
     width: 100%;
-    max-height: 350px;
+    height: 350px;
     border-radius: 0 0 10px 10px;
 
     overflow-y: auto;
@@ -127,8 +127,16 @@
 
     transition: var(--transition-default);
 
+    pointer-events: none;
+
+    ::ng-deep {
+      .cdk-virtual-scroll-content-wrapper {
+        pointer-events: auto;
+      }
+    }
+
     .variant {
-      @extend %body-1-regular-font;
+      @extend %body-2-regular-font;
 
       display: flex;
       align-items: center;
@@ -154,6 +162,10 @@
 
       &.hidden {
         display: none;
+      }
+
+      &:last-of-type {
+        border-radius: 0 0 10px 10px;
       }
     }
 

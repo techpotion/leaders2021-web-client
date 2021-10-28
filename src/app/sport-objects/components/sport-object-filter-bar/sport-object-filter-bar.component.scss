@@ -3,12 +3,10 @@
 :host {
   display: inline-flex;
   flex-direction: column;
-  gap: 30px;
 
   box-sizing: border-box;
   width: 100%;
   padding: 30px;
-  padding-bottom: 0;
   border-radius: 0 0 30px 30px;
 
   background: var(--color-theme-white-1000);
@@ -39,72 +37,63 @@
     }
   }
 
-  .filters-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px 40px;
-    align-items: flex-end;
-
-    max-height: 1000px;
-    margin-bottom: 30px;
-
-    transition: max-height var(--transition-default), opacity calc(2 * var(--transition-default));
-
-    .filter {
+  .animated-filter-container {
+    .filter-container {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      flex-wrap: wrap;
+      gap: 20px 40px;
+      align-items: flex-end;
 
-      .name {
+      padding-top: 30px;
+
+      .filter {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .name {
+          @extend %body-2-regular-font;
+
+          color: var(--color-theme-primary-1000);
+        }
+
+        .select {
+          width: 270px;
+        }
+      }
+
+      .remove-button {
+        padding: 13px;
+
+        .icon {
+          height: 21px;
+        }
+      }
+
+      .filter-button {
         @extend %body-2-regular-font;
 
-        color: var(--color-theme-primary-1000);
+        display: flex;
+        align-items: center;
+
+        height: 50px;
+        padding: 0 15px;
+        border-radius: 4px;
+
+        color: var(--color-theme-white-1000);
+
+        background: var(--color-theme-primary-1000);
+
+        transition: var(--transition-default);
+
+        &:hover {
+          background: #153FB8;
+        }
+
+        &:active {
+          background: var(--color-theme-primary-1100);
+        }
       }
-
-      .select {
-        width: 270px;
-      }
-    }
-
-    .remove-button {
-      padding: 13px;
-
-      .icon {
-        height: 21px;
-      }
-    }
-
-    .filter-button {
-      @extend %body-2-regular-font;
-
-      display: flex;
-      align-items: center;
-
-      height: 50px;
-      padding: 0 15px;
-      border-radius: 4px;
-
-      color: var(--color-theme-white-1000);
-
-      background: var(--color-theme-primary-1000);
-
-      transition: var(--transition-default);
-
-      &:hover {
-        background: #153FB8;
-      }
-
-      &:active {
-        background: var(--color-theme-primary-1100);
-      }
-    }
-
-    &.hidden {
-      max-height: 0;
-      margin: 0;
-      overflow: hidden;
-
-      opacity: 0;
     }
   }
 }
