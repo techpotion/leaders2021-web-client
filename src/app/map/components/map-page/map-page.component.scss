@@ -88,14 +88,6 @@
 
       .object-info {
         z-index: 2;
-
-        transition: var(--transition-default);
-
-        &.hidden {
-          opacity: 0;
-
-          pointer-events: none;
-        }
       }
 
       .polygon-saving {
@@ -103,12 +95,7 @@
         top: 25px;
         right: 130px;
 
-        transition: var(--transition-default);
-
-        &.hidden {
-          opacity: 0;
-          pointer-events: none;
-        }
+        transform-origin: top right;
       }
     }
   }

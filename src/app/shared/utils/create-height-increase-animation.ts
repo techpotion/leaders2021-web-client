@@ -14,11 +14,11 @@ export function createHeightIncreaseAnimation(
   return trigger('heightIncrease', [
     transition(':enter', [
       style({ height: 0, overflow: 'hidden' }),
-      animate('.3s', style({ height })),
+      animate('.3s ease-in-out', style({ height })),
     ]),
     transition(':leave', [
       style({ overflow: 'hidden' }),
-      animate('.3s', style({ height: 0 })),
+      animate('.3s ease-in-out', style({ height: 0 })),
     ]),
   ]);
 }

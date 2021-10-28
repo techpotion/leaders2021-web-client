@@ -33,6 +33,7 @@ import { SportObjectFilterService } from '../../../sport-objects/services/sport-
 import { SportPolygonApiService } from '../../../sport-objects/services/sport-polygon-api.service';
 import { MapUtilsService } from '../../services/map-utils.service';
 import { isNotNil } from '../../../shared/utils/is-not-nil';
+import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale-increase-animation';
 
 import { Heatmap } from '../../models/heatmap';
 import { LatLng } from '../../models/lat-lng';
@@ -68,6 +69,9 @@ type MapContent = 'object-info'
   templateUrl: './map-page.component.html',
   styleUrls: ['./map-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    createScaleIncreaseAnimation(),
+  ],
 })
 export class MapPageComponent implements OnDestroy, OnInit {
 
