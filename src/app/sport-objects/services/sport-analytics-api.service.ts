@@ -7,7 +7,7 @@ import { LatLng } from '../../map/models/lat-lng';
 import {
   FullPolygonAnalytics,
   PolygonSportAnalytics,
-} from '../models/polygon-sport-analytics';
+} from '../../polygon-saving/models/polygon-sport-analytics';
 
 
 @Injectable({

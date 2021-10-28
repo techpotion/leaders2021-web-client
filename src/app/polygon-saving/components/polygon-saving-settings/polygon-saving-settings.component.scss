@@ -68,6 +68,7 @@
 
     .mode-buttons {
       display: flex;
+      gap: 10px;
 
       button {
         @extend %body-1-medium-font;

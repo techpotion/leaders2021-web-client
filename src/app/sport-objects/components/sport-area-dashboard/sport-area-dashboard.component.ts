@@ -9,7 +9,7 @@ import {
 import { BehaviorSubject } from 'rxjs';
 
 import { SportObject, SportArea } from '../../models/sport-object';
-import { FullPolygonAnalytics } from '../../models/polygon-sport-analytics';
+import { FullPolygonAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
 
 
 type DashboardMode = 'areas' | 'area-types' | 'analytics';

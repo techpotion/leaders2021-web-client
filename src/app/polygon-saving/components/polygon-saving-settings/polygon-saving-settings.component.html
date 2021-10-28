@@ -47,9 +47,9 @@
 
                 <div class="current-polygon"
                     *ngIf="newPolygonSubject | async as polygon">
-                    <tp-saved-sport-polygon class="saved-polygon"
+                    <tp-saved-polygon class="saved-polygon"
                         [polygon]="polygon">
-                    </tp-saved-sport-polygon>
+                    </tp-saved-polygon>
 
                     <button class="erase-button"
                         (click)="clearNewPolygon()">
@@ -75,9 +75,9 @@
             <div class="polygon-container">
                 <div class="polygon" 
                      *ngFor="let polygon of shownPolygons | async">
-                    <tp-saved-sport-polygon class="saved-polygon"
+                    <tp-saved-polygon class="saved-polygon"
                         [polygon]="polygon.polygon">
-                    </tp-saved-sport-polygon>
+                    </tp-saved-polygon>
 
                     <div class="buttons-container">
                         <tp-radiobutton

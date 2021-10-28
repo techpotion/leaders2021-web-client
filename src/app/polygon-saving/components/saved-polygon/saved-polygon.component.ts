@@ -14,12 +14,12 @@ import { SportObjectsService } from '../../../sport-objects/services/sport-objec
 
 
 @Component({
-  selector: 'tp-saved-sport-polygon',
-  templateUrl: './saved-sport-polygon.component.html',
-  styleUrls: ['./saved-sport-polygon.component.scss'],
+  selector: 'tp-saved-polygon',
+  templateUrl: './saved-polygon.component.html',
+  styleUrls: ['./saved-polygon.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SavedSportPolygonComponent {
+export class SavedPolygonComponent {
 
   constructor(
     public readonly sportObjectUtils: SportObjectsService,

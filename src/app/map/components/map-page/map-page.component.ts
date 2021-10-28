@@ -30,7 +30,7 @@ import { PopulationApiService } from '../../../population/services/population-ap
 import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
 import { SportAnalyticsApiService } from '../../../sport-objects/services/sport-analytics-api.service';
 import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
-import { SportPolygonApiService } from '../../../sport-objects/services/sport-polygon-api.service';
+import { SportPolygonApiService } from '../../../polygon-saving/services/sport-polygon-api.service';
 import { MapUtilsService } from '../../services/map-utils.service';
 import { isNotNil } from '../../../shared/utils/is-not-nil';
 import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale-increase-animation';
@@ -39,7 +39,7 @@ import { Heatmap } from '../../models/heatmap';
 import { LatLng } from '../../models/lat-lng';
 import { MarkerLayerSource } from '../../models/marker-layer';
 import { SportObject, SportArea } from '../../../sport-objects/models/sport-object';
-import { FullPolygonAnalytics } from '../../../sport-objects/models/polygon-sport-analytics';
+import { FullPolygonAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
 import {
   SportObjectFilterRequest,
   isFilterRequestEmpty,

@@ -33,14 +33,14 @@
             (infoClose)="mapContentSubject.next(undefined)"
         ></tp-sport-object-full-info>
 
-        <tp-sport-polygon-saving-settings class="polygon-saving"
+        <tp-polygon-saving-settings class="polygon-saving"
             *ngIf="(mapContentSubject | async) === 'polygon-saving'"
             [@scaleIncrease]
             (closeSettings)="onPolygonTogglePress(false)"
             (selectPolygon)="newPolygonName.next($event)"
             [newPolygon]="newPolygon | async"
             (polygonChoose)="chosenPolygon.next($event)">
-        </tp-sport-polygon-saving-settings>
+        </tp-polygon-saving-settings>
 
         <div class="layers-toggles">
             <tp-map-toggle

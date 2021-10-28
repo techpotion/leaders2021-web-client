@@ -27,12 +27,12 @@ const DEFAULT_MODE: SettingsMode = 'existing';
 const SEARCH_DEBOUNCE_TIME = 300;
 
 @Component({
-  selector: 'tp-sport-polygon-saving-settings',
-  templateUrl: './sport-polygon-saving-settings.component.html',
-  styleUrls: ['./sport-polygon-saving-settings.component.scss'],
+  selector: 'tp-polygon-saving-settings',
+  templateUrl: './polygon-saving-settings.component.html',
+  styleUrls: ['./polygon-saving-settings.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SportPolygonSavingSettingsComponent implements OnDestroy {
+export class PolygonSavingSettingsComponent implements OnDestroy {
 
   constructor(
     public readonly polygonStorage: SportPolygonService,
