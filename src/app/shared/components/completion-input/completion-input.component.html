@@ -9,10 +9,12 @@
        (focus)="isFocused.next(true)"
        (blur)="isFocused.next(false)"
        (keyup.enter)="searchButton.click()">
-    <button class="search-button"
+    <button class="search-button icon-button"
         #searchButton
         (click)="search(); input.blur()">
-        <img src="assets/lens.svg" alt="search">
+        <img class="icon"
+            src="assets/lens.svg" 
+            alt="search">
     </button>
 </div>
 

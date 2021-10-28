@@ -9,6 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map, debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
@@ -18,6 +19,7 @@ import { EnumSelectVariant } from '../../models/enum-select-variant';
 
 
 const SEARCH_INPUT_DEBOUNCE_TIME = 300;
+const VARIANTS_MAX_HEIGHT = 350;
 
 interface SelectVariant {
   name: string;
@@ -31,6 +33,17 @@ interface SelectVariant {
   templateUrl: './multiple-select.component.html',
   styleUrls: ['./multiple-select.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('heightChange', [
+      transition(':enter', [
+        style({ height: 0 }),
+        animate('.3s', style({ height: VARIANTS_MAX_HEIGHT })),
+      ]),
+      transition(':leave', [
+        animate('.3s', style({ height: 0 })),
+      ]),
+    ]),
+  ],
 })
 export class MultipleSelectComponent implements OnDestroy {
 

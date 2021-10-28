@@ -6,10 +6,11 @@
         (searchChange)="onNameSearch($event)">
     </tp-completion-input>
 
-    <button class="toggle-filters-button"
+    <button class="toggle-filters-button toggle-icon-button"
         (click)="toggleFilters()"
-        [ngClass]="{ 'close': areFiltersOpened }">
-        <img [src]="areFiltersOpened
+        [ngClass]="{ 'pressed': areFiltersOpened }">
+        <img class="icon"
+             [src]="areFiltersOpened
                     ? 'assets/light/filter.svg'
                     : 'assets/dark/filter.svg'"
              alt="toggle filters">
@@ -31,9 +32,11 @@
         </tp-multiple-select>
     </div>
 
-    <button class="remove-button"
+    <button class="remove-button icon-button"
         (click)="clearFilters()">
-        <img src="assets/bin.svg" alt="remove filters">
+        <img class="icon"
+             src="assets/bin.svg"
+             alt="remove filters">
     </button>
 
     <button class="filter-button"

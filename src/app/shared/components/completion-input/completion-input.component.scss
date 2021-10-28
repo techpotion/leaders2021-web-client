@@ -42,22 +42,8 @@
       height: 100%;
       padding: 0 10px;
 
-      img {
+      .icon {
         height: 24px;
-
-        transition: var(--transition-default);
-      }
-
-      &:hover {
-        img {
-          filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
-        }
-      }
-
-      &:active {
-        img {
-          filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
-        }
       }
     }
 

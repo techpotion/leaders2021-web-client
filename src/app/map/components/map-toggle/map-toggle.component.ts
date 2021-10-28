@@ -37,6 +37,9 @@ export class MapToggleComponent implements OnInit {
   @Input()
   public disabled = false;
 
+  @HostBinding('class.toggle-icon-button')
+  public readonly toggleIconButtoClass = true;
+
   // #region Pressed state
 
   @HostListener('click')

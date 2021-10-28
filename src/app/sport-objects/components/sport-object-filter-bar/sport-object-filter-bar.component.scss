@@ -33,17 +33,8 @@
       height: 50px;
       border-radius: 4px;
 
-      background: var(--color-theme-white-1000);
-      box-shadow: var(--shadow-default);
-
-      transition: var(--transition-default);
-
-      &:hover {
-        box-shadow: var(--shadow-input-active);
-      }
-
-      &.close {
-        background: var(--color-theme-primary-1000);
+      .icon {
+        height: 28px;
       }
     }
   }
@@ -78,22 +69,8 @@
     .remove-button {
       padding: 13px;
 
-      img {
+      .icon {
         height: 21px;
-
-        transition: var(--transition-default);
-      }
-
-      &:hover {
-        img {
-          filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
-        }
-      }
-
-      &:active {
-        img {
-          filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
-        }
       }
     }
 

@@ -118,7 +118,7 @@
     flex-direction: column;
 
     width: 100%;
-    max-height: 0;
+    max-height: 350px;
     border-radius: 0 0 10px 10px;
 
     overflow-y: auto;
@@ -155,11 +155,6 @@
       &.hidden {
         display: none;
       }
-    }
-
-    &.opened {
-      height: auto;
-      max-height: 350px;
     }
 
     &::-webkit-scrollbar {
