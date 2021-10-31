@@ -1,0 +1,44 @@
+<div class="top-container">
+    <input class="new-name-input" type="text"
+        placeholder="Название слоя"
+        [formControl]="nameControl"
+        #nameInput>
+
+    <button class="add"
+        [disabled]="!(nameControl.valueChanges | async)?.length
+                     || (newPolygonSubject | async) !== null
+                     || (selectPolygon | async)"
+        (click)="selectPolygon.next(nameControl.value)">
+        <ng-container *ngIf="(selectPolygon | async) === null">
+            <span class="plus"> 
+                + 
+            </span>
+            <span class="hint">добавить участок</span>
+        </ng-container>
+
+        <span class="hint"
+            *ngIf="selectPolygon | async">
+            выделите участок на карте
+        </span>
+    </button>
+
+    <div class="current-polygon"
+        *ngIf="newPolygonSubject | async as polygon">
+        <tp-saved-polygon class="saved-polygon"
+            [polygon]="polygon">
+        </tp-saved-polygon>
+
+        <button class="erase-button"
+            (click)="clearNewPolygon()">
+            <img src="assets/bin.svg" alt="erase">
+        </button>
+    </div>
+</div>
+
+<div class="save-button-container">
+    <button class="save-button"
+        (click)="saveNewPolygon()"
+        [disabled]="(newPolygonSubject | async) === null">
+        Сохранить слой
+    </button>
+</div>

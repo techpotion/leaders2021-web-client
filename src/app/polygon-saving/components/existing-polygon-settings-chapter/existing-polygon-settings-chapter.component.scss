@@ -1,0 +1,36 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  height: 100%;
+
+  .polygon-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 20px;
+
+    height: 0;
+    overflow: auto;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .polygon {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      .buttons-container {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+    }
+  }
+}
