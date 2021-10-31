@@ -11,7 +11,6 @@ import { FormControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 
 import { PolygonSportAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
-
 import { LatLng } from '../../../map/models/lat-lng';
 
 

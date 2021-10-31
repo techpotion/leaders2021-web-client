@@ -10,6 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import { isNotNil } from '../../../shared/utils/is-not-nil';
+import { createHeightIncreaseAnimation } from '../../../shared/utils/create-height-increase-animation';
 import { SportObjectsService } from '../../../sport-objects/services/sport-objects.service';
 
 
@@ -18,6 +19,9 @@ import { SportObjectsService } from '../../../sport-objects/services/sport-objec
   templateUrl: './saved-polygon.component.html',
   styleUrls: ['./saved-polygon.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    createHeightIncreaseAnimation(),
+  ],
 })
 export class SavedPolygonComponent {
 
