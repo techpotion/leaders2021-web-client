@@ -1,7 +1,6 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  OnInit,
   OnDestroy,
 } from '@angular/core';
 
@@ -32,6 +31,7 @@ import { SportAnalyticsApiService } from '../../../sport-objects/services/sport-
 import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
 import { SportPolygonApiService } from '../../../polygon-saving/services/sport-polygon-api.service';
 import { MapUtilsService } from '../../services/map-utils.service';
+import { MapLoadingService } from '../../services/map-loading.service';
 import { isNotNil } from '../../../shared/utils/is-not-nil';
 import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale-increase-animation';
 
@@ -72,11 +72,15 @@ type MapContent = 'object-info'
   animations: [
     createScaleIncreaseAnimation(),
   ],
+  providers: [
+    MapLoadingService,
+  ],
 })
-export class MapPageComponent implements OnDestroy, OnInit {
+export class MapPageComponent implements OnDestroy {
 
   constructor(
     public readonly mapUtils: MapUtilsService,
+    public readonly loading: MapLoadingService,
     public readonly populationApi: PopulationApiService,
     public readonly sportAnalyticsApi: SportAnalyticsApiService,
     public readonly sportObjectsApi: SportObjectsApiService,
@@ -98,30 +102,6 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
-
-  private readonly initSubject = new Subject<void>();
-
-  public ngOnInit(): void {
-    this.initSubject.next();
-  }
-
-  // #endregion
-
-
-  // #region Loading spinners
-
-  private readonly loadingSubject =
-  new BehaviorSubject<{
-    heatmap: boolean;
-    marker: boolean;
-  }>({
-    heatmap: false,
-    marker: false,
-  });
-
-  public readonly loadingShown = this.loadingSubject.pipe(
-    map(loading => loading.heatmap || loading.marker),
-  );
 
   // #endregion
 
@@ -235,11 +215,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
       || _.difference(prev, curr).includes('sport-heatmap')
       || _.difference(curr, prev).includes('sport-heatmap'),
     ),
-    tap(() => {
-      const currentLoadingState = { ...this.loadingSubject.value };
-      currentLoadingState.heatmap = true;
-      this.loadingSubject.next(currentLoadingState);
-    }),
+    tap(() => this.loading.toggle('heatmap', true)),
     switchMap(([, curr]) => {
       const heatmapObservables: Observable<Heatmap>[] = [];
       if (curr.includes('population-heatmap')) {
@@ -256,16 +232,11 @@ export class MapPageComponent implements OnDestroy, OnInit {
           ),
         );
       }
-      if (!heatmapObservables.length) {
-        return of(null);
-      }
+
+      if (!heatmapObservables.length) { return of(null); }
       return combineLatest<Heatmap[]>(heatmapObservables);
     }),
-    tap(() => {
-      const currentLoadingState = { ...this.loadingSubject.value };
-      currentLoadingState.heatmap = false;
-      this.loadingSubject.next(currentLoadingState);
-    }),
+    tap(() => this.loading.toggle('heatmap', false)),
   );
 
   private createPopulationHeatmap(
@@ -501,11 +472,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
     this.filterRequest,
     this.polygonSelection,
   ]).pipe(
-    tap(() => {
-      const currentLoadingState = { ...this.loadingSubject.value };
-      currentLoadingState.marker = true;
-      this.loadingSubject.next(currentLoadingState);
-    }),
+    tap(() => this.loading.toggle('marker', true)),
     switchMap(([[prev, curr], filter, polygon]) => {
       if (!isFilterRequestEmpty(filter)) {
         const polygonizedFilter = { ...filter };
@@ -569,11 +536,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
       }
       return sources;
     }),
-    tap(() => {
-      const currentLoadingState = { ...this.loadingSubject.value };
-      currentLoadingState.marker = false;
-      this.loadingSubject.next(currentLoadingState);
-    }),
+    tap(() => this.loading.toggle('marker', false)),
   );
 
   private createSportObjectMarkerLayer(
