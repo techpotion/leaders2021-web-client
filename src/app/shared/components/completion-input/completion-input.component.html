@@ -20,11 +20,11 @@
 
 <div class="completion-container"
      *ngIf="completionVariantsShown | async as variants"
-     [@heightIncrease]>
+     [@sizeIncrease]>
     <div class="variant-animation-container"
         *ngFor="let variant of variants"
         (click)="selectVariant(variant)"
-        [@heightIncrease]>
+        [@sizeIncrease]>
         <div class="variant">
             {{ variant }}
         </div>

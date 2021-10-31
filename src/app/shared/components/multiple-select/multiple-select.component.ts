@@ -15,7 +15,7 @@ import { map, debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import _ from 'lodash';
 
 import { EnumSelectVariant } from '../../models/enum-select-variant';
-import { createHeightIncreaseAnimation } from '../../utils/create-height-increase-animation';
+import { createSizeIncreaseAnimation } from '../../utils/create-size-increase-animation';
 
 
 const SEARCH_INPUT_DEBOUNCE_TIME = 300;
@@ -34,7 +34,7 @@ interface SelectVariant {
   styleUrls: ['./multiple-select.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
-    createHeightIncreaseAnimation(VARIANTS_MAX_HEIGHT),
+    createSizeIncreaseAnimation('height', VARIANTS_MAX_HEIGHT),
   ],
 })
 export class MultipleSelectComponent implements OnDestroy {

@@ -370,17 +370,22 @@ export class MapPageComponent implements OnDestroy, OnInit {
     this.forcePopups,
     this.polygonSelection.pipe(
       filter(() => this.mapContentSubject.value !== 'polygon-saving'),
-      switchMap(selection => {
-        if (!selection) {
-          return of(null);
-        }
-        return this.sportAnalyticsApi.getPolygonAnalytics(selection).pipe(
-          map(analytics => ({
-            position: this.mapUtils.getMostLeftPoint(selection),
+      switchMap(polygon => {
+        if (!polygon) { return of(null); }
+
+        return combineLatest(
+          this.sportAnalyticsApi.getPolygonAnalytics(polygon),
+          this.sportObjectsApi.getFilteredAreas(
+            { polygon: { points: polygon } },
+          ),
+        ).pipe(
+          map(([analytics, areas]) => ({
+            position: this.mapUtils.getMostLeftPoint(polygon),
             component: SportAreaBriefInfoComponent,
             initMethod: (component: SportAreaBriefInfoComponent) => {
-              component.polygon = selection;
+              component.polygon = polygon;
               component.analytics = analytics;
+              component.areas = areas;
             },
             eventHandler: (component: SportAreaBriefInfoComponent) => {
               if (this.polygonSubscriptions.length) {
@@ -399,14 +404,11 @@ export class MapPageComponent implements OnDestroy, OnInit {
                 component.openFull.pipe(
                   switchMap(() => combineLatest([
                     this.sportObjectsApi.getObjects(
-                      { polygon: { points: selection } },
+                      { polygon: { points: polygon } },
                     ),
-                    this.sportAnalyticsApi.getFullPolygonAnalytics(selection),
-                    this.sportObjectsApi.getFilteredAreas(
-                      { polygon: { points: selection } },
-                    ),
+                    this.sportAnalyticsApi.getFullPolygonAnalytics(polygon),
                   ])),
-                ).subscribe(([objects, analytics, areas]) => {
+                ).subscribe(([objects, analytics]) => {
                   this.dashboardObjects.next(objects);
                   this.dashboardAnalytics.next(analytics);
                   this.dashboardAreas.next(areas);

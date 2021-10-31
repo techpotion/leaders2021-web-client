@@ -9,7 +9,7 @@
 
     <div class="analytics-container"
          *ngIf="isOpened | async"
-         [@heightIncrease]>
+         [@sizeIncrease]>
         <div class="area-square-container">
             <h2 class="metric-name">Площадь спортзон</h2>
             <span class="metric-value">
@@ -33,7 +33,7 @@
             </div>
             <div class="content"
                  *ngIf="isAreaTypesOpened | async"
-                 [@heightIncrease]>
+                 [@sizeIncrease]>
                 <div class="subelement" *ngFor="let type of areaTypes | async">
                     <div class="subheading">
                         <span class="submetric-name">{{ type.type }}</span>
@@ -59,7 +59,7 @@
             </div>
             <div class="content"
                  *ngIf="isSportKindsOpened | async"
-                 [@heightIncrease]>
+                 [@sizeIncrease]>
                 <span class="element" *ngFor="let kind of sportKinds | async">
                     {{ kind }}
                 </span>

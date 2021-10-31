@@ -20,7 +20,7 @@ import {
   startWith,
 } from 'rxjs/operators';
 
-import { createHeightIncreaseAnimation } from '../../utils/create-height-increase-animation';
+import { createSizeIncreaseAnimation } from '../../utils/create-size-increase-animation';
 
 
 const INPUT_DEBOUNCE_TIME = 300;
@@ -32,7 +32,7 @@ const COMPLETION_VARIANTS_COUNT = 5;
   styleUrls: ['./completion-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
-    createHeightIncreaseAnimation(),
+    createSizeIncreaseAnimation('height'),
   ],
 })
 export class CompletionInputComponent implements OnDestroy {

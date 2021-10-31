@@ -48,36 +48,40 @@
         </div>
     </div>
 
-    <div class="controls-container">
-        <input type="text"
-            class="input"
-            placeholder="Название слоя"
-            [formControl]="selectionNameInput"
-            [ngClass]="{ 'shown': saveInputOpened | async }">
+    <ng-container [ngSwitch]="saveControlsOpened | async">
+        <div class="general-controls controls" *ngSwitchCase="false">
+            <button class="save-button"
+                    (click)="saveControlsOpened.next(true)"
+                    [disabled]="(savedState | async) === 'saved'">
+                <div class="icon"
+                     [ngClass]="{ 'saving': (savedState | async)  === 'saving' }"
+                 ></div>
+                <span> сохранить участок </span>
+            </button>
 
-        <button class="save-button"
-            (click)="onSaveClick()"
-            [disabled]="(savedState | async) === 'saved'">
-            <div class="icon"
-                 [ngClass]="{ 'saving': (savedState | async)  === 'saving' }"></div>
-            <span [ngClass]="{ 'shown': (saveInputOpened | async) !== true }">
-                сохранить участок
-            </span>
-        </button>
+            <button class="clear-button"
+                    (click)="clearSelection.emit()">
+                <div class="icon"></div>
+                <span> отменить выделение </span>
+            </button>
+        </div>
 
-        <button class="close-input-button"
-            [ngClass]="{ 'shown': saveInputOpened | async }"
-            (click)="onCloseInputClick()">
-            <img src="assets/cross.svg" alt="close">
-        </button>
-
-        <button class="clear-button"
-            [ngClass]="{ 'shown': (saveInputOpened | async) !== true }"
-            (click)="clearSelection.emit()">
-            <div class="icon"></div>
-            <span>
-                отменить выделение
-            </span>
-        </button>
-    </div>
+        <div class="save-controls controls" *ngSwitchCase="true">
+            <input class="input"
+                   type="text" 
+                   placeholder="Название слоя"
+                   #selectionNameInput
+                   [formControl]="selectionNameControl">
+            <button class="save-button"
+                    (click)="save()"
+                    [disabled]="(selectionNameValid | async) !== true">
+                <div class="icon"
+                     [ngClass]="{ 'saving': (savedState | async)  === 'saving' }"></div>
+            </button>
+            <button class="close-input-button"
+                    (click)="saveControlsOpened.next(false)">
+                <img src="assets/cross.svg" alt="close">
+            </button>
+        </div>
+    </ng-container>
 </ng-container>

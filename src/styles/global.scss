@@ -17,6 +17,10 @@ button {
 
   background: transparent;
   outline: none;
+
+  &:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 @for $i from 1 to 6 {
