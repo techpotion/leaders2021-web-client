@@ -18,7 +18,7 @@ import { SportObjectsService } from '../../services/sport-objects.service';
 import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 import { SportObject, SportArea } from '../../models/sport-object';
-import { FullPolygonAnalytics } from '../../models/polygon-sport-analytics';
+import { FullPolygonAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
 
 
 const SPORT_AREAS_NORM = 358;

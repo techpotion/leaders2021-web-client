@@ -1,6 +1,8 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 import { MultipleSelectComponent } from './components/multiple-select/multiple-select.component';
@@ -39,7 +41,9 @@ import { AreaPipe } from './pipes/area.pipe';
   ],
   imports: [
     CommonModule,
+    BrowserAnimationsModule,
     ReactiveFormsModule,
+    ScrollingModule,
   ],
 })
 export class SharedModule { }

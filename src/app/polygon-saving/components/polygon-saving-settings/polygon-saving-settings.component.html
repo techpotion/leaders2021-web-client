@@ -1,0 +1,35 @@
+<div class="top-container">
+    <h1 class="title">Работа со слоями</h1>
+
+    <button class="close-button"
+        (click)="onCloseClick()">
+        <img src="assets/cross.svg" alt="close">
+    </button>
+</div>
+
+<div class="content">
+    <div class="mode-buttons">
+        <button [ngClass]="{ 'selected': (mode | async) === 'new' }"
+            (click)="mode.next('new')">
+            создать новый
+        </button>
+        <button [ngClass]="{ 'selected': (mode | async) === 'existing' }"
+            (click)="mode.next('existing')">
+            сохраненные
+        </button>
+    </div>
+
+    <div class="mode-content" 
+        [ngSwitch]="mode | async">
+        <tp-new-polygon-settings-chapter
+            *ngSwitchCase="'new'"
+            (selectPolygon)="selectPolygon.emit($event)"
+            [newPolygon]="newPolygon">
+        </tp-new-polygon-settings-chapter>
+
+        <tp-existing-polygon-settings-chapter
+            *ngSwitchCase="'existing'"
+            (polygonView)="polygonChoose.emit($event)">
+        </tp-existing-polygon-settings-chapter>
+    </div>
+</div>

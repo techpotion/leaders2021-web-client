@@ -5,7 +5,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { LatLng } from '../../map/models/lat-lng';
-import { SportObjectAvailability } from '../models/sport-object';
+import { SportObjectAvailability } from '../../sport-objects/models/sport-object';
+
 
 @Injectable({
   providedIn: 'root',
@@ -33,6 +34,5 @@ export class SportPolygonApiService {
       ) as GeoJSON.FeatureCollection<GeoJSON.MultiPolygon>),
     );
   }
-
 
 }

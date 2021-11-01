@@ -1,17 +1,23 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ElementRef,
   EventEmitter,
   Input,
   OnInit,
+  OnDestroy,
   Output,
+  ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 
-import { PolygonSportAnalytics } from '../../models/polygon-sport-analytics';
+import { SportPolygonService } from '../../../polygon-saving/services/sport-polygon.service';
 
+import { PolygonSportAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
+import { SportArea } from '../../models/sport-object';
 import { LatLng } from '../../../map/models/lat-lng';
 
 
@@ -23,9 +29,19 @@ const SAVED_STATE_TIMEOUT = 500;
   styleUrls: ['./sport-area-brief-info.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SportAreaBriefInfoComponent implements OnInit {
+export class SportAreaBriefInfoComponent implements OnDestroy, OnInit {
 
-  constructor() { }
+  constructor(
+    public readonly polygonStorage: SportPolygonService,
+  ) {
+    this.subscriptions.push(
+      this.subscribeInputFocus(),
+      this.subscribeNameReset(),
+    );
+  }
+
+  private readonly subscriptions: Subscription[] = [];
+
 
   // #region Life cycle hooks
 
@@ -36,6 +52,10 @@ export class SportAreaBriefInfoComponent implements OnInit {
     }
   }
 
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   // #endregion
 
 
@@ -43,6 +63,9 @@ export class SportAreaBriefInfoComponent implements OnInit {
 
   @Input()
   public analytics?: PolygonSportAnalytics;
+
+  @Input()
+  public areas?: SportArea[];
 
   // #endregion
 
@@ -77,35 +100,60 @@ export class SportAreaBriefInfoComponent implements OnInit {
   // #ednregion
 
 
-  // #region Save
+  // #region Selection name
 
-  public readonly selectionNameInput = new FormControl('');
+  @ViewChild('selectionNameInput')
+  public readonly selectionNameInput!: ElementRef<HTMLInputElement>;
 
-  public readonly saveInputOpened = new BehaviorSubject<boolean>(false);
+  public readonly selectionNameControl = new FormControl();
+
+  public readonly selectionNameValid =
+  this.selectionNameControl.valueChanges.pipe(
+    map((value: string | null) => !!value?.length),
+  );
+
+  private subscribeInputFocus(): Subscription {
+    return this.saveControlsOpened.pipe(
+      filter(opened => opened),
+    ).subscribe(() => setTimeout(
+      () => this.selectionNameInput.nativeElement.focus(),
+    ));
+  }
+
+  private subscribeNameReset(): Subscription {
+    return this.saveControlsOpened.pipe(
+      filter(opened => opened),
+    ).subscribe(() => this.selectionNameControl.reset());
+  }
+
+  // #endregion
+
+
+  // #region Selection saving
+
+  public readonly saveControlsOpened = new BehaviorSubject<boolean>(false);
 
   public readonly savedState =
   new BehaviorSubject<'unsaved' | 'saving' | 'saved'>('unsaved');
 
   public save(): void {
     this.savedState.next('saving');
+
     setTimeout(() => {
+      if (!this.polygon || !this.analytics || !this.areas) {
+        throw new Error('Cannot save polygon: some fields are empty.');
+      }
+
+      this.polygonStorage.savePolygon({
+        geometry: this.polygon,
+        name: this.selectionNameControl.value as string,
+        analytics: this.analytics,
+        areas: this.areas,
+      });
+
       this.savedState.next('saved');
-      this.saveInputOpened.next(false);
+      this.saveControlsOpened.next(false);
     }, SAVED_STATE_TIMEOUT);
-  }
-
-  public onSaveClick(): void {
-    if (this.saveInputOpened.value) {
-      this.save();
-      this.selectionNameInput.setValue('');
-      return;
-    }
-    this.saveInputOpened.next(true);
-  }
-
-  public onCloseInputClick(): void {
-    this.saveInputOpened.next(false);
-    this.selectionNameInput.setValue('');
   }
 
   // #endregion

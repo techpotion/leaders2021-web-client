@@ -42,22 +42,8 @@
       height: 100%;
       padding: 0 10px;
 
-      img {
+      .icon {
         height: 24px;
-
-        transition: var(--transition-default);
-      }
-
-      &:hover {
-        img {
-          filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
-        }
-      }
-
-      &:active {
-        img {
-          filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
-        }
       }
     }
 
@@ -77,33 +63,34 @@
     z-index: 1;
 
     width: 100%;
-    max-height: 0;
-    border-radius: 0 0 10px 10px;
-    overflow: hidden;
 
-    transition: var(--transition-default);
+    box-shadow: var(--shadow-default);
 
-    .variant {
-      @extend %body-2-light-font;
+    .variant-animation-container {
+      overflow: hidden;
 
-      padding: 10px 30px;
+      .variant {
+        @extend %body-2-light-font;
 
-      color: var(--color-theme-primary-1000);
+        padding: 10px 30px;
 
-      background: var(--color-theme-white-1000);
-      cursor: pointer;
+        color: var(--color-theme-primary-1000);
 
-      transition: var(--transition-default);
+        background: var(--color-theme-white-1000);
+        cursor: pointer;
 
-      user-select: none;
+        transition: var(--transition-default);
 
-      &:hover {
-        background: var(--color-surface-secondary);
+        user-select: none;
+
+        &:hover {
+          background: var(--color-surface-secondary);
+        }
       }
-    }
 
-    &.shown {
-      max-height: 200px;
+      &:last-of-type {
+        border-radius: 0 0 10px 10px;
+      }
     }
   }
 }

@@ -26,19 +26,21 @@
 
     <div class="map-container">
         <tp-sport-object-full-info class="object-info"
-            [ngClass]="{ 'hidden': (mapContentSubject | async) !== 'object-info' }"
+            *ngIf="(mapContentSubject | async) === 'object-info'"
+            [@scaleIncrease]
             [obj]="(fullInfoObject | async)?.obj"
             [sportAreas]="(fullInfoObject | async)?.areas"
             (infoClose)="mapContentSubject.next(undefined)"
         ></tp-sport-object-full-info>
 
-        <tp-sport-polygon-saving-settings class="polygon-saving"
-            [ngClass]="{ 'hidden': (mapContentSubject | async) !== 'polygon-saving' }"
+        <tp-polygon-saving-settings class="polygon-saving"
+            *ngIf="(mapContentSubject | async) === 'polygon-saving'"
+            [@scaleIncrease]
             (closeSettings)="onPolygonTogglePress(false)"
             (selectPolygon)="newPolygonName.next($event)"
             [newPolygon]="newPolygon | async"
             (polygonChoose)="chosenPolygon.next($event)">
-        </tp-sport-polygon-saving-settings>
+        </tp-polygon-saving-settings>
 
         <div class="layers-toggles">
             <tp-map-toggle
@@ -89,5 +91,5 @@
 </div>
 
 <tp-loading-spinner class="loading-spinner"
-                    [ngClass]="{ 'shown': loadingShown | async }">
+                    [ngClass]="{ 'shown': loading.isShown | async }">
 </tp-loading-spinner>

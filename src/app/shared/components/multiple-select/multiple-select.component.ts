@@ -15,9 +15,11 @@ import { map, debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import _ from 'lodash';
 
 import { EnumSelectVariant } from '../../models/enum-select-variant';
+import { createSizeIncreaseAnimation } from '../../utils/create-size-increase-animation';
 
 
 const SEARCH_INPUT_DEBOUNCE_TIME = 300;
+const VARIANTS_MAX_HEIGHT = 350;
 
 interface SelectVariant {
   name: string;
@@ -31,6 +33,9 @@ interface SelectVariant {
   templateUrl: './multiple-select.component.html',
   styleUrls: ['./multiple-select.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    createSizeIncreaseAnimation('height', VARIANTS_MAX_HEIGHT),
+  ],
 })
 export class MultipleSelectComponent implements OnDestroy {
 
@@ -108,6 +113,8 @@ export class MultipleSelectComponent implements OnDestroy {
       this.isOpened.next(false);
     }
   }
+
+  public readonly variantsMaxHeight = VARIANTS_MAX_HEIGHT;
 
   // #endregion
 

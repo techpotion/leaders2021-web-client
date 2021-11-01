@@ -1,0 +1,135 @@
+@import '../../../../styles/mixins';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  box-sizing: border-box;
+  width: 540px;
+  height: 580px;
+  padding-top: 20px;
+
+  border-radius: 35px;
+
+  background: var(--color-theme-white-1000);
+  box-shadow: var(--shadow-default);
+
+  .top-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .title {
+      @extend %body-font;
+
+      margin-left: 30px;
+
+      color: var(--color-theme-primary-1000);
+      font-weight: 500;
+      font-size: 24px;
+    }
+
+    .close-button {
+      box-sizing: border-box;
+      margin-right: 10px;
+      padding: 10px;
+
+      img {
+        width: 15px;
+
+        opacity: .3;
+
+        transition: var(--transition-default);
+      }
+
+      &:hover {
+        img {
+          opacity: 1;
+        }
+      }
+
+      &:active {
+        img {
+          filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+        }
+      }
+    }
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 20px;
+
+    box-sizing: border-box;
+    padding: 0 30px;
+
+    .mode-buttons {
+      display: flex;
+      gap: 10px;
+
+      button {
+        @extend %body-1-medium-font;
+
+        width: 235px;
+        height: 50px;
+        border-radius: 8px;
+
+        color: var(--color-theme-primary-800);
+
+        background: var(--color-theme-white-1000);
+        box-shadow: var(--shadow-inner);
+
+        transition: var(--transition-default);
+
+        &.selected {
+          color: var(--color-theme-white-1000);
+
+          background: var(--color-theme-primary-1000);
+
+          &:hover {
+            background: #153FB8;
+          }
+        }
+
+        &:hover {
+          &:not(.selected) {
+            color: var(--color-theme-primary-1000);
+          }
+        }
+      }
+    }
+
+    .mode-content {
+      flex-grow: 1;
+
+      box-sizing: border-box;
+      padding-bottom: 20px;
+
+      .erase-button,
+      .remove-button {
+        padding: 5px;
+
+        img {
+          width: 18px;
+
+          transition: var(--transition-default);
+        }
+
+        &:hover {
+          img {
+            filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
+          }
+        }
+
+        &:active {
+          img {
+            filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+          }
+        }
+      }
+    }
+  }
+}

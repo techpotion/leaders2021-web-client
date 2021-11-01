@@ -11,18 +11,29 @@ import {
 
 import { FormControl } from '@angular/forms';
 
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { distinctUntilChanged, debounceTime, filter, map } from 'rxjs/operators';
+import { combineLatest, BehaviorSubject, Subscription } from 'rxjs';
+import {
+  distinctUntilChanged,
+  debounceTime,
+  filter,
+  map,
+  startWith,
+} from 'rxjs/operators';
+
+import { createSizeIncreaseAnimation } from '../../utils/create-size-increase-animation';
 
 
 const INPUT_DEBOUNCE_TIME = 300;
-const COMPLETION_VARIANTS_COUNT = 3;
+const COMPLETION_VARIANTS_COUNT = 5;
 
 @Component({
   selector: 'tp-completion-input',
   templateUrl: './completion-input.component.html',
   styleUrls: ['./completion-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    createSizeIncreaseAnimation('height'),
+  ],
 })
 export class CompletionInputComponent implements OnDestroy {
 
@@ -97,12 +108,20 @@ export class CompletionInputComponent implements OnDestroy {
   @Input()
   public variants: string[] = [];
 
-  public completionVariants = this.inputControl.valueChanges.pipe(
+  public readonly completionVariants = this.inputControl.valueChanges.pipe(
+    startWith(this.inputControl.value),
     debounceTime(INPUT_DEBOUNCE_TIME),
     distinctUntilChanged(),
     map((input: string) => this.variants.filter(variant =>
       variant.toLowerCase().includes(input.toLowerCase()))),
     map(variants => variants.slice(0, COMPLETION_VARIANTS_COUNT)),
+  );
+
+  public readonly completionVariantsShown = combineLatest([
+    this.isOpened,
+    this.completionVariants,
+  ]).pipe(
+    map(([opened, variants]) => opened && variants.length ? variants : null),
   );
 
   public selectVariant(variant: string): void {

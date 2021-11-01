@@ -5,34 +5,9 @@
 
   width: 50px;
   height: 50px;
-
   border-radius: 25px;
-
-  background: var(--color-theme-white-1000);
-
-  transition: var(--transition-default);
 
   .icon {
     height: 24px;
-
-    transition: var(--transition-default);
-  }
-
-  &.pressed {
-    background: var(--color-theme-primary-1000);
-  }
-
-  &.disabled {
-    background: rgba(255, 255, 255, .8);
-
-    .icon {
-      opacity: .2;
-    }
-  }
-
-  &:hover {
-    &:not(.disabled) {
-      box-shadow: var(--shadow-input-active);
-    }
   }
 }

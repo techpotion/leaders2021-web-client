@@ -17,10 +17,61 @@ button {
 
   background: transparent;
   outline: none;
+
+  &:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 @for $i from 1 to 6 {
   h#{$i} {
     margin: 0;
+  }
+}
+
+.toggle-icon-button {
+  background: var(--color-theme-white-1000);
+  box-shadow: var(--shadow-default);
+
+  transition: var(--transition-default);
+
+  .icon {
+    transition: var(--transition-default);
+  }
+
+  &.pressed {
+    background: var(--color-theme-primary-1000);
+  }
+
+  &.disabled {
+    background: rgba(255, 255, 255, .8);
+
+    .icon {
+      opacity: .2;
+    }
+  }
+
+  &:hover {
+    &:not(.disabled) {
+      box-shadow: var(--shadow-input-active);
+    }
+  }
+}
+
+.icon-button {
+  .icon {
+    transition: var(--transition-default);
+  }
+
+  &:hover {
+    .icon {
+      filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
+    }
+  }
+
+  &:active {
+    .icon {
+      filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+    }
   }
 }

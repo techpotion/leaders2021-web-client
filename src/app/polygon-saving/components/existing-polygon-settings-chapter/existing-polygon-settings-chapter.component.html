@@ -1,0 +1,24 @@
+<tp-search-input class="search-input"
+                 [formControl]="searchInput">
+</tp-search-input>
+
+<div class="polygon-container">
+    <div class="polygon" 
+         *ngFor="let polygon of shownPolygons | async">
+        <tp-saved-polygon class="saved-polygon"
+                          [polygon]="polygon.polygon">
+        </tp-saved-polygon>
+
+        <div class="buttons-container">
+            <tp-radiobutton
+                    [enabled]="(viewedPolygonIndex | async) === polygon.index"
+                    (enabledChange)="viewPolygon(polygon.index, $event)">
+            </tp-radiobutton>
+
+            <button class="remove-button"
+                    (click)="removePolygon(polygon.index)">
+                <img src="assets/bin.svg" alt="remove">
+            </button>
+        </div>
+    </div>
+</div>

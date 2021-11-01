@@ -11,7 +11,7 @@ import { SportObjectsService } from '../../services/sport-objects.service';
 import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 import { SportArea } from '../../models/sport-object';
-import { FullPolygonAnalytics } from '../../models/polygon-sport-analytics';
+import { FullPolygonAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
 
 
 type SortOrder = 'ascending' | 'descending';

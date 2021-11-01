@@ -9,7 +9,7 @@ import { filter, map } from 'rxjs/operators';
 
 import { isNotNil } from '../../../shared/utils/is-not-nil';
 
-import { FullPolygonAnalytics } from '../../models/polygon-sport-analytics';
+import { FullPolygonAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
 
 
 @Component({

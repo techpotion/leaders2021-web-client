@@ -10,16 +10,20 @@ import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import { isNotNil } from '../../../shared/utils/is-not-nil';
+import { createSizeIncreaseAnimation } from '../../../shared/utils/create-size-increase-animation';
 import { SportObjectsService } from '../../../sport-objects/services/sport-objects.service';
 
 
 @Component({
-  selector: 'tp-saved-sport-polygon',
-  templateUrl: './saved-sport-polygon.component.html',
-  styleUrls: ['./saved-sport-polygon.component.scss'],
+  selector: 'tp-saved-polygon',
+  templateUrl: './saved-polygon.component.html',
+  styleUrls: ['./saved-polygon.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    createSizeIncreaseAnimation('height'),
+  ],
 })
-export class SavedSportPolygonComponent {
+export class SavedPolygonComponent {
 
   constructor(
     public readonly sportObjectUtils: SportObjectsService,

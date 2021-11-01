@@ -34,6 +34,7 @@
 
     background: var(--color-theme-white-1000);
     box-shadow: var(--shadow-default);
+    cursor: pointer;
 
     transition: var(--transition-default);
 
@@ -167,73 +168,15 @@
     }
   }
 
-  .controls-container {
+  .controls {
     display: flex;
-    align-items: center;
-    justify-content: space-evenly;
 
     box-sizing: border-box;
     width: 100%;
     margin-top: 15px;
     padding: 0 20px;
 
-    .input {
-      @extend %body-font;
-
-      position: fixed;
-
-      flex-grow: 1;
-
-      box-sizing: border-box;
-      width: 0;
-      max-width: none;
-      height: 30px;
-      margin: 0;
-      padding: 0;
-      border-radius: 5px;
-
-      color: var(--color-theme-primary-1000);
-      font-weight: 300;
-      font-size: 12px;
-
-      background: var(--color-theme-white-1000);
-      box-shadow: var(--shadow-default);
-
-      transition: var(--transition-default);
-
-      pointer-events: none;
-
-      &.shown {
-        position: static;
-
-        max-width: none;
-        margin-right: 5px;
-        padding: 0 15px;
-
-        pointer-events: auto;
-      }
-
-      &:hover,
-      &:focus {
-        box-shadow: var(--shadow-input-active);
-      }
-
-      &::placeholder {
-        color: var(--color-theme-primary-400);
-      }
-    }
-
     .save-button {
-      @extend %body-font;
-
-      display: flex;
-      gap: 5px;
-      align-items: center;
-
-      color: var(--color-theme-primary-1000);
-      font-weight: 300;
-      font-size: 12px;
-
       transition: var(--transition-default);
 
       .icon {
@@ -244,17 +187,6 @@
 
         &.saving {
           background-image: url('../../../../assets/in-square/tick.svg');
-        }
-      }
-
-      span {
-        width: 0;
-        overflow: hidden;
-
-        transition: var(--transition-default);
-
-        &.shown {
-          width: 70px;
         }
       }
 
@@ -275,85 +207,113 @@
       }
     }
 
-    .close-input-button {
-      position: fixed;
+    &.general-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
 
-      width: 0;
-      padding: 0;
-      overflow: hidden;
+      .save-button, .clear-button {
+        display: flex;
+        gap: 5px;
+        align-items: center;
 
-      transition: var(--transition-default);
+        span {
+          @extend %body-font;
 
-      img {
-        width: 12px;
+          width: 70px;
 
-        opacity: .3;
+          color: var(--color-theme-primary-1000);
+          font-weight: 300;
+          font-size: 12px;
 
+          transition: var(--transition-default);
+        }
+      }
+
+      .clear-button {
         transition: var(--transition-default);
-        transition: width 0;
-      }
 
-      &:hover {
-        img {
-          opacity: 1;
+        .icon {
+          width: 26px;
+          height: 26px;
+
+          background-image: url('../../../../assets/polygon-remove/default.svg');
         }
-      }
 
-      &:active {
-        img {
-          filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+        &:hover,
+        &:active {
+          filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
         }
-      }
 
-      &.shown {
-        position: static;
-
-        width: auto;
-        padding: 3px;
+        &:active {
+          .icon {
+            background-image: url('../../../../assets/polygon-remove/pressed.svg');
+          }
+        }
       }
     }
 
-    .clear-button {
-      @extend %body-font;
-
-      display: flex;
+    &.save-controls {
       gap: 5px;
-      align-items: center;
 
-      width: 0;
-      overflow: hidden;
+      .input {
+        @extend %body-font;
 
-      color: var(--color-theme-primary-1000);
-      font-weight: 300;
-      font-size: 12px;
+        flex-grow: 1;
 
-      transition: var(--transition-default);
+        box-sizing: border-box;
+        width: 0;
+        height: 30px;
+        padding: 0 15px;
+        border-radius: 5px;
 
-      .icon {
-        width: 26px;
-        height: 26px;
+        font-weight: 300;
+        font-size: 12px;
 
-        background-image: url('../../../../assets/polygon-remove/default.svg');
-      }
+        background: var(--color-theme-white-1000);
+        box-shadow: var(--shadow-default);
 
-      span {
-        width: 70px;
-      }
+        transition: var(--transition-default);
 
-      &:hover,
-      &:active {
-        filter: drop-shadow(.1px .1px .3px var(--color-theme-primary-1000));
-      }
+        &:hover,
+        &:focus {
+          box-shadow: var(--shadow-input-active);
+        }
 
-      &:active {
-        .icon {
-          background-image: url('../../../../assets/polygon-remove/pressed.svg');
+        &::placeholder {
+          color: var(--color-theme-primary-400);
         }
       }
 
-      &.shown {
-        width: auto;
+
+      .close-input-button {
+        padding: 3px;
+        overflow: hidden;
+
+        transition: var(--transition-default);
+
+        img {
+          width: 12px;
+
+          opacity: .3;
+
+          transition: var(--transition-default);
+          transition: width 0;
+        }
+
+        &:hover {
+          img {
+            opacity: 1;
+          }
+        }
+
+        &:active {
+          img {
+            filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+          }
+        }
       }
+
     }
   }
 }

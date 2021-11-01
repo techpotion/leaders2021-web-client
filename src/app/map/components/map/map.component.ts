@@ -106,12 +106,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     existingMap.on('render', () => this.renderEvent.next());
 
-    existingMap.on('load', () => {
-      for (const callback of this.loadCallbacks) {
-        callback();
-      }
-      this.loadCallbacks = [];
-    });
+    this.subscribeOnMapLoadEvent(existingMap);
 
     existingMap.on('draw.delete', () => {
       this.polygonDrawDelete.emit();
@@ -135,7 +130,25 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   public readonly renderEvent = new Subject<void>();
 
-  public loadCallbacks: (() => void)[] = [];
+  // #endregion
+
+
+  // #region Load event
+
+  private loadCallbacks: (() => void)[] = [];
+
+  private subscribeOnMapLoadEvent(map: mapboxgl.Map): void {
+    map.on('load', () => {
+      this.mapIsLoaded = true;
+
+      for (const callback of this.loadCallbacks) {
+        callback();
+      }
+      this.loadCallbacks = [];
+    });
+  }
+
+  private mapIsLoaded = false;
 
   // #endregion
 
@@ -168,7 +181,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public set polygonLayerSources(sources: PolygonLayerSource[] | null) {
     const updateSources = sources ?? [];
 
-    if (!this.map || !this.map.loaded()) {
+    if (!this.map || !this.mapIsLoaded) {
       this.loadCallbacks.push(() => this.updatePolygonLayers(updateSources));
       return;
     }
@@ -177,7 +190,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private updatePolygonLayers(sources: PolygonLayerSource[]): void {
-    if (!this.map) {
+    if (!this.map || !this.mapIsLoaded) {
       throw new Error('Cannot update polygon layers: map is not loaded');
     }
     const loadedMap = this.map;
@@ -206,7 +219,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   @Input()
   public set polygonDrawEnabled(value: boolean) {
-    if (!this.map) {
+    if (!this.map || !this.mapIsLoaded) {
       this.loadCallbacks.push(() => this.enablePolygonDraw(value));
       return;
     }
@@ -215,7 +228,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   @Input()
   public set polygon(value: LatLng[] | null) {
-    if (!this.map) {
+    if (!this.map || !this.mapIsLoaded) {
       this.loadCallbacks.push(() => this.setPolygon(value));
       return;
     }
@@ -252,7 +265,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private enablePolygonDraw(enabled: boolean): void {
-    if (!this.map) {
+    if (!this.map || !this.mapIsLoaded) {
       throw new Error('Cannot update polygon draw: map is not loaded');
     }
     const loadedMap = this.map;
@@ -311,7 +324,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public set markerLayerSources(sources: MarkerLayerSource[] | null) {
     const updateSources = sources ?? [];
 
-    if (!this.map) {
+    if (!this.map || !this.mapIsLoaded) {
       this.loadCallbacks.push(() => this.updateMarkerLayers(updateSources));
       return;
     }
@@ -320,7 +333,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateMarkerLayers(sources: MarkerLayerSource[]): void {
-    if (!this.map) {
+    if (!this.map || !this.mapIsLoaded) {
       throw new Error('Cannot update marker layers: map is not loaded');
     }
     const loadedMap = this.map;
@@ -353,7 +366,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public set heatmaps(sources: Heatmap[] | null) {
     const updateSources = sources ?? [];
 
-    if (!this.map) {
+    if (!this.map || !this.mapIsLoaded) {
       this.loadCallbacks.push(() => this.updateHeatmaps(updateSources));
       return;
     }
@@ -362,7 +375,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateHeatmaps(sources: Heatmap[]): void {
-    if (!this.map) {
+    if (!this.map || !this.mapIsLoaded) {
       throw new Error('Cannot update heatmaps: map is not loaded');
     }
     const loadedMap = this.map;
@@ -388,7 +401,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public set popups(sources: PopupSource[] | null) {
     const updateSources = sources ?? [];
 
-    if (!this.map) {
+    if (!this.map || !this.mapIsLoaded) {
       this.loadCallbacks.push(() => this.updatePopups(updateSources));
       return;
     }
@@ -397,7 +410,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private updatePopups(sources: PopupSource[]): void {
-    if (!this.map) {
+    if (!this.map || !this.mapIsLoaded) {
       throw new Error('Cannot update popups: map is not loaded');
     }
     const loadedMap = this.map;
