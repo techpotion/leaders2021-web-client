@@ -30,19 +30,42 @@ export class SportObjectFilterBarComponent {
 
   constructor() { }
 
+
+  // #region Appearance
+
   public areFiltersOpened = false;
 
   public toggleFilters(): void {
     this.areFiltersOpened = !this.areFiltersOpened;
   }
 
+  // #endregion
+
+
+  // #region Name filtering
+
   @Input()
   public nameVariants: string[] = [];
 
+  public onNameSearch(name: string): void {
+    if (!name.length) {
+      this.applyFilterRequest();
+      return;
+    }
+
+    const request: SportObjectFilterRequest = {
+      objectNames: [name],
+    };
+    this.filterRequest.emit(request);
+  }
+
+  // #endregion
+
+
+  // #region Parameter filtering
+
   @Input()
   public filterSources: SportObjectFilterSource[] = [];
-
-  public request: SportObjectFilterRequest = {};
 
   public onChange(
     filters: (string | EnumSelectVariant)[],
@@ -64,31 +87,43 @@ export class SportObjectFilterBarComponent {
     this.request[name] = purifiedFilters as SportObjectFilterType;
   }
 
-  public onNameSearch(name: string): void {
-    if (!name.length) {
-      this.applyFilterRequest();
-      return;
-    }
+  // #endregion
 
-    const request: SportObjectFilterRequest = {
-      objectNames: [name],
-    };
-    this.filterRequest.emit(request);
-  }
 
+  // #region Filter request
+
+  /**
+   * Request with filters to be send.
+   */
+  public request: SportObjectFilterRequest = {};
+
+  /**
+   * Applies existing request.
+   */
   public applyFilterRequest(): void {
     this.filterRequest.emit(this.request);
   }
 
+  /**
+   * Filter request event emitter.
+   */
   @Output()
   public readonly filterRequest =
   new EventEmitter<SportObjectFilterRequest>();
 
+  /**
+   * Clears selection in select component and applies empty request.
+   */
   public clearFilters(): void {
+    // updating variants in multiple select to clear selection
     for (const source of this.filterSources) {
       source.variants = [ ...(source.variants as string[]) ];
     }
+
+    this.request = {};
     this.applyFilterRequest();
   }
+
+  // #endregion
 
 }
