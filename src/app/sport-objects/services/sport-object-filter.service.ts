@@ -61,10 +61,10 @@ export class SportObjectFilterService {
     return {
       name: 'Близость',
       variants: [
-        { index: 1, name: 'Шаговая' },
-        { index: 2, name: 'Районная' },
-        { index: 3, name: 'Окружная' },
-        { index: 4, name: 'Городская' },
+        { index: 4, name: 'Шаговая' },
+        { index: 3, name: 'Районная' },
+        { index: 2, name: 'Окружная' },
+        { index: 1, name: 'Городская' },
       ],
       apiName: 'availabilities',
     };
