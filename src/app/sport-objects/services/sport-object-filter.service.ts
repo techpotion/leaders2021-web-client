@@ -22,7 +22,7 @@ export class SportObjectFilterService {
       map(names => ({
         name: 'Ведомственная принадлежность',
         variants: names,
-        apiName: 'departamentalOrganizationNames',
+        apiName: 'departmentalOrganizationNames',
       })),
     );
   }
@@ -32,7 +32,7 @@ export class SportObjectFilterService {
       map(names => ({
         name: 'Спортивные зоны',
         variants: names,
-        apiName: 'sportAreaNames',
+        apiName: 'sportsAreaNames',
       })),
     );
   }
@@ -42,7 +42,7 @@ export class SportObjectFilterService {
       map(types => ({
         name: 'Типы спортивных зон',
         variants: types,
-        apiName: 'sportAreaTypes',
+        apiName: 'sportsAreaTypes',
       })),
     );
   }
@@ -61,10 +61,10 @@ export class SportObjectFilterService {
     return {
       name: 'Близость',
       variants: [
-        { index: 1, name: 'Шаговая' },
-        { index: 2, name: 'Районная' },
-        { index: 3, name: 'Окружная' },
-        { index: 4, name: 'Городская' },
+        { index: 4, name: 'Шаговая' },
+        { index: 3, name: 'Районная' },
+        { index: 2, name: 'Окружная' },
+        { index: 1, name: 'Городская' },
       ],
       apiName: 'availabilities',
     };
