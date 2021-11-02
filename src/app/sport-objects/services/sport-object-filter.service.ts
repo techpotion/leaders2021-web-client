@@ -22,7 +22,7 @@ export class SportObjectFilterService {
       map(names => ({
         name: 'Ведомственная принадлежность',
         variants: names,
-        apiName: 'departamentalOrganizationNames',
+        apiName: 'departmentalOrganizationNames',
       })),
     );
   }
@@ -32,7 +32,7 @@ export class SportObjectFilterService {
       map(names => ({
         name: 'Спортивные зоны',
         variants: names,
-        apiName: 'sportAreaNames',
+        apiName: 'sportsAreaNames',
       })),
     );
   }
@@ -42,7 +42,7 @@ export class SportObjectFilterService {
       map(types => ({
         name: 'Типы спортивных зон',
         variants: types,
-        apiName: 'sportAreaTypes',
+        apiName: 'sportsAreaTypes',
       })),
     );
   }
