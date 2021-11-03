@@ -3,111 +3,123 @@
   height: 100vh;
   overflow: hidden;
 
-  .top-controls {
-    --filter-bar-default-height: 110px;
-
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    display: flex;
-    flex-direction: column;
+  .blur-container {
     width: 100%;
     height: 100%;
-    overflow: hidden;
 
-    pointer-events: none;
-
-    * {
-      pointer-events: auto;
-    }
-
-    .filter-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 2;
-    }
-
-    .dashboard {
-      --close-dashboard-button-width: 30px;
-
-      position: absolute;
-      top: 0;
-      right: 0;
-      z-index: 1;
-
-      width: 60%;
+    &.loading {
+      filter: blur(20px);
 
       transition: var(--transition-default);
-
-      &.hidden {
-        transform: translateX(calc(100% + var(--close-dashboard-button-width)));
-      }
+      transition-duration: .5s;
     }
 
-    .map-container {
+    .top-controls {
+      --filter-bar-default-height: 110px;
 
       position: absolute;
-      top: var(--filter-bar-default-height);
+      top: 0;
       left: 0;
 
       display: flex;
-      flex-grow: 1;
-      align-items: center;
-      justify-content: center;
-
+      flex-direction: column;
       width: 100%;
-      height: calc(100% - var(--filter-bar-default-height));
+      height: 100%;
+      overflow: hidden;
 
       pointer-events: none;
 
-      .layers-toggles {
-        position: absolute;
-        top: 0;
-        right: 0;
-
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-
-        margin-top: 25px;
-        margin-right: 40px;
-
-        .marker-toggles,
-        .heatmap-toggles {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-
-          border-radius: 25px;
-
-          background: var(--color-background);
-        }
+      * {
+        pointer-events: auto;
       }
 
-      .object-info {
+      .filter-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
         z-index: 2;
       }
 
-      .polygon-saving {
-        position: absolute;
-        top: 25px;
-        right: 130px;
+      .dashboard {
+        --close-dashboard-button-width: 30px;
 
-        transform-origin: top right;
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1;
+
+        width: 60%;
+
+        transition: var(--transition-default);
+
+        &.hidden {
+          transform: translateX(calc(100% + var(--close-dashboard-button-width)));
+        }
+      }
+
+      .map-container {
+
+        position: absolute;
+        top: var(--filter-bar-default-height);
+        left: 0;
+
+        display: flex;
+        flex-grow: 1;
+        align-items: center;
+        justify-content: center;
+
+        width: 100%;
+        height: calc(100% - var(--filter-bar-default-height));
+
+        pointer-events: none;
+
+        .layers-toggles {
+          position: absolute;
+          top: 0;
+          right: 0;
+
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+
+          margin-top: 25px;
+          margin-right: 40px;
+
+          .marker-toggles,
+          .heatmap-toggles {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            border-radius: 25px;
+
+            background: var(--color-background);
+          }
+        }
+
+        .object-info {
+          z-index: 2;
+        }
+
+        .polygon-saving {
+          position: absolute;
+          top: 25px;
+          right: 130px;
+
+          transform-origin: top right;
+        }
       }
     }
-  }
 
-  .toggle-container {
-    position: absolute;
-    top: 25px;
-    right: 40px;
-    z-index: 1;
+    .toggle-container {
+      position: absolute;
+      top: 25px;
+      right: 40px;
+      z-index: 1;
 
-    display: flex;
-    gap: 25px;
+      display: flex;
+      gap: 25px;
+    }
   }
 
   .loading-spinner {
@@ -119,6 +131,21 @@
     opacity: 0;
 
     transition: var(--transition-default);
+
+    pointer-events: none;
+
+    &.shown {
+      opacity: 1;
+
+      pointer-events: auto;
+    }
+  }
+
+  .loading-screen {
+    opacity: 0;
+
+    transition: var(--transition-default);
+    transition-duration: .5s;
 
     pointer-events: none;
 

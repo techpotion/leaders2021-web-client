@@ -2,15 +2,20 @@ import { Injectable } from '@angular/core';
 
 import _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { debounceTime, map } from 'rxjs/operators';
 
 
 interface MapLoadingObject {
+  analytics: boolean;
+  data: boolean;
   heatmap: boolean;
+  map: boolean;
   marker: boolean;
 }
 
 type MapLoadingKey = keyof MapLoadingObject;
+
+const IS_SHOWN_DEBOUNCE_TIME = 300;
 
 @Injectable()
 export class MapLoadingService {
@@ -21,15 +26,24 @@ export class MapLoadingService {
    * Loading state.
    */
   private readonly loadingObject = new BehaviorSubject<MapLoadingObject>({
+    analytics: false,
+    data: false,
     heatmap: false,
+    map: false,
     marker: false,
   });
+
+  /**
+   * Readonly loading state.
+   */
+  public readonly loadingObservable = this.loadingObject.asObservable();
 
   /**
    * Flag that is true if any loading key is true.
    */
   public readonly isShown = this.loadingObject.pipe(
     map(obj => _.some(Object.values(obj))),
+    debounceTime(IS_SHOWN_DEBOUNCE_TIME),
   );
 
   /**

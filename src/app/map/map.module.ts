@@ -11,6 +11,7 @@ import { MapPageComponent } from './components/map-page/map-page.component';
 import { MapToggleComponent } from './components/map-toggle/map-toggle.component';
 
 import { ComponentRenderService } from '../shared/services/component-render.service';
+import { LoadingScreenComponent } from './components/loading-screen/loading-screen.component';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { ComponentRenderService } from '../shared/services/component-render.serv
     MapComponent,
     MapPageComponent,
     MapToggleComponent,
+    LoadingScreenComponent,
   ],
   exports: [
   ],
