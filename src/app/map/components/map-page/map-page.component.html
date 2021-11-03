@@ -1,96 +1,109 @@
-<tp-map class="map"
-    [heatmaps]="heatmaps | async"
-    [markerLayerSources]="markerLayers | async"
-    [popups]="popups | async"
-    [event]="mapEvent | async"
-    [polygonDraw]="polygonDrawMode | async"
-    (polygonDrawChange)="polygonSelection.next($event)"
-    [polygon]="forcePolygon | async"
-    [polygonLayerSources]="polygonSources | async"
-    [boundsPadding]="mapBoundsPadding | async"
-></tp-map>
+<div class="blur-container"
+     [ngClass]="{ 'loading': loading.isShown | async }">
+    <tp-map 
+        class="map"
+        [heatmaps]="heatmaps | async"
+        [markerLayerSources]="markerLayers | async"
+        [popups]="popups | async"
+        [event]="mapEvent | async"
+        [polygonDraw]="polygonDrawMode | async"
+        (polygonDrawChange)="polygonSelection.next($event)"
+        [polygon]="forcePolygon | async"
+        [polygonLayerSources]="polygonSources | async"
+        [boundsPadding]="mapBoundsPadding | async"
+    ></tp-map>
 
-<div class="top-controls">
-    <tp-sport-object-filter-bar class="filter-bar"
-        [filterSources]="(markerFilterSources | async) || []"
-        [nameVariants]="(nameVariants | async) || []"
-        (filterRequest)="filterRequest.next($event)">
-    </tp-sport-object-filter-bar>
+    <div class="top-controls">
+        <tp-sport-object-filter-bar 
+            class="filter-bar"
+            [filterSources]="(markerFilterSources | async) || []"
+            [nameVariants]="(nameVariants | async) || []"
+            (filterRequest)="filterRequest.next($event)"
+        ></tp-sport-object-filter-bar>
 
-    <tp-sport-area-dashboard class="dashboard"
-         [ngClass]="{ 'hidden': (mode.contentObservable | async) !== 'polygon-dashboard' }"
-         [objects]="dashboardObjects | async"
-         [analytics]="dashboardAnalytics | async"
-         [areas]="dashboardAreas | async"
-         (closeDashboard)="mode.clearContent()">
-    </tp-sport-area-dashboard>
+        <tp-sport-area-dashboard 
+            class="dashboard"
+            [ngClass]="{ 'hidden': (mode.contentObservable | async) !== 'polygon-dashboard' }"
+            [objects]="dashboardObjects | async"
+            [analytics]="dashboardAnalytics | async"
+            [areas]="dashboardAreas | async"
+            (closeDashboard)="mode.clearContent()"
+        ></tp-sport-area-dashboard>
 
-    <div class="map-container">
-        <tp-sport-object-full-info class="object-info"
-            *ngIf="(mode.contentObservable | async) === 'object-info'"
-            [@scaleIncrease]
-            [obj]="(fullInfoObject | async)?.obj"
-            [sportAreas]="(fullInfoObject | async)?.areas"
-            (infoClose)="mode.clearContent()"
-        ></tp-sport-object-full-info>
+        <div class="map-container">
+            <tp-sport-object-full-info 
+                class="object-info"
+                *ngIf="(mode.contentObservable | async) === 'object-info'"
+                [@scaleIncrease]
+                [obj]="(fullInfoObject | async)?.obj"
+                [sportAreas]="(fullInfoObject | async)?.areas"
+                (infoClose)="mode.clearContent()"
+            ></tp-sport-object-full-info>
 
-        <tp-polygon-saving-settings class="polygon-saving"
-            *ngIf="(mode.contentObservable | async) === 'polygon-saving'"
-            [@scaleIncrease]
-            (closeSettings)="onTogglePress(false, 'polygon-saving')"
-            (drawPolygon)="settingsAwaitingPolygon.next($event)"
-            [newPolygon]="newPolygon | async"
-            (polygonView)="forcePolygon.next($event)">
-        </tp-polygon-saving-settings>
+            <tp-polygon-saving-settings 
+                class="polygon-saving"
+                *ngIf="(mode.contentObservable | async) === 'polygon-saving'"
+                [@scaleIncrease]
+                (closeSettings)="onTogglePress(false, 'polygon-saving')"
+                (drawPolygon)="settingsAwaitingPolygon.next($event)"
+                [newPolygon]="newPolygon | async"
+                (polygonView)="forcePolygon.next($event)"
+            ></tp-polygon-saving-settings>
 
-        <div class="layers-toggles">
-            <tp-map-toggle
+            <div class="layers-toggles">
+                <tp-map-toggle
                     [isPressed]="(mode.contentObservable | async) === 'polygon-saving'"
                     (pressChange)="onTogglePress($event, 'polygon-saving')"
                     lightIcon="assets/light/layers.svg"
                     darkIcon="assets/dark/layers.svg"    
-            > </tp-map-toggle>
+                ></tp-map-toggle>
 
-            <div class="marker-toggles">
-                <tp-map-toggle
+                <div class="marker-toggles">
+                    <tp-map-toggle
                         [isPressed]="!!(isPolygonDrawTogglePressed | async)"
                         (pressChange)="onTogglePress($event, 'polygon-draw')"
                         lightIcon="assets/light/polygon.svg"
                         darkIcon="assets/dark/polygon.svg"    
-                > </tp-map-toggle>
-                <tp-map-toggle
+                    ></tp-map-toggle>
+                    <tp-map-toggle
                         [isPressed]="!!(isMarkerTogglePressed | async)"
                         (pressChange)="onTogglePress($event, 'marker')"
                         lightIcon="assets/light/marker.svg"
                         darkIcon="assets/dark/marker.svg"    
-                > </tp-map-toggle>
-            </div>
+                    ></tp-map-toggle>
+                </div>
 
-            <div class="heatmap-toggles">
-                <tp-map-toggle
+                <div class="heatmap-toggles">
+                    <tp-map-toggle
                         [isPressed]="!!(isPopulationTogglePressed | async)"
                         (pressChange)="onTogglePress($event, 'population-heatmap')"
                         lightIcon="assets/light/population.svg"
                         darkIcon="assets/dark/population.svg"    
-                > </tp-map-toggle>
-                <tp-map-toggle
+                    ></tp-map-toggle>
+                    <tp-map-toggle
                         [isPressed]="!!(isSportObjectsTogglePressed | async)"
                         (pressChange)="onTogglePress($event, 'sport-heatmap')"
                         lightIcon="assets/light/runner.svg"
                         darkIcon="assets/dark/runner.svg"    
-                > </tp-map-toggle>
-                <tp-map-toggle
+                    ></tp-map-toggle>
+                    <tp-map-toggle
                         *ngIf="singleAvailabilityChosen | async"
                         [isPressed]="!!(isObjectIntersectionTogglePressed | async)"
                         (pressChange)="onTogglePress($event, 'object-intersection')"
                         lightIcon="assets/light/intersection.svg"
                         darkIcon="assets/dark/intersection.svg"    
-                > </tp-map-toggle>
+                    ></tp-map-toggle>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<tp-loading-spinner class="loading-spinner"
-                    [ngClass]="{ 'shown': loading.isShown | async }">
-</tp-loading-spinner>
+<!-- <tp-loading-spinner class="loading-spinner" -->
+                    <!-- [ngClass]="{ 'shown': loading.isShown | async }"> -->
+<!-- </tp-loading-spinner> -->
+
+<tp-loading-screen
+    *ngIf="loading.isShown | async"
+    [@opacityIncrease]>
+</tp-loading-screen>

@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   OnDestroy,
 } from '@angular/core';
+import { transition, trigger, style, animate } from '@angular/animations';
 
 import {
   of,
@@ -33,6 +34,7 @@ import { MapUtilsService } from '../../services/map-utils.service';
 import { MapLoadingService } from '../../services/map-loading.service';
 import { MapModeService, MapMode } from '../../services/map-mode.service';
 import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale-increase-animation';
+import { createOpacityIncreaseAnimation } from '../../../shared/utils/create-opacity-increase-animation';
 
 import { PolygonDrawMode } from '../../services/map.service';
 import { Heatmap } from '../../models/heatmap';
@@ -67,6 +69,7 @@ const POLYGON_SAVING_BOUNDS_PADDING = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     createScaleIncreaseAnimation(),
+    createOpacityIncreaseAnimation(),
   ],
   providers: [
     MapLoadingService,
