@@ -291,7 +291,7 @@ export class MapPageComponent implements OnDestroy {
   public readonly popups = merge(
     this.forcePopups,
     this.polygonSelection.pipe(
-      filter(() => this.mode.content !== 'polygon-saving'),
+      map(polygon => this.mode.content === 'polygon-saving' ? null : polygon),
       switchMap(polygon => {
         if (!polygon) { return of(null); }
 
