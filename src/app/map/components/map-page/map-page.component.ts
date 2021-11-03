@@ -488,6 +488,7 @@ export class MapPageComponent implements OnDestroy {
       return sources;
     }),
     tap(() => this.loading.toggle('marker', false)),
+    tap(() => setTimeout(() => this.cd.detectChanges())),
   );
 
   private createSportObjectMarkerLayer(

@@ -282,11 +282,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private subscribePolygonFly(): Subscription {
     return combineLatest([
       this.boundsPaddingSubject,
-      this.polygonDrawChange.pipe(
-        filter(isNotNil),
-      ),
+      this.polygonDrawChange,
     ]).subscribe(([boundsPadding, polygon]) => {
-      if (!boundsPadding || !this.map || !this.mapIsLoaded) { return; }
+      if (!boundsPadding || !polygon
+        || !this.map || !this.mapIsLoaded) { return; }
 
       this.map.flyTo({ center: this.mapUtils.getPolygonCenter(polygon) });
       const structurizedPadding = typeof boundsPadding === 'number'
