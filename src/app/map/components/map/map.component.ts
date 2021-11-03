@@ -295,6 +295,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private subscribeOnPolygonDrawDelete(): Subscription {
     return this.polygonDrawDelete.subscribe(() => {
+      if (this.drawMode.value === 'static') { return; }
+
       this.draw?.changeMode('draw_polygon');
       this.drawMode.next('draw_polygon');
     });
