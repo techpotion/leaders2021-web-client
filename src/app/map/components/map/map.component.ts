@@ -12,8 +12,8 @@ import _ from 'lodash';
 import mapboxgl from 'mapbox-gl';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Subject, Subscription } from 'rxjs';
+import { filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
 
@@ -27,6 +27,7 @@ import { MapEvent } from '../../models/map-event';
 
 
 import { MapService, PolygonDrawMode } from '../../services/map.service';
+import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 
 mapboxgl.accessToken = environment.map.token;
@@ -41,6 +42,8 @@ const DEFAULT_ZOOM: MapZoom = {
 
 const EVENT_DEBOUNCE_TIME = 300;
 
+const EXTRA_BOUNDS_PADDING = 10;
+
 @Component({
   selector: 'tp-map',
   templateUrl: './map.component.html',
@@ -54,6 +57,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   ) {
     this.subscriptions.push(
       this.subscribeOnPolygonDrawDelete(),
+      this.subscribePolygonFly(),
     );
   }
 
@@ -118,10 +122,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         event.features[0] as GeoJSON.Feature<GeoJSON.Polygon>,
       ));
 
-    existingMap.on('draw.update', (event: MapboxDraw.DrawUpdateEvent) =>
+    existingMap.on('draw.update', (event: MapboxDraw.DrawUpdateEvent) => {
       this.onPolygonChange(
         event.features[0] as GeoJSON.Feature<GeoJSON.Polygon>,
-      ));
+      );});
 
     existingMap.on('draw.modechange', (event: MapboxDraw.DrawModeChageEvent) => {
       this.drawMode.next(event.mode);
@@ -168,6 +172,19 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.onPolygonChange();
       }
     }
+  }
+
+  // #endregion
+
+
+  // #region Bounds
+
+  private readonly boundsPaddingSubject =
+  new BehaviorSubject<mapboxgl.PaddingOptions | number | null>(null);
+
+  @Input()
+  public set boundsPadding(value: mapboxgl.PaddingOptions | number | null) {
+    this.boundsPaddingSubject.next(value);
   }
 
   // #endregion
@@ -236,6 +253,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private setPolygon(polygon: LatLng[] | null): void {
+    if (!this.map || !this.mapIsLoaded) {
+      throw new Error('Cannot set polygon: map is not loaded');
+    }
     if (!this.draw && !polygon) {
       return;
     }
@@ -255,6 +275,36 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.draw.set({
       type: 'FeatureCollection',
       features: [this.mapUtils.convertToGeoJsonPolygon(polygon)],
+    });
+    this.polygonDrawChange.next(polygon);
+  }
+
+  private subscribePolygonFly(): Subscription {
+    return combineLatest([
+      this.boundsPaddingSubject,
+      this.polygonDrawChange.pipe(
+        filter(isNotNil),
+      ),
+    ]).subscribe(([boundsPadding, polygon]) => {
+      if (!boundsPadding || !this.map || !this.mapIsLoaded) { return; }
+
+      this.map.flyTo({ center: this.mapUtils.getPolygonCenter(polygon) });
+      const structurizedPadding = typeof boundsPadding === 'number'
+        ? {
+          top: boundsPadding,
+          bottom: boundsPadding,
+          left: boundsPadding,
+          right: boundsPadding,
+        } : boundsPadding;
+
+      this.map.fitBounds(this.mapUtils.getPolygonBounds(polygon), {
+        padding: {
+          top: structurizedPadding.top + EXTRA_BOUNDS_PADDING,
+          bottom: structurizedPadding.bottom + EXTRA_BOUNDS_PADDING,
+          right: structurizedPadding.right + EXTRA_BOUNDS_PADDING,
+          left: structurizedPadding.left + EXTRA_BOUNDS_PADDING,
+        },
+      });
     });
   }
 

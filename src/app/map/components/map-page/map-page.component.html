@@ -7,6 +7,7 @@
     (polygonDrawChange)="polygonSelection.next($event)"
     [polygon]="forcePolygon | async"
     [polygonLayerSources]="polygonSources | async"
+    [boundsPadding]="mapBoundsPadding | async"
 ></tp-map>
 
 <div class="top-controls">

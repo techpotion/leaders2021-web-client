@@ -120,6 +120,34 @@ export class MapService {
     }
   }
 
+  public getPolygonCenter(polygon: LatLng[]): LatLng {
+    return {
+      lat: _.mean(polygon.map(vertex => vertex.lat)),
+      lng: _.mean(polygon.map(vertex => vertex.lng)),
+    };
+  }
+
+  public getPolygonBounds(polygon: LatLng[]): [LatLng, LatLng] {
+    const minLat = _.min(polygon.map(vertex => vertex.lat));
+    const minLng = _.min(polygon.map(vertex => vertex.lng));
+    const maxLat = _.max(polygon.map(vertex => vertex.lat));
+    const maxLng = _.max(polygon.map(vertex => vertex.lng));
+    if (!minLat || !minLng || !maxLat || !maxLng) {
+      throw new Error('Cannot create bounds: not enought vertices.');
+    }
+
+    return [
+      {
+        lat: minLat,
+        lng: minLng,
+      },
+      {
+        lat: maxLat,
+        lng: maxLng,
+      },
+    ];
+  }
+
   // #endregion
 
 

@@ -53,6 +53,13 @@ import { SportAreaBriefInfoComponent } from
   '../../../sport-objects/components/sport-area-brief-info/sport-area-brief-info.component';
 
 
+const POLYGON_SAVING_BOUNDS_PADDING = {
+  top: 110,
+  right: 670,
+  bottom: 0,
+  left: 0,
+};
+
 @Component({
   selector: 'tp-map-page',
   templateUrl: './map-page.component.html',
@@ -219,6 +226,17 @@ export class MapPageComponent implements OnDestroy {
       ],
     };
   }
+
+  // #endregion
+
+
+  // #region Bounds
+
+  public readonly mapBoundsPadding = this.mode.contentObservable.pipe(
+    map(content => content === 'polygon-saving'
+      ? POLYGON_SAVING_BOUNDS_PADDING
+      : null),
+  );
 
   // #endregion
 
