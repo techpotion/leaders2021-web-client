@@ -26,7 +26,7 @@ import { PopupSource } from '../../models/popup';
 import { MapEvent } from '../../models/map-event';
 
 
-import { MapService } from '../../services/map.service';
+import { MapService, PolygonDrawMode } from '../../services/map.service';
 
 
 mapboxgl.accessToken = environment.map.token;
@@ -124,7 +124,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       ));
 
     existingMap.on('draw.modechange', (event: MapboxDraw.DrawModeChageEvent) => {
-      this.polygonDrawMode.next(event.mode);
+      this.drawMode.next(event.mode);
     });
   }
 
@@ -162,8 +162,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
 
     if (value.event === 'clear-polygon') {
-      if (this.polygonDraw) {
-        this.polygonDraw.deleteAll();
+      if (this.draw) {
+        this.draw.deleteAll();
         this.polygonDrawDelete.emit();
         this.onPolygonChange();
       }
@@ -212,18 +212,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   // #region Polygon draw
 
-  private polygonDraw?: MapboxDraw;
+  private draw?: MapboxDraw;
 
-  public readonly polygonDrawMode =
+  public readonly drawMode =
   new BehaviorSubject<MapboxDraw.DrawMode | undefined>(undefined);
 
   @Input()
-  public set polygonDrawEnabled(value: boolean) {
+  public set polygonDraw(mode: PolygonDrawMode | null) {
     if (!this.map || !this.mapIsLoaded) {
-      this.loadCallbacks.push(() => this.enablePolygonDraw(value));
+      this.loadCallbacks.push(() => this.enablePolygonDraw(mode));
       return;
     }
-    this.enablePolygonDraw(value);
+    this.enablePolygonDraw(mode);
   }
 
   @Input()
@@ -236,49 +236,54 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private setPolygon(polygon: LatLng[] | null): void {
-    if (!this.polygonDraw && !polygon) {
+    if (!this.draw && !polygon) {
       return;
     }
 
-    if (!this.polygonDraw) {
+    if (!this.draw) {
       throw new Error('Polygon draw is disabled.'
         + 'Enable before polygon setting.');
     }
 
     if (!polygon) {
-      this.polygonDraw.deleteAll();
+      this.draw.deleteAll();
       this.polygonDrawDelete.emit();
       this.onPolygonChange();
       return;
     }
 
-    this.polygonDraw.set({
+    this.draw.set({
       type: 'FeatureCollection',
       features: [this.mapUtils.convertToGeoJsonPolygon(polygon)],
     });
   }
 
   private removePolygonDraw(map: mapboxgl.Map): void {
-    if (this.polygonDraw) {
-      map.removeControl(this.polygonDraw);
+    if (this.draw) {
+      map.removeControl(this.draw);
     }
   }
 
-  private enablePolygonDraw(enabled: boolean): void {
+  private enablePolygonDraw(mode: PolygonDrawMode | null): void {
     if (!this.map || !this.mapIsLoaded) {
       throw new Error('Cannot update polygon draw: map is not loaded');
     }
     const loadedMap = this.map;
 
-    this.removePolygonDraw(loadedMap);
-    if (enabled) {
-      this.polygonDraw = this.mapUtils.addPolygonDraw(loadedMap);
-      this.polygonDrawMode.next(this.polygonDraw.getMode());
-    } else {
-      this.polygonDrawChange.emit(undefined);
-      this.polygonDraw = undefined;
-      this.polygonDrawMode.next(undefined);
+    if (!mode) {
+      this.removePolygonDraw(loadedMap);
+      this.polygonDrawChange.emit(null);
+      this.draw = undefined;
+      this.drawMode.next(undefined);
+      return;
     }
+
+    if (!this.draw) {
+      this.draw = this.mapUtils.addPolygonDraw(loadedMap);
+    }
+    this.mapUtils.changeDrawMode(this.draw, mode);
+
+    this.drawMode.next(this.draw.getMode());
   }
 
   @Output()
@@ -286,12 +291,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   @Output()
   public readonly polygonDrawChange =
-  new EventEmitter<LatLng[] | undefined>();
+  new EventEmitter<LatLng[] | null>();
 
   private subscribeOnPolygonDrawDelete(): Subscription {
     return this.polygonDrawDelete.subscribe(() => {
-      this.polygonDraw?.changeMode('draw_polygon');
-      this.polygonDrawMode.next('draw_polygon');
+      this.draw?.changeMode('draw_polygon');
+      this.drawMode.next('draw_polygon');
     });
   }
 

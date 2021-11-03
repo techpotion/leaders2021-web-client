@@ -3,7 +3,7 @@
     [markerLayerSources]="markerLayers | async"
     [popups]="popups | async"
     [event]="mapEvent | async"
-    [polygonDrawEnabled]="!!(isPolygonDrawTogglePressed | async)"
+    [polygonDraw]="polygonDrawMode | async"
     (polygonDrawChange)="polygonSelection.next($event)"
     [polygon]="forcePolygon | async"
     [polygonLayerSources]="polygonSources | async"
@@ -36,10 +36,10 @@
         <tp-polygon-saving-settings class="polygon-saving"
             *ngIf="(mode.contentObservable | async) === 'polygon-saving'"
             [@scaleIncrease]
-            (closeSettings)="onPolygonTogglePress(false)"
-            (selectPolygon)="newPolygonName.next($event)"
+            (closeSettings)="onTogglePress(false, 'polygon-saving')"
+            (drawPolygon)="settingsAwaitingPolygon.next($event)"
             [newPolygon]="newPolygon | async"
-            (polygonChoose)="chosenPolygon.next($event)">
+            (polygonView)="forcePolygon.next($event)">
         </tp-polygon-saving-settings>
 
         <div class="layers-toggles">

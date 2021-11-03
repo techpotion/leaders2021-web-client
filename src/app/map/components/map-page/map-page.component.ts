@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   OnDestroy,
 } from '@angular/core';
 
@@ -11,7 +12,6 @@ import {
   merge,
   Observable,
   Subscription,
-  zip,
 } from 'rxjs';
 import {
   filter,
@@ -32,9 +32,9 @@ import { SportPolygonApiService } from '../../../polygon-saving/services/sport-p
 import { MapUtilsService } from '../../services/map-utils.service';
 import { MapLoadingService } from '../../services/map-loading.service';
 import { MapModeService, MapMode } from '../../services/map-mode.service';
-import { isNotNil } from '../../../shared/utils/is-not-nil';
 import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale-increase-animation';
 
+import { PolygonDrawMode } from '../../services/map.service';
 import { Heatmap } from '../../models/heatmap';
 import { LatLng } from '../../models/lat-lng';
 import { MarkerLayerSource } from '../../models/marker-layer';
@@ -69,6 +69,7 @@ import { SportAreaBriefInfoComponent } from
 export class MapPageComponent implements OnDestroy {
 
   constructor(
+    public readonly cd: ChangeDetectorRef,
     public readonly mapUtils: MapUtilsService,
     public readonly loading: MapLoadingService,
     public readonly mode: MapModeService,
@@ -79,8 +80,7 @@ export class MapPageComponent implements OnDestroy {
     public readonly sportPolygonApi: SportPolygonApiService,
   ) {
     this.subscriptions.push(
-      this.subscribeOnNewPolygonName(),
-      this.subscribeOnPolygonChoose(),
+      this.subscribeClearingPolygon(),
     );
   }
 
@@ -115,16 +115,6 @@ export class MapPageComponent implements OnDestroy {
       this.mode.add(mode);
     } else {
       this.mode.remove(mode);
-    }
-  }
-
-  public onPolygonTogglePress(pressed: boolean): void {
-    if (pressed) {
-      this.mode.content = 'polygon-saving';
-      this.mode.add('polygon-saving');
-    } else {
-      this.mode.clearContent();
-      this.mode.remove('polygon-saving');
     }
   }
 
@@ -235,52 +225,40 @@ export class MapPageComponent implements OnDestroy {
 
   // #region Polygon selection
 
-  public readonly polygonSelection =
-  new BehaviorSubject<LatLng[] | undefined>(undefined);
-
-  public readonly newPolygonName =
-  new BehaviorSubject<string | null>(null);
-
-  public subscribeOnNewPolygonName(): Subscription {
-    return this.newPolygonName.subscribe(name => {
-      this.mapEvent.next({ event: 'clear-polygon' });
-      if (name) {
-        this.onTogglePress(true, 'polygon-draw');
+  public readonly polygonDrawMode: Observable<PolygonDrawMode | null> =
+  this.mode.modeObservable.pipe(
+    switchMap(modes => {
+      if (modes.includes('polygon-draw')) {
+        return of('draw' as const);
       }
-    });
-  }
-
-  public readonly newPolygon = zip(
-    this.polygonSelection.pipe(
-      filter(isNotNil),
-    ),
-    this.newPolygonName.pipe(
-      filter(isNotNil),
-    ),
-  ).pipe(
-    switchMap(([points, name]) => combineLatest([
-      this.sportObjectsApi.getFilteredAreas({ polygon: { points } }),
-      this.sportAnalyticsApi.getPolygonAnalytics(points),
-      of(points),
-      of(name),
-    ])),
-    map(([areas, analytics, geometry, name]) =>
-      ({ geometry, name, analytics, areas })),
+      if (modes.includes('polygon-saving')) {
+        return this.settingsAwaitingPolygon.pipe(
+          map(value => value
+            ? 'draw' as const
+            : 'read' as const),
+        );
+      }
+      return of(null);
+    }),
+    tap(() => this.cd.detectChanges()),
   );
 
-  public readonly chosenPolygon =
+  public readonly polygonSelection =
   new BehaviorSubject<LatLng[] | null>(null);
 
-  public subscribeOnPolygonChoose(): Subscription {
-    return this.chosenPolygon.subscribe(polygon => {
-      if (polygon) {
-        this.onTogglePress(true, 'polygon-draw');
-        this.forcePolygon.next(polygon);
-        return;
-      }
-      this.mapEvent.next({ event: 'clear-polygon' });
-    });
+  public readonly settingsAwaitingPolygon =
+  new BehaviorSubject<boolean>(false);
+
+  private subscribeClearingPolygon(): Subscription {
+    return this.settingsAwaitingPolygon.pipe(
+      filter(isAwaiting => isAwaiting),
+    ).subscribe(() => this.mapEvent.next({ event: 'clear-polygon' }));
   }
+
+  public readonly newPolygon = this.settingsAwaitingPolygon.pipe(
+    filter(isAwaiting => isAwaiting),
+    switchMap(() => this.polygonSelection),
+  );
 
   public readonly forcePolygon =
   new BehaviorSubject<LatLng[] | null>(null);

@@ -6,11 +6,13 @@ import {
   Output,
 } from '@angular/core';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { SportPolygonService } from '../../services/sport-polygon.service';
+import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
+import { SportAnalyticsApiService } from '../../../sport-objects/services/sport-analytics-api.service';
 
-import { SportPolygon } from '../../models/sport-polygon';
 import { LatLng } from '../../../map/models/lat-lng';
 
 
@@ -27,6 +29,8 @@ export class PolygonSavingSettingsComponent {
 
   constructor(
     public readonly polygonStorage: SportPolygonService,
+    public readonly objectsApi: SportObjectsApiService,
+    public readonly analyticsApi: SportAnalyticsApiService,
   ) { }
 
 
@@ -52,11 +56,31 @@ export class PolygonSavingSettingsComponent {
   // #region 'New' mode
 
   @Output()
-  public readonly selectPolygon =
-  new EventEmitter<string | null>();
+  public readonly drawPolygon = new EventEmitter<boolean>();
+
+  public readonly newPolygonGeometry =
+  new BehaviorSubject<LatLng[] | null>(null);
 
   @Input()
-  public newPolygon: SportPolygon | null = null;
+  public set newPolygon(value: LatLng[] | null) {
+    this.newPolygonGeometry.next(value);
+  }
+
+  public readonly newPolygonAreas = this.newPolygonGeometry.pipe(
+    switchMap(polygon => {
+      if (!polygon) { return of(null); }
+      return this.objectsApi.getFilteredAreas({
+        polygon: { points: polygon },
+      });
+    }),
+  );
+
+  public readonly newPolygonAnalytics = this.newPolygonGeometry.pipe(
+    switchMap(polygon => {
+      if (!polygon) { return of(null); }
+      return this.analyticsApi.getPolygonAnalytics(polygon);
+    }),
+  );
 
   // #endregion
 
@@ -64,7 +88,7 @@ export class PolygonSavingSettingsComponent {
   // #region 'Existing' mode
 
   @Output()
-  public readonly polygonChoose = new EventEmitter<LatLng[] | null>();
+  public readonly polygonView = new EventEmitter<LatLng[] | null>();
 
   // #endregion
 

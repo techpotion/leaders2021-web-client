@@ -6,10 +6,10 @@
 
     <button class="add"
         [disabled]="!(nameControl.valueChanges | async)?.length
-                     || (newPolygonSubject | async) !== null
-                     || (selectPolygon | async)"
-        (click)="selectPolygon.next(nameControl.value)">
-        <ng-container *ngIf="(selectPolygon | async) === null">
+                     || (polygonSubject | async) !== null
+                     || (drawPolygon | async)"
+        (click)="drawPolygon.next(true)">
+        <ng-container *ngIf="(drawPolygon | async) === false">
             <span class="plus"> 
                 + 
             </span>
@@ -17,13 +17,13 @@
         </ng-container>
 
         <span class="hint"
-            *ngIf="selectPolygon | async">
+            *ngIf="drawPolygon | async">
             выделите участок на карте
         </span>
     </button>
 
     <div class="current-polygon"
-        *ngIf="newPolygonSubject | async as polygon">
+        *ngIf="polygonSubject | async as polygon">
         <tp-saved-polygon class="saved-polygon"
             [polygon]="polygon">
         </tp-saved-polygon>
@@ -38,7 +38,7 @@
 <div class="save-button-container">
     <button class="save-button"
         (click)="saveNewPolygon()"
-        [disabled]="(newPolygonSubject | async) === null">
+        [disabled]="(polygonSubject | async) === null">
         Сохранить слой
     </button>
 </div>

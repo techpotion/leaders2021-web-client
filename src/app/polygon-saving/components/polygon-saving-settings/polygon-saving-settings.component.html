@@ -23,13 +23,15 @@
         [ngSwitch]="mode | async">
         <tp-new-polygon-settings-chapter
             *ngSwitchCase="'new'"
-            (selectPolygon)="selectPolygon.emit($event)"
-            [newPolygon]="newPolygon">
+            (drawPolygon)="drawPolygon.emit($event)"
+            [polygonGeometry]="newPolygonGeometry | async"
+            [polygonAreas]="newPolygonAreas | async"
+            [polygonAnalytics]="newPolygonAnalytics | async">
         </tp-new-polygon-settings-chapter>
 
         <tp-existing-polygon-settings-chapter
             *ngSwitchCase="'existing'"
-            (polygonView)="polygonChoose.emit($event)">
+            (polygonView)="polygonView.emit($event)">
         </tp-existing-polygon-settings-chapter>
     </div>
 </div>
