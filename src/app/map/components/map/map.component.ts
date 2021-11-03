@@ -13,7 +13,7 @@ import mapboxgl from 'mapbox-gl';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { BehaviorSubject, combineLatest, Subject, Subscription } from 'rxjs';
-import { filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
 
@@ -27,7 +27,6 @@ import { MapEvent } from '../../models/map-event';
 
 
 import { MapService, PolygonDrawMode } from '../../services/map.service';
-import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 
 mapboxgl.accessToken = environment.map.token;
@@ -125,7 +124,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     existingMap.on('draw.update', (event: MapboxDraw.DrawUpdateEvent) => {
       this.onPolygonChange(
         event.features[0] as GeoJSON.Feature<GeoJSON.Polygon>,
-      );});
+      );
+    });
 
     existingMap.on('draw.modechange', (event: MapboxDraw.DrawModeChageEvent) => {
       this.drawMode.next(event.mode);
