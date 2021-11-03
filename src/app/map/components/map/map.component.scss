@@ -30,7 +30,8 @@
     }
   }
 
-  &.polygon-draw {
+  // stylelint-disable-next-line
+  &.mode-draw_polygon {
     ::ng-deep {
       .mapboxgl-canvas-container {
         cursor: crosshair;

@@ -13,7 +13,7 @@ import mapboxgl from 'mapbox-gl';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { BehaviorSubject, combineLatest, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
 
@@ -55,7 +55,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     public readonly mapUtils: MapService,
   ) {
     this.subscriptions.push(
-      this.subscribeOnPolygonDrawDelete(),
+      ...this.subscribeChangeDrawMode(),
       this.subscribePolygonFly(),
     );
   }
@@ -342,13 +342,23 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public readonly polygonDrawChange =
   new EventEmitter<LatLng[] | null>();
 
-  private subscribeOnPolygonDrawDelete(): Subscription {
-    return this.polygonDrawDelete.subscribe(() => {
+  private subscribeChangeDrawMode(): Subscription[] {
+    const deleteSubscription = this.polygonDrawDelete.subscribe(() => {
       if (this.drawMode.value === 'static') { return; }
 
       this.draw?.changeMode('draw_polygon');
       this.drawMode.next('draw_polygon');
     });
+
+    const modeChangeSubscription = this.drawMode.pipe(
+      filter(mode => mode === 'simple_select'),
+      filter(() => !this.draw?.getAll().features.length),
+    ).subscribe(() => {
+      this.draw?.changeMode('draw_polygon');
+      this.drawMode.next('draw_polygon');
+    });
+
+    return [deleteSubscription, modeChangeSubscription];
   }
 
   private onPolygonChange(
