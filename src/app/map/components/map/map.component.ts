@@ -13,7 +13,7 @@ import mapboxgl from 'mapbox-gl';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { BehaviorSubject, combineLatest, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
 
@@ -27,7 +27,6 @@ import { MapEvent } from '../../models/map-event';
 
 
 import { MapService, PolygonDrawMode } from '../../services/map.service';
-import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 
 mapboxgl.accessToken = environment.map.token;
