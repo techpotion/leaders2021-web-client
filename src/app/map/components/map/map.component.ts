@@ -12,7 +12,7 @@ import _ from 'lodash';
 import mapboxgl from 'mapbox-gl';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
@@ -26,7 +26,7 @@ import { PopupSource } from '../../models/popup';
 import { MapEvent } from '../../models/map-event';
 
 
-import { MapService } from '../../services/map.service';
+import { MapService, PolygonDrawMode } from '../../services/map.service';
 
 
 mapboxgl.accessToken = environment.map.token;
@@ -41,6 +41,8 @@ const DEFAULT_ZOOM: MapZoom = {
 
 const EVENT_DEBOUNCE_TIME = 300;
 
+const EXTRA_BOUNDS_PADDING = 10;
+
 @Component({
   selector: 'tp-map',
   templateUrl: './map.component.html',
@@ -54,6 +56,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   ) {
     this.subscriptions.push(
       this.subscribeOnPolygonDrawDelete(),
+      this.subscribePolygonFly(),
     );
   }
 
@@ -118,13 +121,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         event.features[0] as GeoJSON.Feature<GeoJSON.Polygon>,
       ));
 
-    existingMap.on('draw.update', (event: MapboxDraw.DrawUpdateEvent) =>
+    existingMap.on('draw.update', (event: MapboxDraw.DrawUpdateEvent) => {
       this.onPolygonChange(
         event.features[0] as GeoJSON.Feature<GeoJSON.Polygon>,
-      ));
+      );
+    });
 
     existingMap.on('draw.modechange', (event: MapboxDraw.DrawModeChageEvent) => {
-      this.polygonDrawMode.next(event.mode);
+      this.drawMode.next(event.mode);
     });
   }
 
@@ -162,12 +166,25 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
 
     if (value.event === 'clear-polygon') {
-      if (this.polygonDraw) {
-        this.polygonDraw.deleteAll();
+      if (this.draw) {
+        this.draw.deleteAll();
         this.polygonDrawDelete.emit();
         this.onPolygonChange();
       }
     }
+  }
+
+  // #endregion
+
+
+  // #region Bounds
+
+  private readonly boundsPaddingSubject =
+  new BehaviorSubject<mapboxgl.PaddingOptions | number | null>(null);
+
+  @Input()
+  public set boundsPadding(value: mapboxgl.PaddingOptions | number | null) {
+    this.boundsPaddingSubject.next(value);
   }
 
   // #endregion
@@ -212,18 +229,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   // #region Polygon draw
 
-  private polygonDraw?: MapboxDraw;
+  private draw?: MapboxDraw;
 
-  public readonly polygonDrawMode =
+  public readonly drawMode =
   new BehaviorSubject<MapboxDraw.DrawMode | undefined>(undefined);
 
   @Input()
-  public set polygonDrawEnabled(value: boolean) {
+  public set polygonDraw(mode: PolygonDrawMode | null) {
     if (!this.map || !this.mapIsLoaded) {
-      this.loadCallbacks.push(() => this.enablePolygonDraw(value));
+      this.loadCallbacks.push(() => this.enablePolygonDraw(mode));
       return;
     }
-    this.enablePolygonDraw(value);
+    this.enablePolygonDraw(mode);
   }
 
   @Input()
@@ -236,49 +253,86 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private setPolygon(polygon: LatLng[] | null): void {
-    if (!this.polygonDraw && !polygon) {
+    if (!this.map || !this.mapIsLoaded) {
+      throw new Error('Cannot set polygon: map is not loaded');
+    }
+    if (!this.draw && !polygon) {
       return;
     }
 
-    if (!this.polygonDraw) {
+    if (!this.draw) {
       throw new Error('Polygon draw is disabled.'
         + 'Enable before polygon setting.');
     }
 
     if (!polygon) {
-      this.polygonDraw.deleteAll();
+      this.draw.deleteAll();
       this.polygonDrawDelete.emit();
       this.onPolygonChange();
       return;
     }
 
-    this.polygonDraw.set({
+    this.draw.set({
       type: 'FeatureCollection',
       features: [this.mapUtils.convertToGeoJsonPolygon(polygon)],
+    });
+    this.polygonDrawChange.next(polygon);
+  }
+
+  private subscribePolygonFly(): Subscription {
+    return combineLatest([
+      this.boundsPaddingSubject,
+      this.polygonDrawChange,
+    ]).subscribe(([boundsPadding, polygon]) => {
+      if (!boundsPadding || !polygon
+        || !this.map || !this.mapIsLoaded) { return; }
+
+      this.map.flyTo({ center: this.mapUtils.getPolygonCenter(polygon) });
+      const structurizedPadding = typeof boundsPadding === 'number'
+        ? {
+          top: boundsPadding,
+          bottom: boundsPadding,
+          left: boundsPadding,
+          right: boundsPadding,
+        } : boundsPadding;
+
+      this.map.fitBounds(this.mapUtils.getPolygonBounds(polygon), {
+        padding: {
+          top: structurizedPadding.top + EXTRA_BOUNDS_PADDING,
+          bottom: structurizedPadding.bottom + EXTRA_BOUNDS_PADDING,
+          right: structurizedPadding.right + EXTRA_BOUNDS_PADDING,
+          left: structurizedPadding.left + EXTRA_BOUNDS_PADDING,
+        },
+      });
     });
   }
 
   private removePolygonDraw(map: mapboxgl.Map): void {
-    if (this.polygonDraw) {
-      map.removeControl(this.polygonDraw);
+    if (this.draw) {
+      map.removeControl(this.draw);
     }
   }
 
-  private enablePolygonDraw(enabled: boolean): void {
+  private enablePolygonDraw(mode: PolygonDrawMode | null): void {
     if (!this.map || !this.mapIsLoaded) {
       throw new Error('Cannot update polygon draw: map is not loaded');
     }
     const loadedMap = this.map;
 
-    this.removePolygonDraw(loadedMap);
-    if (enabled) {
-      this.polygonDraw = this.mapUtils.addPolygonDraw(loadedMap);
-      this.polygonDrawMode.next(this.polygonDraw.getMode());
-    } else {
-      this.polygonDrawChange.emit(undefined);
-      this.polygonDraw = undefined;
-      this.polygonDrawMode.next(undefined);
+    if (!mode) {
+      this.removePolygonDraw(loadedMap);
+      this.polygonDrawChange.emit(null);
+      this.draw = undefined;
+      this.drawMode.next(undefined);
+      return;
     }
+
+    if (!this.draw) {
+      this.draw = this.mapUtils.addPolygonDraw(loadedMap);
+    }
+    this.mapUtils.changeDrawMode(this.draw, mode);
+
+    this.drawMode.next(this.draw.getMode());
   }
 
   @Output()
@@ -286,12 +340,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   @Output()
   public readonly polygonDrawChange =
-  new EventEmitter<LatLng[] | undefined>();
+  new EventEmitter<LatLng[] | null>();
 
   private subscribeOnPolygonDrawDelete(): Subscription {
     return this.polygonDrawDelete.subscribe(() => {
-      this.polygonDraw?.changeMode('draw_polygon');
-      this.polygonDrawMode.next('draw_polygon');
+      if (this.drawMode.value === 'static') { return; }
+
+      this.draw?.changeMode('draw_polygon');
+      this.drawMode.next('draw_polygon');
     });
   }
 

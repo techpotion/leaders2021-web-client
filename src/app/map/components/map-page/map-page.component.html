@@ -3,10 +3,11 @@
     [markerLayerSources]="markerLayers | async"
     [popups]="popups | async"
     [event]="mapEvent | async"
-    [polygonDrawEnabled]="!!(isPolygonDrawTogglePressed | async)"
+    [polygonDraw]="polygonDrawMode | async"
     (polygonDrawChange)="polygonSelection.next($event)"
     [polygon]="forcePolygon | async"
     [polygonLayerSources]="polygonSources | async"
+    [boundsPadding]="mapBoundsPadding | async"
 ></tp-map>
 
 <div class="top-controls">
@@ -17,35 +18,35 @@
     </tp-sport-object-filter-bar>
 
     <tp-sport-area-dashboard class="dashboard"
-         [ngClass]="{ 'hidden': (mapContentSubject | async) !== 'polygon-dashboard' }"
+         [ngClass]="{ 'hidden': (mode.contentObservable | async) !== 'polygon-dashboard' }"
          [objects]="dashboardObjects | async"
          [analytics]="dashboardAnalytics | async"
          [areas]="dashboardAreas | async"
-         (closeDashboard)="mapContentSubject.next(undefined)">
+         (closeDashboard)="mode.clearContent()">
     </tp-sport-area-dashboard>
 
     <div class="map-container">
         <tp-sport-object-full-info class="object-info"
-            *ngIf="(mapContentSubject | async) === 'object-info'"
+            *ngIf="(mode.contentObservable | async) === 'object-info'"
             [@scaleIncrease]
             [obj]="(fullInfoObject | async)?.obj"
             [sportAreas]="(fullInfoObject | async)?.areas"
-            (infoClose)="mapContentSubject.next(undefined)"
+            (infoClose)="mode.clearContent()"
         ></tp-sport-object-full-info>
 
         <tp-polygon-saving-settings class="polygon-saving"
-            *ngIf="(mapContentSubject | async) === 'polygon-saving'"
+            *ngIf="(mode.contentObservable | async) === 'polygon-saving'"
             [@scaleIncrease]
-            (closeSettings)="onPolygonTogglePress(false)"
-            (selectPolygon)="newPolygonName.next($event)"
+            (closeSettings)="onTogglePress(false, 'polygon-saving')"
+            (drawPolygon)="settingsAwaitingPolygon.next($event)"
             [newPolygon]="newPolygon | async"
-            (polygonChoose)="chosenPolygon.next($event)">
+            (polygonView)="forcePolygon.next($event)">
         </tp-polygon-saving-settings>
 
         <div class="layers-toggles">
             <tp-map-toggle
-                    [isPressed]="(mapContentSubject | async) === 'polygon-saving'"
-                    (pressChange)="onPolygonTogglePress($event)"
+                    [isPressed]="(mode.contentObservable | async) === 'polygon-saving'"
+                    (pressChange)="onTogglePress($event, 'polygon-saving')"
                     lightIcon="assets/light/layers.svg"
                     darkIcon="assets/dark/layers.svg"    
             > </tp-map-toggle>

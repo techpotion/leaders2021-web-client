@@ -131,12 +131,24 @@ export class SportAreaBriefInfoComponent implements OnDestroy, OnInit {
 
   // #region Selection saving
 
+  /**
+   * Selection controls state (visible or not).
+   */
   public readonly saveControlsOpened = new BehaviorSubject<boolean>(false);
 
+  /**
+   * Selection saving component state.
+   */
   public readonly savedState =
   new BehaviorSubject<'unsaved' | 'saving' | 'saved'>('unsaved');
 
+  /**
+   * Sets component into 'saving' state if it is not already.
+   * After SAVED_STATE_TIMEOUT saves polygon.
+   */
   public save(): void {
+    if (this.savedState.value === 'saving') { return; }
+
     this.savedState.next('saving');
 
     setTimeout(() => {

@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   OnDestroy,
 } from '@angular/core';
 
@@ -10,9 +11,7 @@ import {
   combineLatest,
   merge,
   Observable,
-  Subject,
   Subscription,
-  zip,
 } from 'rxjs';
 import {
   filter,
@@ -32,9 +31,10 @@ import { SportObjectFilterService } from '../../../sport-objects/services/sport-
 import { SportPolygonApiService } from '../../../polygon-saving/services/sport-polygon-api.service';
 import { MapUtilsService } from '../../services/map-utils.service';
 import { MapLoadingService } from '../../services/map-loading.service';
-import { isNotNil } from '../../../shared/utils/is-not-nil';
+import { MapModeService, MapMode } from '../../services/map-mode.service';
 import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale-increase-animation';
 
+import { PolygonDrawMode } from '../../services/map.service';
 import { Heatmap } from '../../models/heatmap';
 import { LatLng } from '../../models/lat-lng';
 import { MarkerLayerSource } from '../../models/marker-layer';
@@ -53,16 +53,12 @@ import { SportAreaBriefInfoComponent } from
   '../../../sport-objects/components/sport-area-brief-info/sport-area-brief-info.component';
 
 
-type MapMode = 'marker'
-| 'population-heatmap'
-| 'sport-heatmap'
-| 'polygon-draw'
-| 'object-intersection';
-
-type MapContent = 'object-info'
-| 'analysis'
-| 'polygon-saving'
-| 'polygon-dashboard';
+const POLYGON_SAVING_BOUNDS_PADDING = {
+  top: 110,
+  right: 670,
+  bottom: 0,
+  left: 0,
+};
 
 @Component({
   selector: 'tp-map-page',
@@ -74,13 +70,16 @@ type MapContent = 'object-info'
   ],
   providers: [
     MapLoadingService,
+    MapModeService,
   ],
 })
 export class MapPageComponent implements OnDestroy {
 
   constructor(
+    public readonly cd: ChangeDetectorRef,
     public readonly mapUtils: MapUtilsService,
     public readonly loading: MapLoadingService,
+    public readonly mode: MapModeService,
     public readonly populationApi: PopulationApiService,
     public readonly sportAnalyticsApi: SportAnalyticsApiService,
     public readonly sportObjectsApi: SportObjectsApiService,
@@ -88,9 +87,7 @@ export class MapPageComponent implements OnDestroy {
     public readonly sportPolygonApi: SportPolygonApiService,
   ) {
     this.subscriptions.push(
-      ...this.subscribeOnMapModeChange(),
-      this.subscribeOnNewPolygonName(),
-      this.subscribeOnPolygonChoose(),
+      this.subscribeClearingPolygon(),
     );
   }
 
@@ -108,9 +105,6 @@ export class MapPageComponent implements OnDestroy {
 
   // #region Map content
 
-  public readonly mapContentSubject =
-  new BehaviorSubject<MapContent | undefined>(undefined);
-
   public readonly fullInfoObject = new BehaviorSubject<{
     obj: SportObject;
     areas: SportArea[];
@@ -123,76 +117,34 @@ export class MapPageComponent implements OnDestroy {
 
   // #region Map mode
 
-  private readonly mapModeAdd = new Subject<MapMode>();
-
-  private readonly mapModeRemove = new Subject<MapMode>();
-
-  public readonly mapModeSubject = new BehaviorSubject<MapMode[]>([]);
-
-  private subscribeOnMapModeChange(): Subscription[] {
-    const removeSub = this.mapModeRemove.subscribe(mode => {
-      const newModes = this.mapModeSubject.value.filter(
-        existingMode => mode !== existingMode,
-      );
-      this.mapModeSubject.next(newModes);
-    });
-
-    const addSub = this.mapModeAdd.subscribe(mode => {
-      if (this.mapModeSubject.value.includes(mode)) {
-        return;
-      }
-      const newModes = [ ...this.mapModeSubject.value ];
-      newModes.push(mode);
-      this.mapModeSubject.next(newModes);
-    });
-
-    return [removeSub, addSub];
-  }
-
   public onTogglePress(pressed: boolean, mode: MapMode): void {
     if (pressed) {
-      this.onMapModeAdd(mode);
-      this.mapModeAdd.next(mode);
+      this.mode.add(mode);
     } else {
-      this.mapModeRemove.next(mode);
+      this.mode.remove(mode);
     }
   }
 
-  public onPolygonTogglePress(pressed: boolean): void {
-    if (pressed) {
-      this.mapContentSubject.next('polygon-saving');
-    } else {
-      this.mapContentSubject.next(undefined);
-    }
-  }
-
-  public readonly isPolygonDrawTogglePressed = this.mapModeSubject.pipe(
+  public readonly isPolygonDrawTogglePressed = this.mode.modeObservable.pipe(
     map(modes => modes.includes('polygon-draw')),
   );
 
-  public readonly isMarkerTogglePressed = this.mapModeSubject.pipe(
+  public readonly isMarkerTogglePressed = this.mode.modeObservable.pipe(
     map(modes => modes.includes('marker')),
   );
 
-  public readonly isPopulationTogglePressed = this.mapModeSubject.pipe(
+  public readonly isPopulationTogglePressed = this.mode.modeObservable.pipe(
     map(modes => modes.includes('population-heatmap')),
   );
 
-  public readonly isSportObjectsTogglePressed = this.mapModeSubject.pipe(
+  public readonly isSportObjectsTogglePressed = this.mode.modeObservable.pipe(
     map(modes => modes.includes('sport-heatmap')),
   );
 
-  public readonly isObjectIntersectionTogglePressed = this.mapModeSubject.pipe(
+  public readonly isObjectIntersectionTogglePressed =
+  this.mode.modeObservable.pipe(
     map(modes => modes.includes('object-intersection')),
   );
-
-  private onMapModeAdd(mode: MapMode): void {
-    if (mode === 'polygon-draw') {
-      this.mapModeRemove.next('marker');
-    } else if (mode === 'marker') {
-      this.mapModeRemove.next('polygon-draw');
-    }
-  }
 
   // #endregion
 
@@ -207,7 +159,7 @@ export class MapPageComponent implements OnDestroy {
   // #region Heatmaps
 
   public readonly heatmaps: Observable<Heatmap[] | null>
-  = this.mapModeSubject.pipe(
+  = this.mode.modeObservable.pipe(
     pairwise(),
     filter(([prev, curr]) =>
       _.difference(prev, curr).includes('population-heatmap')
@@ -278,54 +230,53 @@ export class MapPageComponent implements OnDestroy {
   // #endregion
 
 
-  // #region Polygon selection
+  // #region Bounds
 
-  public readonly polygonSelection =
-  new BehaviorSubject<LatLng[] | undefined>(undefined);
-
-  public readonly newPolygonName =
-  new BehaviorSubject<string | null>(null);
-
-  public subscribeOnNewPolygonName(): Subscription {
-    return this.newPolygonName.subscribe(name => {
-      this.mapEvent.next({ event: 'clear-polygon' });
-      if (name) {
-        this.onTogglePress(true, 'polygon-draw');
-      }
-    });
-  }
-
-  public readonly newPolygon = zip(
-    this.polygonSelection.pipe(
-      filter(isNotNil),
-    ),
-    this.newPolygonName.pipe(
-      filter(isNotNil),
-    ),
-  ).pipe(
-    switchMap(([points, name]) => combineLatest([
-      this.sportObjectsApi.getFilteredAreas({ polygon: { points } }),
-      this.sportAnalyticsApi.getPolygonAnalytics(points),
-      of(points),
-      of(name),
-    ])),
-    map(([areas, analytics, geometry, name]) =>
-      ({ geometry, name, analytics, areas })),
+  public readonly mapBoundsPadding = this.mode.contentObservable.pipe(
+    map(content => content === 'polygon-saving'
+      ? POLYGON_SAVING_BOUNDS_PADDING
+      : null),
   );
 
-  public readonly chosenPolygon =
+  // #endregion
+
+
+  // #region Polygon selection
+
+  public readonly polygonDrawMode: Observable<PolygonDrawMode | null> =
+  this.mode.modeObservable.pipe(
+    switchMap(modes => {
+      if (modes.includes('polygon-draw')) {
+        return of('draw' as const);
+      }
+      if (modes.includes('polygon-saving')) {
+        return this.settingsAwaitingPolygon.pipe(
+          map(value => value
+            ? 'draw' as const
+            : 'read' as const),
+        );
+      }
+      return of(null);
+    }),
+    tap(() => this.cd.detectChanges()),
+  );
+
+  public readonly polygonSelection =
   new BehaviorSubject<LatLng[] | null>(null);
 
-  public subscribeOnPolygonChoose(): Subscription {
-    return this.chosenPolygon.subscribe(polygon => {
-      if (polygon) {
-        this.onTogglePress(true, 'polygon-draw');
-        this.forcePolygon.next(polygon);
-        return;
-      }
-      this.mapEvent.next({ event: 'clear-polygon' });
-    });
+  public readonly settingsAwaitingPolygon =
+  new BehaviorSubject<boolean>(false);
+
+  private subscribeClearingPolygon(): Subscription {
+    return this.settingsAwaitingPolygon.pipe(
+      filter(isAwaiting => isAwaiting),
+    ).subscribe(() => this.mapEvent.next({ event: 'clear-polygon' }));
   }
+
+  public readonly newPolygon = this.settingsAwaitingPolygon.pipe(
+    filter(isAwaiting => isAwaiting),
+    switchMap(() => this.polygonSelection),
+  );
 
   public readonly forcePolygon =
   new BehaviorSubject<LatLng[] | null>(null);
@@ -340,7 +291,7 @@ export class MapPageComponent implements OnDestroy {
   public readonly popups = merge(
     this.forcePopups,
     this.polygonSelection.pipe(
-      filter(() => this.mapContentSubject.value !== 'polygon-saving'),
+      filter(() => this.mode.content !== 'polygon-saving'),
       switchMap(polygon => {
         if (!polygon) { return of(null); }
 
@@ -383,7 +334,7 @@ export class MapPageComponent implements OnDestroy {
                   this.dashboardObjects.next(objects);
                   this.dashboardAnalytics.next(analytics);
                   this.dashboardAreas.next(areas);
-                  this.mapContentSubject.next('polygon-dashboard');
+                  this.mode.content = 'polygon-dashboard';
                   this.forcePopups.next([]);
                 }),
               );
@@ -439,7 +390,7 @@ export class MapPageComponent implements OnDestroy {
 
   public readonly polygonSources = combineLatest([
     this.polygonSelection,
-    this.mapModeSubject,
+    this.mode.modeObservable,
     this.filterRequest,
   ]).pipe(
     switchMap(([selection, mode, filter]) => {
@@ -461,13 +412,13 @@ export class MapPageComponent implements OnDestroy {
 
   public readonly markerLayers: Observable<MarkerLayerSource[] | null> =
   combineLatest([
-    this.mapModeSubject.pipe(
+    this.mode.modeObservable.pipe(
       pairwise(),
       filter(([prev, curr]) =>
         _.difference(prev, curr).includes('marker')
         || _.difference(curr, prev).includes('marker'),
       ),
-      startWith([this.mapModeSubject.value, this.mapModeSubject.value]),
+      startWith([this.mode.modes, this.mode.modes]),
     ),
     this.filterRequest,
     this.polygonSelection,
@@ -528,7 +479,7 @@ export class MapPageComponent implements OnDestroy {
               })),
               map(areas => ({ obj, areas })),
             ).subscribe(obj => {
-              this.mapContentSubject.next('object-info');
+              this.mode.content = 'object-info';
               this.fullInfoObject.next(obj);
             });
           },
@@ -537,6 +488,7 @@ export class MapPageComponent implements OnDestroy {
       return sources;
     }),
     tap(() => this.loading.toggle('marker', false)),
+    tap(() => setTimeout(() => this.cd.detectChanges())),
   );
 
   private createSportObjectMarkerLayer(

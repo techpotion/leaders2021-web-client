@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import mapboxgl from 'mapbox-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import _ from 'lodash';
 // import { circle } from '@turf/turf';
 
@@ -20,6 +21,12 @@ import { isNotNil } from '../../shared/utils/is-not-nil';
 // eslint-disable-next-line
 const CLUSTER_RADIUSES = [ 20, 100, 30, 750, 40 ];
 
+export type PolygonDrawMode = 'draw' | 'read';
+
+interface MapboxDrawModes {
+  [modeKey: string]: MapboxDraw.DrawCustomMode | MapboxDraw.DrawMode;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -33,9 +40,13 @@ export class MapService {
 
   // #region Polygon draw
 
-  public addPolygonDraw(map: mapboxgl.Map): MapboxDraw {
+  public addPolygonDraw(
+    map: mapboxgl.Map,
+  ): MapboxDraw {
     const draw = new MapboxDraw({
-      defaultMode: 'draw_polygon',
+      modes: Object.assign({
+        static: StaticMode as MapboxDraw.DrawCustomMode,
+      }, MapboxDraw.modes) as unknown as MapboxDrawModes,
       styles: [
         drawStyles.polygonFill,
         drawStyles.polygonStroke,
@@ -48,7 +59,33 @@ export class MapService {
       ],
     });
     map.addControl(draw);
+
     return draw;
+  }
+
+  private toDrawMode(
+    mode: PolygonDrawMode,
+  ): MapboxDraw.DrawModes[keyof MapboxDraw.DrawModes] {
+    if (mode === 'draw') {
+      return 'draw_polygon';
+    }
+    return 'static';
+  }
+
+  public changeDrawMode(draw: MapboxDraw, mode: PolygonDrawMode): void {
+    const drawMode = this.toDrawMode(mode);
+    if (draw.getMode() === drawMode) { return; }
+
+    // Strange if-construction because of strange typing in mapbox-gl-draw
+    if (drawMode === 'simple_select') {
+      draw.changeMode(drawMode);
+    } else if (drawMode === 'draw_line_string') {
+      draw.changeMode(drawMode);
+    } else if (drawMode === 'draw_polygon'
+      || drawMode === 'draw_point'
+      || drawMode === 'static') {
+      draw.changeMode(drawMode);
+    }
   }
 
   public addPolygonLayer(
@@ -81,6 +118,34 @@ export class MapService {
     for (const id of ids) {
       this.removePolygonLayer(map, id);
     }
+  }
+
+  public getPolygonCenter(polygon: LatLng[]): LatLng {
+    return {
+      lat: _.mean(polygon.map(vertex => vertex.lat)),
+      lng: _.mean(polygon.map(vertex => vertex.lng)),
+    };
+  }
+
+  public getPolygonBounds(polygon: LatLng[]): [LatLng, LatLng] {
+    const minLat = _.min(polygon.map(vertex => vertex.lat));
+    const minLng = _.min(polygon.map(vertex => vertex.lng));
+    const maxLat = _.max(polygon.map(vertex => vertex.lat));
+    const maxLng = _.max(polygon.map(vertex => vertex.lng));
+    if (!minLat || !minLng || !maxLat || !maxLng) {
+      throw new Error('Cannot create bounds: not enought vertices.');
+    }
+
+    return [
+      {
+        lat: minLat,
+        lng: minLng,
+      },
+      {
+        lat: maxLat,
+        lng: maxLng,
+      },
+    ];
   }
 
   // #endregion

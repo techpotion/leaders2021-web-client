@@ -2,6 +2,7 @@ import {
   Component,
   ChangeDetectionStrategy,
   Output,
+  OnDestroy,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
@@ -25,11 +26,20 @@ const SEARCH_DEBOUNCE_TIME = 300;
   styleUrls: ['./existing-polygon-settings-chapter.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExistingPolygonSettingsChapterComponent {
+export class ExistingPolygonSettingsChapterComponent implements OnDestroy {
 
   constructor(
     public readonly polygonStorage: SportPolygonService,
   ) { }
+
+
+  // #region Lifecycle hooks
+
+  public ngOnDestroy(): void {
+    this.clearViewedPolygon();
+  }
+
+  // #endregion
 
 
   // #region Search input
@@ -69,8 +79,12 @@ export class ExistingPolygonSettingsChapterComponent {
   // #region Removing polygons
 
   public removePolygon(index: number): void {
-    if (index === this.viewedPolygonIndex.value) {
+    const viewedIndex = this.viewedPolygonIndex.value;
+    if (index === viewedIndex) {
       this.viewedPolygonIndex.next(undefined);
+    }
+    if (viewedIndex && index < viewedIndex) {
+      this.viewedPolygonIndex.next(viewedIndex - 1);
     }
 
     const polygons = this.polygons.value;
@@ -100,10 +114,14 @@ export class ExistingPolygonSettingsChapterComponent {
 
   public viewPolygon(index: number, selected: boolean): void {
     if (!selected && this.viewedPolygonIndex.value === index) {
-      this.viewedPolygonIndex.next(undefined);
+      this.clearViewedPolygon();
       return;
     }
     this.viewedPolygonIndex.next(index);
+  }
+
+  private clearViewedPolygon(): void {
+    this.viewedPolygonIndex.next(undefined);
   }
 
   // #endregion
