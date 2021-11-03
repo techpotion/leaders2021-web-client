@@ -107,13 +107,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     existingMap.on('move', () =>
       this.centerSubject.next(existingMap.getCenter()));
 
-    // TODO
-    existingMap.on('sourcedata', ev => console.log(
-      'data loaded',
-      ev.isSourceLoaded,
-      ev.sourceId,
-      ev.sourceDataType,
-    ));
+    existingMap.on('sourcedata', (event: mapboxgl.MapSourceDataEvent) => {
+      // eslint-disable-next-line
+      if (!event.sourceDataType
+          && existingMap.isSourceLoaded(event.sourceId)) {
+        this.sourceLoad.next(event.sourceId);
+      }
+    });
 
     existingMap.on('render', () => this.renderEvent.next());
 
@@ -165,6 +165,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   @Output()
   public readonly mapLoad = new EventEmitter<void>();
+
+  private readonly sourceLoad = new BehaviorSubject<string | null>(null);
 
   // #endregion
 
@@ -433,6 +435,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
   }
 
+  @Output()
+  public readonly markerLayerLoad = this.sourceLoad.pipe(
+    filter(sourceId => sourceId === _.last(this.markerLayers)?.id),
+  );
+
   // #endregion
 
 
@@ -467,6 +474,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.heatmapIds.push(id);
     });
   }
+
+  @Output()
+  public readonly heatmapLoad = this.sourceLoad.pipe(
+    filter(sourceId => sourceId === _.last(this.heatmapIds)),
+  );
 
   // #endregion
 

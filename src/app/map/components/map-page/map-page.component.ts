@@ -172,10 +172,10 @@ export class MapPageComponent implements OnDestroy, OnInit {
       || _.difference(prev, curr).includes('sport-heatmap')
       || _.difference(curr, prev).includes('sport-heatmap'),
     ),
-    tap(() => this.loading.toggle('heatmap', true)),
     switchMap(([, curr]) => {
       const heatmapObservables: Observable<Heatmap>[] = [];
       if (curr.includes('population-heatmap')) {
+        this.loading.toggle('heatmap', true);
         heatmapObservables.push(
           this.populationApi.getDensity().pipe(
             map(source => this.createPopulationHeatmap(source)),
@@ -183,6 +183,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
         );
       }
       if (curr.includes('sport-heatmap')) {
+        this.loading.toggle('heatmap', true);
         heatmapObservables.push(
           this.sportObjectsApi.getObjectsGeoJson().pipe(
             map(source => this.createSportObjectHeatmap(source)),
@@ -193,7 +194,6 @@ export class MapPageComponent implements OnDestroy, OnInit {
       if (!heatmapObservables.length) { return of(null); }
       return combineLatest<Heatmap[]>(heatmapObservables);
     }),
-    tap(() => this.loading.toggle('heatmap', false)),
   );
 
   private createPopulationHeatmap(
@@ -297,16 +297,17 @@ export class MapPageComponent implements OnDestroy, OnInit {
     this.forcePopups,
     this.polygonSelection.pipe(
       map(polygon => this.mode.content === 'polygon-saving' ? null : polygon),
-      tap(() => this.loading.toggle('analytics', true)),
       switchMap(polygon => {
         if (!polygon) { return of(null); }
 
+        this.loading.toggle('analytics', true);
         return combineLatest(
           this.sportAnalyticsApi.getPolygonAnalytics(polygon),
           this.sportObjectsApi.getFilteredAreas(
             { polygon: { points: polygon } },
           ),
         ).pipe(
+          tap(() => this.loading.toggle('analytics', false)),
           map(([analytics, areas]) => ({
             position: this.mapUtils.getMostLeftPoint(polygon),
             component: SportAreaBriefInfoComponent,
@@ -353,7 +354,6 @@ export class MapPageComponent implements OnDestroy, OnInit {
           map(popup => [popup]),
         );
       }),
-      tap(() => this.loading.toggle('analytics', false)),
     ),
   );
 
@@ -432,9 +432,9 @@ export class MapPageComponent implements OnDestroy, OnInit {
     this.filterRequest,
     this.polygonSelection,
   ]).pipe(
-    tap(() => this.loading.toggle('marker', true)),
     switchMap(([[prev, curr], filter, polygon]) => {
       if (!isFilterRequestEmpty(filter)) {
+        this.loading.toggle('marker', true);
         const polygonizedFilter = { ...filter };
         if (polygon) {
           polygonizedFilter.polygon = { points: polygon };
@@ -447,12 +447,14 @@ export class MapPageComponent implements OnDestroy, OnInit {
       }
 
       if (_.difference(curr, prev).includes('marker')) {
+        this.loading.toggle('marker', true);
         return this.sportObjectsApi.getObjectsGeoJson().pipe(
           map(source => [this.createSportObjectMarkerLayer(source)]),
         );
       }
 
       if (polygon) {
+        this.loading.toggle('marker', true);
         return this.sportObjectsApi.getObjectsGeoJson(
           { polygon: { points: polygon } },
         ).pipe(
@@ -498,7 +500,6 @@ export class MapPageComponent implements OnDestroy, OnInit {
       }
       return sources;
     }),
-    tap(() => this.loading.toggle('marker', false)),
     tap(() => setTimeout(() => this.cd.detectChanges())),
   );
 

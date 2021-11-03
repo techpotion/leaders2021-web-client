@@ -12,6 +12,8 @@
         [polygonLayerSources]="polygonSources | async"
         [boundsPadding]="mapBoundsPadding | async"
         (mapLoad)="loading.toggle('map', false)"
+        (markerLayerLoad)="loading.toggle('marker', false)"
+        (heatmapLoad)="loading.toggle('heatmap', false)"
     ></tp-map>
 
     <div class="top-controls">

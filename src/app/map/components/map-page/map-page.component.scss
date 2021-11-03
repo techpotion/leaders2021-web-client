@@ -8,7 +8,7 @@
     height: 100%;
 
     &.loading {
-      filter: blur(10px);
+      filter: blur(20px);
 
       transition: var(--transition-default);
       transition-duration: .5s;
