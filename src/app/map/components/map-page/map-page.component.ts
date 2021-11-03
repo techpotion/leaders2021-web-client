@@ -2,9 +2,9 @@ import {
   Component,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  OnInit,
   OnDestroy,
 } from '@angular/core';
-import { transition, trigger, style, animate } from '@angular/animations';
 
 import {
   of,
@@ -34,7 +34,6 @@ import { MapUtilsService } from '../../services/map-utils.service';
 import { MapLoadingService } from '../../services/map-loading.service';
 import { MapModeService, MapMode } from '../../services/map-mode.service';
 import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale-increase-animation';
-import { createOpacityIncreaseAnimation } from '../../../shared/utils/create-opacity-increase-animation';
 
 import { PolygonDrawMode } from '../../services/map.service';
 import { Heatmap } from '../../models/heatmap';
@@ -69,14 +68,13 @@ const POLYGON_SAVING_BOUNDS_PADDING = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     createScaleIncreaseAnimation(),
-    createOpacityIncreaseAnimation(),
   ],
   providers: [
     MapLoadingService,
     MapModeService,
   ],
 })
-export class MapPageComponent implements OnDestroy {
+export class MapPageComponent implements OnDestroy, OnInit {
 
   constructor(
     public readonly cd: ChangeDetectorRef,
@@ -98,6 +96,10 @@ export class MapPageComponent implements OnDestroy {
 
 
   // #region Life cycle hooks
+
+  public ngOnInit(): void {
+    this.loading.toggle('map', true);
+  }
 
   public ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
@@ -295,6 +297,7 @@ export class MapPageComponent implements OnDestroy {
     this.forcePopups,
     this.polygonSelection.pipe(
       map(polygon => this.mode.content === 'polygon-saving' ? null : polygon),
+      tap(() => this.loading.toggle('analytics', true)),
       switchMap(polygon => {
         if (!polygon) { return of(null); }
 
@@ -327,12 +330,14 @@ export class MapPageComponent implements OnDestroy {
                   this.forcePopups.next([])),
 
                 component.openFull.pipe(
+                  tap(() => this.loading.toggle('analytics', true)),
                   switchMap(() => combineLatest([
                     this.sportObjectsApi.getObjects(
                       { polygon: { points: polygon } },
                     ),
                     this.sportAnalyticsApi.getFullPolygonAnalytics(polygon),
                   ])),
+                  tap(() => this.loading.toggle('analytics', false)),
                 ).subscribe(([objects, analytics]) => {
                   this.dashboardObjects.next(objects);
                   this.dashboardAnalytics.next(analytics);
@@ -348,6 +353,7 @@ export class MapPageComponent implements OnDestroy {
           map(popup => [popup]),
         );
       }),
+      tap(() => this.loading.toggle('analytics', false)),
     ),
   );
 
@@ -477,10 +483,12 @@ export class MapPageComponent implements OnDestroy {
             }
 
             this.fullInfoObjectSubscription = component.openFull.pipe(
+              tap(() => this.loading.toggle('data', true)),
               switchMap(objectId => this.sportObjectsApi.getFilteredAreas({
                 objectIds: [objectId],
               })),
               map(areas => ({ obj, areas })),
+              tap(() => this.loading.toggle('data', false)),
             ).subscribe(obj => {
               this.mode.content = 'object-info';
               this.fullInfoObject.next(obj);

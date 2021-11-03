@@ -11,6 +11,7 @@
         [polygon]="forcePolygon | async"
         [polygonLayerSources]="polygonSources | async"
         [boundsPadding]="mapBoundsPadding | async"
+        (mapLoad)="loading.toggle('map', false)"
     ></tp-map>
 
     <div class="top-controls">
@@ -103,7 +104,6 @@
                     <!-- [ngClass]="{ 'shown': loading.isShown | async }"> -->
 <!-- </tp-loading-spinner> -->
 
-<tp-loading-screen
-    *ngIf="loading.isShown | async"
-    [@opacityIncrease]>
+<tp-loading-screen class="loading-screen"
+    [ngClass]="{ shown: loading.isShown | async }">
 </tp-loading-screen>

@@ -107,6 +107,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     existingMap.on('move', () =>
       this.centerSubject.next(existingMap.getCenter()));
 
+    // TODO
+    existingMap.on('sourcedata', ev => console.log(
+      'data loaded',
+      ev.isSourceLoaded,
+      ev.sourceId,
+      ev.sourceDataType,
+    ));
+
     existingMap.on('render', () => this.renderEvent.next());
 
     this.subscribeOnMapLoadEvent(existingMap);
@@ -144,6 +152,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private subscribeOnMapLoadEvent(map: mapboxgl.Map): void {
     map.on('load', () => {
       this.mapIsLoaded = true;
+      this.mapLoad.emit();
 
       for (const callback of this.loadCallbacks) {
         callback();
@@ -153,6 +162,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   private mapIsLoaded = false;
+
+  @Output()
+  public readonly mapLoad = new EventEmitter<void>();
 
   // #endregion
 

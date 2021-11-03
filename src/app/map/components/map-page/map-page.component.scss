@@ -140,4 +140,19 @@
       pointer-events: auto;
     }
   }
+
+  .loading-screen {
+    opacity: 0;
+
+    transition: var(--transition-default);
+    transition-duration: .5s;
+
+    pointer-events: none;
+
+    &.shown {
+      opacity: 1;
+
+      pointer-events: auto;
+    }
+  }
 }
