@@ -7,29 +7,49 @@
     </div>
 </div>
 
-<div class="metrics">
-    <div class="metric-container">
-        <span class="number">
-            {{ areasCount | async }}
-        </span>
-        <span class="metric-hint">спортивных зон</span>
-    </div>
+<div class="metrics-container">
+    <span class="hint">
+        На 100 000 человек
+    </span>
+    <div class="metrics">
+        <div class="metric-container">
+            <div class="number-container">
+                <span class="number">
+                    ≈{{ areasCount | async }}
+                </span>
+                <tp-tooltip>
+                    <img class="indicator" src="assets/in-circle/exclamation.svg">
+                </tp-tooltip>
+            </div>
+            <span class="metric-hint">спортивных зон</span>
+        </div>
 
-    <div class="metric-container">
-        <span class="number">
-            {{ sportKindsCount | async }}
-        </span>
-        <span class="metric-hint">видов спортивных услуг</span>
-    </div>
+        <div class="metric-container">
+            <div class="number-container">
+                <span class="number">
+                    ≈{{ sportKindsCount | async }}
+                </span>
+                <tp-tooltip>
+                    <img class="indicator" src="assets/in-circle/exclamation.svg">
+                </tp-tooltip>
+            </div>
+            <span class="metric-hint">видов спортивных услуг</span>
+        </div>
 
-    <div class="metric-container">
-        <span class="number">
-            {{ areasSquare | async | area }}
-            <span class="units">
-                м <sup>2</sup>
-            </span>
-        </span>
-        <span class="metric-hint">площадь спортивных зон</span>
+        <div class="metric-container">
+            <div class="number-container">
+                <span class="number">
+                    ≈{{ areasSquare | async | area }}
+                    <span class="units">
+                        м <sup>2</sup>
+                    </span>
+                </span>
+                <tp-tooltip>
+                    <img class="indicator" src="assets/in-circle/exclamation.svg">
+                </tp-tooltip>
+            </div>
+            <span class="metric-hint">площадь спортивных зон</span>
+        </div>
     </div>
 </div>
 

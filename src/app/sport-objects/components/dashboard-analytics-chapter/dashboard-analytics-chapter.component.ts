@@ -41,17 +41,17 @@ export class DashboardAnalyticsChapterComponent {
 
   public readonly areasCount = this.analyticsSubject.pipe(
     filter(isNotNil),
-    map(analytics => analytics.basicAnalytics.areasAmount),
+    map(analytics => Math.floor(analytics.basicAnalytics.areasAmountPer100k)),
   );
 
   public readonly sportKindsCount = this.analyticsSubject.pipe(
     filter(isNotNil),
-    map(analytics => analytics.basicAnalytics.sportsAmount),
+    map(analytics => Math.floor(analytics.basicAnalytics.sportsAmountPer100k)),
   );
 
   public readonly areasSquare = this.analyticsSubject.pipe(
     filter(isNotNil),
-    map(analytics => Math.floor(analytics.basicAnalytics.areasSquare)),
+    map(analytics => Math.floor(analytics.basicAnalytics.areasSquarePer100k)),
   );
 
   // #endregion
