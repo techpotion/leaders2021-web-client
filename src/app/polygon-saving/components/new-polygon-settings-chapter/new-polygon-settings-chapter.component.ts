@@ -183,6 +183,13 @@ implements AfterViewInit, OnDestroy {
     this.drawPolygon.next(true);
   }
 
+  @Input()
+  public set clearEvent(event: [] | null) {
+    if (event) {
+      this.clearNewPolygon();
+    }
+  }
+
   // #endregion
 
 }

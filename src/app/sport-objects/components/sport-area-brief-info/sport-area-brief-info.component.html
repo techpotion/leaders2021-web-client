@@ -1,94 +1,101 @@
-<ng-container *ngIf="analytics">
-    <button class="close-button"
-        (click)="closeInfo.next()">
-        <img src="assets/cross.svg">
-    </button>
-
+<div class="analytics-button-container">
     <button class="analytics-button"
         (click)="openFullInfo()">
         <div class="icon"></div>
         Аналитика
     </button>
 
-    <div class="content-container">
-        <div class="area-types-container metric-container">
-            <span class="number">
-                {{ analytics.areaTypesAmount }}
-                <img class="illustration" 
-                     src="assets/illustrations/runner.svg">
-            </span>
-            <span class="units">
-                видов спортзон
-            </span>
-        </div>
+    <button class="download-button" (click)="download()">
+        <img class="icon" src="assets/download.svg" alt="download">
+    </button>
+</div>
 
-        <div class="sport-kinds-container metric-container">
-            <span class="number">
-                {{ analytics.sportsAmount }}
-                <img class="illustration"
-                     src="assets/illustrations/ball.svg">
-            </span>
-            <span class="units">
-                типов услуг
-            </span>
-        </div>
+<div class="population-container">
+    <div class="hint">При плотности населения</div>
+    <div class="number-container">
+        <span class="number">≈{{ populationDensity | async }} чел/км<sup>2</sup></span>
+        <img class="icon" src="assets/availability/walking.svg">
+    </div>
+</div>
 
-        <div class="area-square-container metric-container">
-            <span class="number">
-                {{ analytics.areasSquare | area }} 
-                <span class="metric-units">
-                    м<sup>2</sup>
-                </span>
-                <img class="illustration"
-                    src="assets/illustrations/polygon.svg">
-            </span>
-            <span class="units">
-                площадь спортзон
-            </span>
-        </div>
+<div class="content-container">
+    <div class="area-types-container metric-container">
+        <span class="number">
+            {{ areaTypesAmount | async }}
+            <img class="illustration" 
+                 src="assets/illustrations/runner.svg">
+        </span>
+        <span class="units">
+            видов спортзон
+        </span>
     </div>
 
-    <ng-container [ngSwitch]="saveControlsOpened | async">
-        <div class="general-controls controls" *ngSwitchCase="false">
+    <div class="sport-kinds-container metric-container">
+        <span class="number">
+            {{ sportsAmount | async }}
+            <img class="illustration"
+                 src="assets/illustrations/ball.svg">
+        </span>
+        <span class="units">
+            типов услуг
+        </span>
+    </div>
+
+    <div class="area-square-container metric-container">
+        <span class="number">
+            {{ areasSquare | async | area }} 
+            <span class="metric-units">
+                м<sup>2</sup>
+            </span>
+            <img class="illustration"
+                src="assets/illustrations/polygon.svg">
+        </span>
+        <span class="units">
+            площадь спортзон
+        </span>
+    </div>
+</div>
+
+<ng-container [ngSwitch]="saveControlsOpened | async">
+    <div class="general-controls controls" *ngSwitchCase="false">
+        <button class="save-button"
+                (click)="saveControlsOpened.next(true)"
+                [disabled]="(savedState | async) === 'saved'">
+            <div class="icon"
+                 [ngClass]="{ 'saving': (savedState | async)  === 'saving' }"
+             ></div>
+            <span> сохранить участок </span>
+        </button>
+
+        <button class="clear-button"
+                (click)="clearSelection.emit()">
+            <div class="icon"></div>
+            <span> отменить выделение </span>
+        </button>
+    </div>
+
+    <div class="save-controls controls" *ngSwitchCase="true">
+        <input class="input"
+               type="text" 
+               placeholder="Название слоя"
+               #selectionNameInput
+               [formControl]="selectionNameControl">
+
+        <tp-tooltip text="Сохранить"
+                    [disabled]="(selectionNameValid | async) !== true">
             <button class="save-button"
-                    (click)="saveControlsOpened.next(true)"
-                    [disabled]="(savedState | async) === 'saved'">
+                    (click)="save()"
+                    [disabled]="(selectionNameValid | async) !== true">
                 <div class="icon"
-                     [ngClass]="{ 'saving': (savedState | async)  === 'saving' }"
-                 ></div>
-                <span> сохранить участок </span>
+                     [ngClass]="{ 'saving': (savedState | async)  === 'saving' }"></div>
             </button>
+        </tp-tooltip>
 
-            <button class="clear-button"
-                    (click)="clearSelection.emit()">
-                <div class="icon"></div>
-                <span> отменить выделение </span>
+        <tp-tooltip text="Отмена">
+            <button class="close-input-button"
+                    (click)="saveControlsOpened.next(false)">
+                <img src="assets/cross.svg" alt="close">
             </button>
-        </div>
-
-        <div class="save-controls controls" *ngSwitchCase="true">
-            <input class="input"
-                   type="text" 
-                   placeholder="Название слоя"
-                   #selectionNameInput
-                   [formControl]="selectionNameControl">
-
-            <tp-tooltip text="Сохранить"
-                        [disabled]="(selectionNameValid | async) !== true">
-                <button class="save-button"
-                        (click)="save()"
-                        [disabled]="(selectionNameValid | async) !== true">
-                    <div class="icon"
-                         [ngClass]="{ 'saving': (savedState | async)  === 'saving' }"></div>
-                </button>
-            </tp-tooltip>
-
-            <tp-tooltip text="Отмена">
-                <button class="close-input-button"
-                        (click)="saveControlsOpened.next(false)">
-                    <img src="assets/cross.svg" alt="close">
-                </button>
-            </tp-tooltip>
-        </div>
-    </ng-container>
+        </tp-tooltip>
+    </div>
 </ng-container>

@@ -5,86 +5,122 @@
 
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  gap: 20px;
 
-  padding-bottom: 20px;
+  padding: 20px 0;
   border-radius: 25px;
 
   background: var(--color-theme-white-1000);
   box-shadow: var(--shadow-2x);
 
-  .analytics-button {
-    @extend %body-font;
-
+  .analytics-button-container {
     position: absolute;
-    top: 50px;
+    top: 20px;
     right: -50px;
     z-index: 1;
 
     display: flex;
-    gap: 5px;
     align-items: center;
 
-    padding: 5px 15px;
+    box-sizing: border-box;
+    padding-right: 6px;
     border-radius: 15px;
 
-    color: var(--color-theme-primary-1000);
-    font-weight: 500;
-    font-size: 12px;
+    background: var(--color-theme-primary-1000);
 
-    background: var(--color-theme-white-1000);
-    box-shadow: var(--shadow-default);
-    cursor: pointer;
+    .analytics-button {
+      @extend %body-font;
 
-    transition: var(--transition-default);
+      display: flex;
+      gap: 5px;
+      align-items: center;
 
-    .icon {
-      width: 20px;
-      height: 23px;
+      box-sizing: border-box;
+      margin: -1px;
+      padding: 5px 15px;
+      border-radius: 15px;
 
-      background-image: url('../../../../assets/bulb.svg');
-    }
+      color: var(--color-theme-primary-1000);
+      font-weight: 500;
+      font-size: 12px;
 
-    &:hover {
+      background: var(--color-theme-white-1000);
+      box-shadow: var(--shadow-default);
+      transform: translateX(-1px);
+      cursor: pointer;
+
+      transition: var(--transition-default);
+
       .icon {
-        background-image: url('../../../../assets/lighting-bulb.svg');
+        width: 20px;
+        height: 23px;
+
+        background-image: url('../../../../assets/bulb.svg');
+      }
+
+      &:hover {
+        .icon {
+          background-image: url('../../../../assets/lighting-bulb.svg');
+        }
+      }
+
+      &:active {
+        background: var(--color-surface-primary);
+
+        .icon {
+          background-image: url('../../../../assets/lighting-bulb.svg');
+        }
       }
     }
 
-    &:active {
-      background: var(--color-surface-primary);
+    .download-button {
+      box-sizing: border-box;
+      padding: 4px;
 
       .icon {
-        background-image: url('../../../../assets/lighting-bulb.svg');
+        height: 16px;
+
+        transition: var(--transition-default);
+      }
+
+      &:hover {
+        .icon {
+          filter: drop-shadow(.1px .1px .3px var(--color-theme-white-1000));
+        }
+      }
+
+      &:active {
+        .icon {
+          filter: drop-shadow(.1px .1px 1px var(--color-theme-white-1000));
+        }
       }
     }
   }
 
-  .close-button {
+  .population-container {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
 
-    width: 50px;
-    height: 50px;
+    margin-left: 20px;
 
-    img {
-      height: 12px;
+    color: var(--color-theme-primary-1000);
 
-      opacity: .3;
+    .hint {
+      @extend %body-2-medium-font;
 
-      transition: var(--transition-default);
+      font-size: 14px;
     }
 
-    &:hover {
-      img {
-        opacity: 1;
-      }
-    }
+    .number-container {
+      @extend %body-1-semibold-font;
 
-    &:active {
-      img {
-        filter: drop-shadow(.1px .1px 1px var(--color-theme-primary-1000));
+      display: flex;
+      gap: 5px;
+      align-items: flex-end;
+
+      .icon {
+        height: 24px;
       }
     }
   }

@@ -226,9 +226,7 @@ export class MapService {
 
       const popup = layer.popup;
       if (popup) {
-        marker.getElement().addEventListener('click', (event: Event) => {
-          event.stopPropagation();
-
+        marker.getElement().addEventListener('click', () => {
           const popupContent = this.renderer.injectComponent(
             popup.component,
             component => {
@@ -244,8 +242,10 @@ export class MapService {
             },
           );
 
-          new mapboxgl.Popup({ closeButton: false, offset: 42 })
-            .setDOMContent(popupContent).setLngLat(position).addTo(map);
+          setTimeout(() =>
+            new mapboxgl.Popup({ closeButton: false, offset: 42 })
+              .setDOMContent(popupContent).setLngLat(position).addTo(map),
+          );
         });
       }
 

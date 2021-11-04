@@ -279,8 +279,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private draw?: MapboxDraw;
 
+  @Output()
   public readonly drawMode =
-  new BehaviorSubject<MapboxDraw.DrawMode | undefined>(undefined);
+  new BehaviorSubject<MapboxDraw.DrawMode | null>(null);
 
   @Input()
   public set polygonDraw(mode: PolygonDrawMode | null) {
@@ -355,7 +356,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.removePolygonDraw(loadedMap);
       this.polygonDrawChange.emit(null);
       this.draw = undefined;
-      this.drawMode.next(undefined);
+      this.drawMode.next(null);
       return;
     }
 

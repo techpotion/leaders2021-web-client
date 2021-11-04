@@ -4,7 +4,6 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  OnInit,
   OnDestroy,
   Output,
   ViewChild,
@@ -15,6 +14,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import { SportPolygonService } from '../../../polygon-saving/services/sport-polygon.service';
+import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 import { PolygonSportAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
 import { SportArea } from '../../models/sport-object';
@@ -29,7 +29,7 @@ const SAVED_STATE_TIMEOUT = 500;
   styleUrls: ['./sport-area-brief-info.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SportAreaBriefInfoComponent implements OnDestroy, OnInit {
+export class SportAreaBriefInfoComponent implements OnDestroy {
 
   constructor(
     public readonly polygonStorage: SportPolygonService,
@@ -45,13 +45,6 @@ export class SportAreaBriefInfoComponent implements OnDestroy, OnInit {
 
   // #region Life cycle hooks
 
-  public ngOnInit(): void {
-    if (!this.analytics) {
-      throw new Error('Cannot create brief info: '
-        + 'analytics not passed.');
-    }
-  }
-
   public ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
@@ -61,11 +54,37 @@ export class SportAreaBriefInfoComponent implements OnDestroy, OnInit {
 
   // #region Analytics
 
+  public readonly analyticsSubject =
+  new BehaviorSubject<PolygonSportAnalytics | null>(null);
+
   @Input()
-  public analytics?: PolygonSportAnalytics;
+  public set analytics(value: PolygonSportAnalytics | null) {
+    this.analyticsSubject.next(value);
+  }
 
   @Input()
   public areas?: SportArea[];
+
+  public readonly populationDensity = this.analyticsSubject.pipe(
+    filter(isNotNil),
+    map(analytics => Math.floor(analytics.density)),
+  );
+
+  public readonly areaTypesAmount = this.analyticsSubject.pipe(
+    filter(isNotNil),
+    map(analytics => analytics.areaTypesAmount),
+  );
+
+  public readonly sportsAmount = this.analyticsSubject.pipe(
+    filter(isNotNil),
+    map(analytics => analytics.sportsAmount),
+  );
+
+  public readonly areasSquare = this.analyticsSubject.pipe(
+    filter(isNotNil),
+    map(analytics => analytics.areasSquare),
+  );
+
 
   // #endregion
 
@@ -89,10 +108,16 @@ export class SportAreaBriefInfoComponent implements OnDestroy, OnInit {
   // #endregion
 
 
-  // #region Close info
+  // #region Download
 
-  @Output()
-  public readonly closeInfo = new EventEmitter<void>();
+  public download(): void {
+    console.warn('Download method not implemented');
+  }
+
+  // #endregion
+
+
+  // #region Close info
 
   @Output()
   public readonly clearSelection = new EventEmitter<void>();

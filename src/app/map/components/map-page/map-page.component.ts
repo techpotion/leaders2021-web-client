@@ -24,7 +24,6 @@ import {
   pairwise,
 } from 'rxjs/operators';
 import _ from 'lodash';
-import mapboxgl from 'mapbox-gl';
 
 import { PopulationApiService } from '../../../population/services/population-api.service';
 import { SportObjectsApiService } from '../../../sport-objects/services/sport-objects-api.service';
@@ -133,22 +132,6 @@ export class MapPageComponent implements OnDestroy, OnInit {
     }
   }
 
-  public readonly isPolygonDrawTogglePressed = this.mode.modeObservable.pipe(
-    map(modes => modes.includes('polygon-draw')),
-  );
-
-  public readonly isMarkerTogglePressed = this.mode.modeObservable.pipe(
-    map(modes => modes.includes('marker')),
-  );
-
-  public readonly isPopulationTogglePressed = this.mode.modeObservable.pipe(
-    map(modes => modes.includes('population-heatmap')),
-  );
-
-  public readonly isSportObjectsTogglePressed = this.mode.modeObservable.pipe(
-    map(modes => modes.includes('sport-heatmap')),
-  );
-
   public readonly isObjectIntersectionTogglePressed =
   this.mode.modeObservable.pipe(
     map(modes => modes.includes('object-intersection')),
@@ -245,10 +228,10 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   public readonly mapBoundsPadding = this.mode.contentObservable.pipe(
     map(content => {
-      if (content === 'polygon-saving') {
+      if (content.includes('polygon-saving')) {
         return POLYGON_SAVING_BOUNDS_PADDING;
       }
-      if (content === 'polygon-dashboard') {
+      if (content.includes('polygon-dashboard')) {
         return {
           top: 110,
           bottom: 0,
@@ -272,7 +255,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
   ]).pipe(
     switchMap(([modes, content]) => {
       if (modes.includes('polygon-draw')) {
-        if (content === 'polygon-dashboard') {
+        if (content.includes('polygon-dashboard')) {
           return of('read' as const);
         }
         return of('draw' as const);
@@ -309,6 +292,11 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public readonly forcePolygon =
   new BehaviorSubject<LatLng[] | null>(null);
 
+  public readonly polygonEvent =
+  new BehaviorSubject<{ event: 'clear' | 'undefined' }>({
+    event: 'undefined',
+  });
+
   // #endregion
 
 
@@ -318,9 +306,21 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   public readonly popups = merge(
     this.forcePopups,
-    this.polygonSelection.pipe(
-      map(polygon => this.mode.content === 'polygon-saving' ? null : polygon),
+    combineLatest([
+      this.polygonSelection,
+      this.mode.contentObservable,
+    ]).pipe(
+      map(([polygon, content]) => {
+        if (!polygon) { return null; }
+        if ((this.mode.modes.includes('polygon-draw')
+          || this.mode.modes.includes('polygon-saving'))
+          && !content.includes('polygon-dashboard')) {
+          return polygon;
+        }
+        return null;
+      }),
       switchMap(polygon => {
+        this.loading.toggle('analytics', false);
         if (!polygon) { return of(null); }
 
         this.loading.toggle('analytics', true);
@@ -338,6 +338,9 @@ export class MapPageComponent implements OnDestroy, OnInit {
               component.polygon = polygon;
               component.analytics = analytics;
               component.areas = areas;
+              if (this.mode.modes.includes('polygon-saving')) {
+                component.savedState.next('saved');
+              }
             },
             eventHandler: (component: SportAreaBriefInfoComponent) => {
               if (this.polygonSubscriptions.length) {
@@ -346,12 +349,10 @@ export class MapPageComponent implements OnDestroy, OnInit {
               }
 
               this.polygonSubscriptions.push(
-                component.clearSelection.subscribe(() => this.mapEvent.next(
-                  { event: 'clear-polygon' },
-                )),
-
-                component.closeInfo.subscribe(() =>
-                  this.forcePopups.next([])),
+                component.clearSelection.subscribe(() => {
+                  this.mapEvent.next({ event: 'clear-polygon' });
+                  this.polygonEvent.next({ event: 'clear' });
+                }),
 
                 component.openFull.pipe(
                   tap(() => this.loading.toggle('analytics', true)),
@@ -366,12 +367,12 @@ export class MapPageComponent implements OnDestroy, OnInit {
                   this.dashboardObjects.next(objects);
                   this.dashboardAnalytics.next(analytics);
                   this.dashboardAreas.next(areas);
-                  this.mode.content = 'polygon-dashboard';
+                  this.mode.addContent('polygon-dashboard');
                   this.forcePopups.next([]);
                 }),
               );
             },
-            anchor: 'right' as mapboxgl.Anchor,
+            anchor: 'right' as const,
             closeOnClick: false,
           })),
           map(popup => [popup]),
@@ -515,7 +516,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
               map(areas => ({ obj, areas })),
               tap(() => this.loading.toggle('data', false)),
             ).subscribe(obj => {
-              this.mode.content = 'object-info';
+              this.mode.addContent('object-info');
               this.fullInfoObject.next(obj);
             });
           },

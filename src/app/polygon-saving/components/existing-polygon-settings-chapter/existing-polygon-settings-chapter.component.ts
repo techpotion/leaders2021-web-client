@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  Input,
   Output,
   OnDestroy,
 } from '@angular/core';
@@ -122,6 +123,13 @@ export class ExistingPolygonSettingsChapterComponent implements OnDestroy {
 
   private clearViewedPolygon(): void {
     this.viewedPolygonIndex.next(undefined);
+  }
+
+  @Input()
+  public set clearEvent(event: [] | null) {
+    if (event) {
+      this.clearViewedPolygon();
+    }
   }
 
   // #endregion
