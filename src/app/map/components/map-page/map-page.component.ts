@@ -249,9 +249,15 @@ export class MapPageComponent implements OnDestroy, OnInit {
   // #region Polygon selection
 
   public readonly polygonDrawMode: Observable<PolygonDrawMode | null> =
-  this.mode.modeObservable.pipe(
-    switchMap(modes => {
+  combineLatest([
+    this.mode.modeObservable,
+    this.mode.contentObservable,
+  ]).pipe(
+    switchMap(([modes, content]) => {
       if (modes.includes('polygon-draw')) {
+        if (content === 'polygon-dashboard') {
+          return of('read' as const);
+        }
         return of('draw' as const);
       }
       if (modes.includes('polygon-saving')) {
