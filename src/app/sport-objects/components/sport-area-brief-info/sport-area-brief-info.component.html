@@ -72,16 +72,23 @@
                    placeholder="Название слоя"
                    #selectionNameInput
                    [formControl]="selectionNameControl">
-            <button class="save-button"
-                    (click)="save()"
-                    [disabled]="(selectionNameValid | async) !== true">
-                <div class="icon"
-                     [ngClass]="{ 'saving': (savedState | async)  === 'saving' }"></div>
-            </button>
-            <button class="close-input-button"
-                    (click)="saveControlsOpened.next(false)">
-                <img src="assets/cross.svg" alt="close">
-            </button>
+
+            <tp-tooltip text="Сохранить"
+                        [disabled]="(selectionNameValid | async) !== true">
+                <button class="save-button"
+                        (click)="save()"
+                        [disabled]="(selectionNameValid | async) !== true">
+                    <div class="icon"
+                         [ngClass]="{ 'saving': (savedState | async)  === 'saving' }"></div>
+                </button>
+            </tp-tooltip>
+
+            <tp-tooltip text="Отмена">
+                <button class="close-input-button"
+                        (click)="saveControlsOpened.next(false)">
+                    <img src="assets/cross.svg" alt="close">
+                </button>
+            </tp-tooltip>
         </div>
     </ng-container>
 </ng-container>

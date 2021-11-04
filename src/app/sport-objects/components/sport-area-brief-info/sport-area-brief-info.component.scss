@@ -255,6 +255,7 @@
 
     &.save-controls {
       gap: 5px;
+      align-items: center;
 
       .input {
         @extend %body-font;
@@ -267,6 +268,7 @@
         padding: 0 15px;
         border-radius: 5px;
 
+        color: var(--color-theme-primary-1000);
         font-weight: 300;
         font-size: 12px;
 
@@ -284,7 +286,6 @@
           color: var(--color-theme-primary-400);
         }
       }
-
 
       .close-input-button {
         padding: 3px;
@@ -313,7 +314,6 @@
           }
         }
       }
-
     }
   }
 }

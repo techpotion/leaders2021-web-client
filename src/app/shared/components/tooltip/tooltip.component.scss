@@ -1,0 +1,74 @@
+@import '../../../../styles/mixins';
+
+:host {
+  position: relative;
+
+  .tooltip-container {
+    position: absolute;
+    z-index: 2;
+
+    display: flex;
+
+    width: 280px;
+
+    pointer-events: none;
+
+    .tooltip {
+      @extend %body-2-regular-font;
+
+      display: inline-block;
+
+      box-sizing: border-box;
+      padding: 7px;
+      border-radius: 7px;
+
+      color: var(--color-theme-white-1000);
+      text-align: center;
+
+      background: var(--color-theme-primary-1000);
+      box-shadow: var(--shadow-default);
+    }
+
+    &.bottom {
+      left: 50%;
+
+      justify-content: center;
+
+      margin: 5px 0;
+
+      transform: translateX(-50%);
+    }
+
+    &.top {
+      bottom: 100%;
+      left: 50%;
+
+      justify-content: center;
+
+      margin: 5px 0;
+
+      transform: translateX(-50%);
+    }
+
+    &.left {
+      top: 0;
+      right: 100%;
+
+      align-items: center;
+      justify-content: flex-end;
+
+      height: 100%;
+      margin: 0 5px;
+    }
+
+    &.right {
+      top: 0;
+      left: 100%;
+
+      align-items: center;
+
+      height: 100%;
+      margin: 0 5px;
+    }
+  }
+}

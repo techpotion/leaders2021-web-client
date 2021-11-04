@@ -111,29 +111,6 @@
             transform: translateY(-10px);
           }
 
-          .indicator-tooltip {
-            @extend %body-2-regular-font;
-
-            position: absolute;
-            top: -40%;
-            right: -100%;
-
-            max-width: 280px;
-            padding: 14px;
-            border-radius: 7px;
-
-            color: var(--color-theme-white-1000);
-            text-align: center;
-
-            background: var(--color-theme-primary-1000);
-            box-shadow: var(--shadow-default);
-            opacity: 0;
-
-            transition: var(--transition-default);
-
-            pointer-events: none;
-          }
-
           .indicator {
             width: 28px;
 

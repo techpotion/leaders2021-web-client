@@ -33,18 +33,16 @@
                     {{ areasAmount | async }}
                 </span>
                 <div class="units">спортивных зон</div>
-                <img class="indicator" 
-                     [src]="((areasAmountPercent | async) || 0) >= 80
-                            ? 'assets/in-circle/tick.svg'
-                            : 'assets/in-circle/exclamation.svg'"
-                >
-                <span class="indicator-tooltip">
-                    {{ 
-                        ((areasAmountPercent | async) || 0) >= 80 
+                <tp-tooltip [text]="((areasAmountPercent | async) || 0) >= 80 
                         ? 'Территория достаточно оснащена спортивными зонами'
-                        : 'Число спортивных зон слишком мало для плотности населения территории' 
-                    }}
-                </span>
+                        : 'Число спортивных зон слишком мало для плотности населения территории'"
+                        position="right">
+                    <img class="indicator" 
+                         [src]="((areasAmountPercent | async) || 0) >= 80
+                                ? 'assets/in-circle/tick.svg'
+                                : 'assets/in-circle/exclamation.svg'"
+                    >
+                </tp-tooltip>
             </div>
             <div class="progress-bar">
                 <div class="filler"
