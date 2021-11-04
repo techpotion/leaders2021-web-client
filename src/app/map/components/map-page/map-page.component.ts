@@ -368,7 +368,6 @@ export class MapPageComponent implements OnDestroy, OnInit {
                 }),
               );
             },
-            anchor: 'right' as mapboxgl.Anchor,
             closeOnClick: false,
           })),
           map(popup => [popup]),
