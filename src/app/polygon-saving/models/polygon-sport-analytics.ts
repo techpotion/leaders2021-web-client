@@ -10,6 +10,9 @@ export interface PolygonSportAnalytics {
   sportsKinds: string[];
   areaTypes: string[];
   areaTypesAmount: number;
+  sportsObjectsAmount: number;
+  sportsObjectsAmountPer100k: number;
+  density: number;
 }
 
 export interface Park {
@@ -30,12 +33,23 @@ export interface PollutionPoint {
   results: string;
 }
 
+export interface SubwayPoint {
+  name: string;
+  lineColor: string;
+  point: LatLng;
+  distanceFromPolygon: number;
+}
+
 export interface FullPolygonAnalytics {
   basicAnalytics: PolygonSportAnalytics;
   parkAnalytics: {
     parks: Park[];
   };
   pollutionAnalytics: {
-    points: PollutionPoint;
+    points: PollutionPoint[];
   };
+  subwayAnalytics: {
+    points: SubwayPoint[];
+  };
+  mark: number;
 }

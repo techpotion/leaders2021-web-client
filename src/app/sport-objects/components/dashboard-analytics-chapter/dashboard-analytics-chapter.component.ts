@@ -12,6 +12,8 @@ import { isNotNil } from '../../../shared/utils/is-not-nil';
 import { FullPolygonAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
 
 
+const DECIMAL_UNIT = 10;
+
 @Component({
   selector: 'tp-dashboard-analytics-chapter',
   templateUrl: './dashboard-analytics-chapter.component.html',
@@ -22,6 +24,8 @@ export class DashboardAnalyticsChapterComponent {
 
   constructor() { }
 
+  // #region Analytics source
+
   public readonly analyticsSubject =
   new BehaviorSubject<FullPolygonAnalytics | null>(null);
 
@@ -29,6 +33,11 @@ export class DashboardAnalyticsChapterComponent {
   public set analytics(value: FullPolygonAnalytics | null) {
     this.analyticsSubject.next(value);
   }
+
+  // #endregion
+
+
+  // #region Metrics
 
   public readonly areasCount = this.analyticsSubject.pipe(
     filter(isNotNil),
@@ -44,5 +53,18 @@ export class DashboardAnalyticsChapterComponent {
     filter(isNotNil),
     map(analytics => Math.floor(analytics.basicAnalytics.areasSquare)),
   );
+
+  // #endregion
+
+
+  // #region Mark
+
+  public readonly mark = this.analyticsSubject.pipe(
+    filter(isNotNil),
+    map(analytics => analytics.mark),
+    map(mark => Math.floor(mark * DECIMAL_UNIT) / DECIMAL_UNIT),
+  );
+
+  // #endregion
 
 }
