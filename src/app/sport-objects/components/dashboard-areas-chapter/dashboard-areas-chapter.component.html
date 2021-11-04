@@ -30,7 +30,7 @@
             </span>
             <div class="number-container">
                 <span class="number">
-                    {{ areasAmount | async }}
+                    ≈{{ areasAmount | async }}
                 </span>
                 <div class="units">спортивных зон</div>
                 <tp-tooltip [text]="((areasAmountPercent | async) || 0) >= 80 
