@@ -25,6 +25,7 @@
         ></tp-sport-object-filter-bar>
 
         <tp-sport-area-dashboard 
+            #dashboard
             class="dashboard"
             [ngClass]="{ 'hidden': (mode.contentObservable | async) !== 'polygon-dashboard' }"
             [objects]="dashboardObjects | async"

@@ -2,8 +2,10 @@ import {
   Component,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  ElementRef,
   OnInit,
   OnDestroy,
+  ViewChild,
 } from '@angular/core';
 
 import {
@@ -52,6 +54,8 @@ import { SportObjectBriefInfoComponent } from
   '../../../sport-objects/components/sport-object-brief-info/sport-object-brief-info.component';
 import { SportAreaBriefInfoComponent } from
   '../../../sport-objects/components/sport-area-brief-info/sport-area-brief-info.component';
+import { SportAreaDashboardComponent } from
+  '../../../sport-objects/components/sport-area-dashboard/sport-area-dashboard.component';
 
 
 const POLYGON_SAVING_BOUNDS_PADDING = {
@@ -237,10 +241,24 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   // #region Bounds
 
+  @ViewChild('dashboard')
+  public dashboardComponent!: SportAreaDashboardComponent;
+
   public readonly mapBoundsPadding = this.mode.contentObservable.pipe(
-    map(content => content === 'polygon-saving'
-      ? POLYGON_SAVING_BOUNDS_PADDING
-      : null),
+    map(content => {
+      if (content === 'polygon-saving') {
+        return POLYGON_SAVING_BOUNDS_PADDING;
+      }
+      if (content === 'polygon-dashboard') {
+        return {
+          top: 110,
+          bottom: 0,
+          left: 0,
+          right: this.dashboardComponent.el.nativeElement.offsetWidth,
+        };
+      }
+      return null;
+    }),
   );
 
   // #endregion
