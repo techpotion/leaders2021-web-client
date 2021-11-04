@@ -22,6 +22,7 @@ export interface Park {
   location: string;
   hasSportground: boolean;
   objectPoint: LatLng;
+  square: number;
 }
 
 export interface PollutionPoint {
@@ -47,6 +48,7 @@ export interface FullPolygonAnalytics {
   };
   pollutionAnalytics: {
     points: PollutionPoint[];
+    pollutionPercentage: number;
   };
   subwayAnalytics: {
     points: SubwayPoint[];

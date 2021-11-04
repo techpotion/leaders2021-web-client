@@ -17,7 +17,8 @@
                 <span class="number">
                     ≈{{ areasCount | async }}
                 </span>
-                <tp-tooltip>
+                <tp-tooltip *ngIf="(areasCountIsOk | async) === false"
+                    text="Для данной плотности населения спортивных зон недостаточно">
                     <img class="indicator" src="assets/in-circle/exclamation.svg">
                 </tp-tooltip>
             </div>
@@ -29,7 +30,8 @@
                 <span class="number">
                     ≈{{ sportKindsCount | async }}
                 </span>
-                <tp-tooltip>
+                <tp-tooltip *ngIf="(sportKindsIsOk | async) === false"
+                    text="Для данной плотности населения недостаточно видов спортивных услуг">
                     <img class="indicator" src="assets/in-circle/exclamation.svg">
                 </tp-tooltip>
             </div>
@@ -44,7 +46,9 @@
                         м <sup>2</sup>
                     </span>
                 </span>
-                <tp-tooltip>
+                <tp-tooltip *ngIf="(areasSquareIsOk | async) === false"
+                    text="Для данной плотности населения недостаточно площади спортивных зон"
+                    position="left">
                     <img class="indicator" src="assets/in-circle/exclamation.svg">
                 </tp-tooltip>
             </div>
@@ -53,8 +57,111 @@
     </div>
 </div>
 
-<div class="about-container">
-    <h1 class="title">
-        Здесь будет аналитическая сводка о выбранной территории...
-    </h1>
+<div class="grid-container">
+    <div class="park-container grid-element">
+        <div class="background"></div>
+
+        <div class="indicator-container">
+            <div class="heading-container">
+                <img class="icon" src="assets/tree-good.svg">
+                <span class="heading">Наличие парковых зон</span>
+            </div>
+        </div>
+
+        <div class="number-container">
+            <span class="number">{{ parkAmount | async }}</span>
+            <span class="hint">парков поблизости</span>
+        </div>
+
+        <div class="list-container">
+            <div class="list-item" *ngFor="let park of parks | async">
+                <div class="title-container">
+                    <img class="icon" src="assets/marker-ecology-good.svg">
+                    <span class="title">{{ park.location }}</span>
+                </div>
+                <span class="value">{{ park.square | area }} м<sup>2</sup></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="ecology-container grid-element">
+        <div class="background"></div>
+
+        <div class="indicator-container">
+            <div class="heading-container">
+                <img class="icon" src="assets/tree-bad.svg">
+                <span class="heading">Экологическая обстановка</span>
+            </div>
+
+            <tp-tooltip *ngIf="(pollutionLevelIsOk | async) === false"
+                    text="Уровень загрязненности области слишком высок"
+                    position="left">
+                <img class="indicator" src="assets/in-circle/exclamation.svg">
+            </tp-tooltip>
+        </div>
+
+        <div class="number-container">
+            <span class="number">≈{{ pollutionLevel | async }} %</span>
+            <span class="hint">загрязненность участка</span>
+        </div>
+
+        <div class="list-container">
+            <div class="list-item" *ngFor="let point of pollutionPoints | async">
+                <div class="title-container">
+                    <img class="icon" src="assets/marker-ecology-bad.svg">
+                    <span class="title">{{ point.location }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="population-container grid-element">
+        <div class="background"></div>
+
+        <div class="indicator-container">
+            <div class="heading-container">
+                <img class="icon" src="assets/population.svg">
+                <span class="heading">Население</span>
+            </div>
+        </div>
+
+        <div class="number-container">
+            <span class="number">≈{{ populationDensity | async }}</span>
+            <span class="hint">средняя плотность населения на 1 км<sup>2</sup></span>
+        </div>
+    </div>
+    
+    <div class="transport-container grid-element">
+        <div class="background"></div>
+
+        <div class="indicator-container">
+            <div class="heading-container">
+                <img class="icon" src="assets/subway.svg">
+                <span class="heading">Транспортная доступность</span>
+            </div>
+
+            <tp-tooltip *ngIf="(subwayDistanceIsOk | async) === false"
+                    text="Данная область имеет низкий уровень транспортной доступности"
+                    position="left">
+                <img class="indicator" src="assets/in-circle/exclamation.svg">
+            </tp-tooltip>
+        </div>
+
+        <div class="number-container">
+            <span class="number">{{ subwayStationAmount | async }}</span>
+            <span class="hint">ближайших станций метро</span>
+        </div>
+
+        <div class="list-container">
+            <div class="list-item" *ngFor="let station of subwayStations | async">
+                <div class="title-container">
+                    <div class="line"
+                         [ngStyle]="{ 'background': station.lineColor }">
+                    </div>
+                    <span class="title">{{ station.name }}</span>
+                </div>
+                <span class="value">{{ station.distanceFromPolygon | area }} м</span>
+            </div>
+        </div>
+    </div>
 </div>
