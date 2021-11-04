@@ -79,6 +79,20 @@
 
       .icon {
         height: 16px;
+
+        transition: var(--transition-default);
+      }
+
+      &:hover {
+        .icon {
+          filter: drop-shadow(.1px .1px .3px var(--color-theme-white-1000));
+        }
+      }
+
+      &:active {
+        .icon {
+          filter: drop-shadow(.1px .1px 1px var(--color-theme-white-1000));
+        }
       }
     }
   }
