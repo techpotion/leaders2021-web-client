@@ -26,12 +26,14 @@
             (drawPolygon)="drawPolygon.emit($event)"
             [polygonGeometry]="newPolygonGeometry | async"
             [polygonAreas]="newPolygonAreas | async"
-            [polygonAnalytics]="newPolygonAnalytics | async">
+            [polygonAnalytics]="newPolygonAnalytics | async"
+            [clearEvent]="clearSelectionEmitter | async">
         </tp-new-polygon-settings-chapter>
 
         <tp-existing-polygon-settings-chapter
             *ngSwitchCase="'existing'"
-            (polygonView)="polygonView.emit($event)">
+            (polygonView)="polygonView.emit($event)"
+            [clearEvent]="clearSelectionEmitter | async">
         </tp-existing-polygon-settings-chapter>
     </div>
 </div>

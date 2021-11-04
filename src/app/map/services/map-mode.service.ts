@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 
 export type MapMode = 'marker'
@@ -23,21 +24,51 @@ export class MapModeService {
 
   // #region Content
 
-  private readonly contentSubject =
-  new BehaviorSubject<MapContent | undefined>(undefined);
+  private readonly contentSubject = new BehaviorSubject<MapContent[]>([]);
 
   public readonly contentObservable = this.contentSubject.asObservable();
 
-  public get content(): MapContent | undefined {
+  public get content(): MapContent[] {
     return this.contentSubject.value;
   }
 
-  public set content(value: MapContent | undefined) {
-    this.contentSubject.next(value);
+  public addContent(content: MapContent): void {
+    if (this.contentSubject.value.includes(content)) { return; }
+
+    this.onAddContent(content);
+
+    const newContent = [ ...this.contentSubject.value ];
+    newContent.push(content);
+
+    this.contentSubject.next(newContent);
+  }
+
+  public removeContent(content: MapContent): void {
+    const newContent = this.contentSubject.value.filter(
+      existingContent => content !== existingContent,
+    );
+
+    this.contentSubject.next(newContent);
+  }
+
+  public hasContent(content: MapContent): Observable<boolean> {
+    return this.contentObservable.pipe(
+      map(existingContent => existingContent.includes(content)),
+    );
   }
 
   public clearContent(): void {
-    this.content = undefined;
+    this.contentSubject.next([]);
+  }
+
+  private onAddContent(content: MapContent): void {
+    if (content === 'object-info') {
+      this.clearContent();
+    } else if (content === 'polygon-saving') {
+      this.clearContent();
+    } else if (content === 'polygon-dashboard') {
+      this.removeContent('object-info');
+    }
   }
 
   // #endregion
@@ -51,6 +82,12 @@ export class MapModeService {
 
   public get modes(): MapMode[] {
     return this.modeSubject.value;
+  }
+
+  public hasMode(mode: MapMode): Observable<boolean> {
+    return this.modeObservable.pipe(
+      map(existingModes => existingModes.includes(mode)),
+    );
   }
 
   public add(mode: MapMode): void {
@@ -78,7 +115,7 @@ export class MapModeService {
     if (mode === 'polygon-saving') {
       this.remove('marker');
       this.remove('polygon-draw');
-      this.content = 'polygon-saving';
+      this.addContent('polygon-saving');
     } else if (mode === 'marker') {
       this.remove('polygon-saving');
       this.remove('polygon-draw');
@@ -90,7 +127,7 @@ export class MapModeService {
 
   private onRemove(mode: MapMode): void {
     if (mode === 'polygon-saving') {
-      this.content = undefined;
+      this.removeContent('polygon-saving');
     }
   }
 

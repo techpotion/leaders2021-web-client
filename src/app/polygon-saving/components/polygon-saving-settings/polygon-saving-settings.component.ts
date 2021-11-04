@@ -90,6 +90,15 @@ export class PolygonSavingSettingsComponent {
   @Output()
   public readonly polygonView = new EventEmitter<LatLng[] | null>();
 
+  public readonly clearSelectionEmitter = new EventEmitter<[]>();
+
+  @Input()
+  public set event(event: { event: 'clear' | 'undefined' } | null) {
+    if (event?.event === 'clear') {
+      this.clearSelectionEmitter.emit([]);
+    }
+  }
+
   // #endregion
 
 }

@@ -27,17 +27,17 @@
         <tp-sport-area-dashboard 
             #dashboard
             class="dashboard"
-            [ngClass]="{ 'hidden': (mode.contentObservable | async) !== 'polygon-dashboard' }"
+            [ngClass]="{ 'hidden': !(mode.hasContent('polygon-dashboard') | async) }"
             [objects]="dashboardObjects | async"
             [analytics]="dashboardAnalytics | async"
             [areas]="dashboardAreas | async"
-            (closeDashboard)="mode.clearContent()"
+            (closeDashboard)="mode.removeContent('polygon-dashboard')"
         ></tp-sport-area-dashboard>
 
         <div class="map-container">
             <tp-sport-object-full-info 
                 class="object-info"
-                *ngIf="(mode.contentObservable | async) === 'object-info'"
+                *ngIf="mode.hasContent('object-info') | async"
                 [@scaleIncrease]
                 [obj]="(fullInfoObject | async)?.obj"
                 [sportAreas]="(fullInfoObject | async)?.areas"
@@ -46,12 +46,13 @@
 
             <tp-polygon-saving-settings 
                 class="polygon-saving"
-                *ngIf="(mode.contentObservable | async) === 'polygon-saving'"
+                *ngIf="mode.hasContent('polygon-saving') | async"
                 [@scaleIncrease]
                 (closeSettings)="onTogglePress(false, 'polygon-saving')"
                 (drawPolygon)="settingsAwaitingPolygon.next($event)"
                 [newPolygon]="newPolygon | async"
                 (polygonView)="forcePolygon.next($event)"
+                [event]="polygonEvent | async"
             ></tp-polygon-saving-settings>
 
             <div class="layers-toggles">
@@ -59,7 +60,7 @@
                     text="Работа со слоями"
                     position="left">
                     <tp-map-toggle
-                        [isPressed]="(mode.contentObservable | async) === 'polygon-saving'"
+                        [isPressed]="!!(mode.hasContent('polygon-saving') | async)"
                         (pressChange)="onTogglePress($event, 'polygon-saving')"
                         lightIcon="assets/light/layers.svg"
                         darkIcon="assets/dark/layers.svg"    
@@ -71,7 +72,7 @@
                         text="Нарисовать область"
                         position="left">
                         <tp-map-toggle
-                            [isPressed]="!!(isPolygonDrawTogglePressed | async)"
+                            [isPressed]="!!(mode.hasMode('polygon-draw') | async)"
                             (pressChange)="onTogglePress($event, 'polygon-draw')"
                             lightIcon="assets/light/polygon.svg"
                             darkIcon="assets/dark/polygon.svg"    
@@ -81,7 +82,7 @@
                         text="Спортивные объекты"
                         position="left">
                         <tp-map-toggle
-                            [isPressed]="!!(isMarkerTogglePressed | async)"
+                            [isPressed]="!!(mode.hasMode('marker') | async)"
                             (pressChange)="onTogglePress($event, 'marker')"
                             lightIcon="assets/light/marker.svg"
                             darkIcon="assets/dark/marker.svg"    
@@ -94,7 +95,7 @@
                         text="Тепловая карта населения"
                         position="left">
                         <tp-map-toggle
-                            [isPressed]="!!(isPopulationTogglePressed | async)"
+                            [isPressed]="!!(mode.hasMode('population-heatmap') | async)"
                             (pressChange)="onTogglePress($event, 'population-heatmap')"
                             lightIcon="assets/light/population.svg"
                             darkIcon="assets/dark/population.svg"    
@@ -104,7 +105,7 @@
                         text="Тепловая карта спортивных объектов"
                         position="left">
                         <tp-map-toggle
-                            [isPressed]="!!(isSportObjectsTogglePressed | async)"
+                            [isPressed]="!!(mode.hasMode('sport-heatmap') | async)"
                             (pressChange)="onTogglePress($event, 'sport-heatmap')"
                             lightIcon="assets/light/runner.svg"
                             darkIcon="assets/dark/runner.svg"    
