@@ -6,15 +6,19 @@
         (searchChange)="onNameSearch($event)">
     </tp-completion-input>
 
-    <button class="toggle-filters-button toggle-icon-button"
-        (click)="toggleFilters()"
-        [ngClass]="{ 'pressed': areFiltersOpened }">
-        <img class="icon"
-             [src]="areFiltersOpened
-                    ? 'assets/light/filter.svg'
-                    : 'assets/dark/filter.svg'"
-             alt="toggle filters">
-    </button>
+    <tp-tooltip
+        [text]="areFiltersOpened ? 'Скрыть фильтры' : 'Раскрыть фильтры'"
+        position="left">
+        <button class="toggle-filters-button toggle-icon-button"
+            (click)="toggleFilters()"
+            [ngClass]="{ 'pressed': areFiltersOpened }">
+            <img class="icon"
+                 [src]="areFiltersOpened
+                        ? 'assets/light/filter.svg'
+                        : 'assets/dark/filter.svg'"
+                 alt="toggle filters">
+        </button>
+    </tp-tooltip>
 </div>
 
 <div class="animated-filter-container"
@@ -34,12 +38,14 @@
             </tp-multiple-select>
         </div>
 
-        <button class="remove-button icon-button"
-            (click)="clearFilters()">
-            <img class="icon"
-                 src="assets/bin.svg"
-                 alt="remove filters">
-        </button>
+        <tp-tooltip text="Очистить фильтры">
+            <button class="remove-button icon-button"
+                (click)="clearFilters()">
+                <img class="icon"
+                     src="assets/bin.svg"
+                     alt="remove filters">
+            </button>
+        </tp-tooltip>
 
         <button class="filter-button"
             (click)="applyFilterRequest()">

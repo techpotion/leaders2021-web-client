@@ -1,0 +1,14 @@
+<div class="content"
+    (mouseenter)="isOpened.next(true)"
+    (mouseleave)="isOpened.next(false)">
+    <ng-content></ng-content>
+</div>
+
+<div class="tooltip-container"
+    [ngClass]="position"
+     *ngIf="(isOpened | async) && !disabled"
+    [@opacityIncrease]>
+    <span class="tooltip">
+        {{ text }}
+    </span>
+</div>

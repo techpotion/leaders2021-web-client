@@ -15,6 +15,7 @@ import { DashboardPieChartComponent } from './components/dashboard-pie-chart/das
 import { DashboardChipListComponent } from './components/dashboard-chip-list/dashboard-chip-list.component';
 
 import { AreaPipe } from './pipes/area.pipe';
+import { TooltipComponent } from './components/tooltip/tooltip.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { AreaPipe } from './pipes/area.pipe';
     DashboardPieChartComponent,
     DashboardChipListComponent,
     AreaPipe,
+    TooltipComponent,
   ],
   exports: [
     LoadingSpinnerComponent,
@@ -38,6 +40,7 @@ import { AreaPipe } from './pipes/area.pipe';
     DashboardPieChartComponent,
     DashboardChipListComponent,
     AreaPipe,
+    TooltipComponent,
   ],
   imports: [
     CommonModule,
