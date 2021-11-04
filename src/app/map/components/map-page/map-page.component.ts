@@ -350,9 +350,6 @@ export class MapPageComponent implements OnDestroy, OnInit {
                   { event: 'clear-polygon' },
                 )),
 
-                component.closeInfo.subscribe(() =>
-                  this.forcePopups.next([])),
-
                 component.openFull.pipe(
                   tap(() => this.loading.toggle('analytics', true)),
                   switchMap(() => combineLatest([
