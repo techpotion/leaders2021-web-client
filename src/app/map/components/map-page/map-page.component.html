@@ -1,3 +1,4 @@
+<!-- eslint-disable -->
 <div class="blur-container"
      [ngClass]="{ 'loading': loading.isShown | async }">
     <tp-map 
@@ -27,7 +28,7 @@
         <tp-sport-area-dashboard 
             #dashboard
             class="dashboard"
-            [ngClass]="{ 'hidden': !(mode.hasContent('polygon-dashboard') | async) }"
+            [ngClass]="{ 'hidden': (mode.hasContent('polygon-dashboard') | async) === false }"
             [objects]="dashboardObjects | async"
             [analytics]="dashboardAnalytics | async"
             [areas]="dashboardAreas | async"
