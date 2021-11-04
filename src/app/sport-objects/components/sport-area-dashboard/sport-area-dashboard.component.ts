@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ElementRef,
   EventEmitter,
   Input,
   Output,
@@ -23,7 +24,9 @@ const DEFAULT_MODE: DashboardMode = 'areas';
 })
 export class SportAreaDashboardComponent {
 
-  constructor() { }
+  constructor(
+    public readonly el: ElementRef<HTMLElement>,
+  ) { }
 
   public readonly mode = new BehaviorSubject<DashboardMode>(DEFAULT_MODE);
 

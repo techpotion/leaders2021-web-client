@@ -201,6 +201,40 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.boundsPaddingSubject.next(value);
   }
 
+  /**
+   * Flies to center of polygon and
+   * fits it into map bounds with given paddings.
+   *
+   * @param polygon Polygon to fit
+   * @param padding Padding in px
+   */
+  private fitBounds(
+    polygon: LatLng[],
+    padding: mapboxgl.PaddingOptions | number,
+  ): void {
+    if (!this.map || !this.mapIsLoaded) {
+      throw new Error('Cannot fit polygon: map is not loaded.');
+    }
+
+    this.map.flyTo({ center: this.mapUtils.getPolygonCenter(polygon) });
+    const structurizedPadding = typeof padding === 'number'
+      ? {
+        top: padding,
+        bottom: padding,
+        left: padding,
+        right: padding,
+      } : padding;
+
+    this.map.fitBounds(this.mapUtils.getPolygonBounds(polygon), {
+      padding: {
+        top: structurizedPadding.top + EXTRA_BOUNDS_PADDING,
+        bottom: structurizedPadding.bottom + EXTRA_BOUNDS_PADDING,
+        right: structurizedPadding.right + EXTRA_BOUNDS_PADDING,
+        left: structurizedPadding.left + EXTRA_BOUNDS_PADDING,
+      },
+    });
+  }
+
   // #endregion
 
 
@@ -301,23 +335,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       if (!boundsPadding || !polygon
         || !this.map || !this.mapIsLoaded) { return; }
 
-      this.map.flyTo({ center: this.mapUtils.getPolygonCenter(polygon) });
-      const structurizedPadding = typeof boundsPadding === 'number'
-        ? {
-          top: boundsPadding,
-          bottom: boundsPadding,
-          left: boundsPadding,
-          right: boundsPadding,
-        } : boundsPadding;
-
-      this.map.fitBounds(this.mapUtils.getPolygonBounds(polygon), {
-        padding: {
-          top: structurizedPadding.top + EXTRA_BOUNDS_PADDING,
-          bottom: structurizedPadding.bottom + EXTRA_BOUNDS_PADDING,
-          right: structurizedPadding.right + EXTRA_BOUNDS_PADDING,
-          left: structurizedPadding.left + EXTRA_BOUNDS_PADDING,
-        },
-      });
+      this.fitBounds(polygon, boundsPadding);
     });
   }
 

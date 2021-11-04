@@ -1,0 +1,10 @@
+<ng-container *ngFor="let item of itemsSubject | async">
+    <div class="item">
+        <div class="color-box"
+             [ngStyle]="{ 'background': item.color }">
+        </div>
+        <span [ngStyle]="{ 'color': item.color }">
+            {{ item.title }}
+        </span>
+    </div>
+</ng-container>

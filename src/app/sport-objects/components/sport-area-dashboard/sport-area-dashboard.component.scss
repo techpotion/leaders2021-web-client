@@ -15,7 +15,7 @@
 
   .close-button {
     position: absolute;
-    top: var(--filter-bar-default-height);
+    top: calc(var(--filter-bar-default-height) + 30px);
     left: 0;
 
     display: flex;
@@ -23,18 +23,16 @@
     justify-content: center;
 
     width: var(--close-dashboard-button-width);
-    height: 80px;
+    height: 65px;
     border-radius: 10px 0 0 10px;
 
     background: var(--color-theme-white-1000);
-    box-shadow: var(--shadow-2x);
+    box-shadow: var(--shadow-default);
 
     transform: translateX(-100%);
 
-    img {
-      height: 15px;
-
-      transform: rotate(180deg);
+    .icon {
+      height: 20px;
     }
   }
 
@@ -42,6 +40,7 @@
     display: flex;
     gap: 30px;
     align-items: flex-end;
+    justify-content: space-around;
 
     width: 100%;
     margin-top: 30px;

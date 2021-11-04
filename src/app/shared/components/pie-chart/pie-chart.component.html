@@ -1,3 +1,6 @@
 <div class="chart-container">
     <canvas #chart></canvas>
 </div>
+<tp-chart-legend class="legend"
+    [items]="legend | async">
+</tp-chart-legend>

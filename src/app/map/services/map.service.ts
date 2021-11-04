@@ -73,8 +73,12 @@ export class MapService {
   }
 
   public changeDrawMode(draw: MapboxDraw, mode: PolygonDrawMode): void {
-    const drawMode = this.toDrawMode(mode);
+    let drawMode = this.toDrawMode(mode);
     if (draw.getMode() === drawMode) { return; }
+
+    if (drawMode === 'draw_polygon' && draw.getAll().features.length) {
+      drawMode = 'simple_select';
+    }
 
     // Strange if-construction because of strange typing in mapbox-gl-draw
     if (drawMode === 'simple_select') {
