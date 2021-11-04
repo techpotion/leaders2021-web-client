@@ -2,7 +2,6 @@ import {
   Component,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  ElementRef,
   OnInit,
   OnDestroy,
   ViewChild,
