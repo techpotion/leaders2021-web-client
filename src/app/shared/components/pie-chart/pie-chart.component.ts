@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   ElementRef,
   Input,
   ViewChild,
@@ -18,6 +19,7 @@ import {
 import { filter } from 'rxjs/operators';
 
 import { PieChartData } from '../../models/pie-chart-data';
+import { ChartLegendItem } from '../../models/chart-legend';
 
 
 Chart.register(...registerables);
@@ -31,6 +33,7 @@ Chart.register(...registerables);
 export class PieChartComponent implements AfterViewInit, OnDestroy {
 
   constructor(
+    public readonly cd: ChangeDetectorRef,
   ) {
     this.subscriptions.push(
       this.subscribeOnData(),
@@ -76,7 +79,6 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
           data: data.map(element => element.value),
           backgroundColor: [
             '#F6DCDE',
-            '#FFFFFF',
             '#6C82C1',
             '#193C9D',
             '#EE2D1E',
@@ -90,17 +92,18 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'right',
-            labels: {
-              boxWidth: 4,
-              boxHeight: 12,
-              padding: 20,
-              font: { family: 'Inter', size: 16 },
-            },
+            display: false,
+          },
+          tooltip: {
+            backgroundColor: '#193C9D',
+            titleColor: '#FFFFFF',
+            titleFont: { family: 'Inter', size: 14 },
           },
         },
       },
     });
+
+    this.generateLegend();
   }
 
   // #endregion
@@ -123,6 +126,31 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
         filter(data => !!data.length),
       ),
     ]).subscribe(([, data]) => this.initChart(data));
+  }
+
+  // #endregion
+
+
+  // #region Legend
+
+  public readonly legend = new BehaviorSubject<ChartLegendItem[]>([]);
+
+  private generateLegend(): void {
+    if (!this.chart) {
+      throw new Error('Cannot generate legend: no chart found.');
+    }
+    const labelGenerator =
+    this.chart.options.plugins?.legend?.labels?.generateLabels;
+    if (labelGenerator) {
+      const labels = labelGenerator(this.chart).filter(
+        item => !!item.fillStyle,
+      ).map(item => ({
+        title: item.text,
+        color: item.fillStyle as string,
+      }));
+      this.legend.next(labels);
+      this.cd.detectChanges();
+    }
   }
 
   // #endregion
