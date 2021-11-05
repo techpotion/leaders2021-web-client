@@ -137,7 +137,7 @@ export class SportAreaBriefInfoComponent implements OnDestroy {
               var blob = new Blob([bytestr], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
               var link = document.createElement("a");
               link.href = window.URL.createObjectURL(blob);
-              link.download = "myFileName.xlsx";
+              link.download = "Аналитика\ полигона.xlsx";
               link.click();
           })
       })
