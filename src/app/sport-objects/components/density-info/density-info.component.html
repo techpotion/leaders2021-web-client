@@ -1,0 +1,19 @@
+<div class="population-container density-container"
+    *ngIf="(populationSubject | async) !== null">
+    <div class="heading-container">
+        <span class="heading">Плотность населения</span>
+        <img class="icon" src="assets/availability/walking.svg">
+    </div>
+    <span class="number">{{ populationSubject | async }} чел/км<sup>2</sup></span>
+</div>
+
+<hr *ngIf="bothExist | async">
+
+<div class="objects-container density-container"
+    *ngIf="(objectsSubject | async) !== null">
+    <div class="heading-container">
+        <span class="heading">Количество спортобъектов</span>
+        <img class="icon" src="assets/ball.svg">
+    </div>
+    <span class="number">{{ objectsSubject | async }} объектов</span>
+</div>

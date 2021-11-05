@@ -14,6 +14,7 @@ import { SportAreaDashboardComponent } from './components/sport-area-dashboard/s
 import { DashboardAreasChapterComponent } from './components/dashboard-areas-chapter/dashboard-areas-chapter.component';
 import { DashboardAreaTypesChapterComponent } from './components/dashboard-area-types-chapter/dashboard-area-types-chapter.component';
 import { DashboardAnalyticsChapterComponent } from './components/dashboard-analytics-chapter/dashboard-analytics-chapter.component';
+import { DensityInfoComponent } from './components/density-info/density-info.component';
 
 
 @NgModule({
@@ -26,12 +27,14 @@ import { DashboardAnalyticsChapterComponent } from './components/dashboard-analy
     DashboardAreasChapterComponent,
     DashboardAreaTypesChapterComponent,
     DashboardAnalyticsChapterComponent,
+    DensityInfoComponent,
   ],
   exports: [
     SportObjectFilterBarComponent,
     SportObjectFullInfoComponent,
     SportAreaBriefInfoComponent,
     SportAreaDashboardComponent,
+    DensityInfoComponent,
   ],
   imports: [
     CommonModule,

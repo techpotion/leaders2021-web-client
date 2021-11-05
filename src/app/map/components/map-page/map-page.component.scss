@@ -1,4 +1,6 @@
 :host {
+  position: relative;
+
   display: block;
   height: 100vh;
   overflow: hidden;
@@ -12,6 +14,17 @@
 
       transition: var(--transition-default);
       transition-duration: .5s;
+    }
+
+    .density-info {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+
+      transition: var(--transition-default);
+
+      pointer-events: none;
     }
 
     .top-controls {
