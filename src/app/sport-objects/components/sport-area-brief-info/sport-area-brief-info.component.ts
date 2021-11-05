@@ -111,7 +111,7 @@ export class SportAreaBriefInfoComponent implements OnDestroy {
 
 
   // #region Download
-
+  /* eslint-disable */
   private base64ToArrayBuffer(base64: string): Uint8Array{ // !!!
     var binaryString = window.atob(base64);
     var binaryLen = binaryString.length;
@@ -147,6 +147,7 @@ export class SportAreaBriefInfoComponent implements OnDestroy {
   //   console.warn('Download method not implemented');
   // }
 
+  /* eslint-enable */
   // #endregion
 
 
