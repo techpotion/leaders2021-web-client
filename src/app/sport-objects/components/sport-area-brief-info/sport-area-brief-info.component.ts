@@ -20,7 +20,7 @@ import { PolygonSportAnalytics } from '../../../polygon-saving/models/polygon-sp
 import { SportArea } from '../../models/sport-object';
 import { LatLng } from '../../../map/models/lat-lng';
 
-import { SportAnalyticsApiService } from '../../services/sport-analytics-api.service'; // !!!
+import { SportAnalyticsApiService } from '../../services/sport-analytics-api.service';
 
 const SAVED_STATE_TIMEOUT = 500;
 
@@ -34,7 +34,7 @@ export class SportAreaBriefInfoComponent implements OnDestroy {
 
   constructor(
     public readonly polygonStorage: SportPolygonService,
-    public readonly sportAnalyticsApi: SportAnalyticsApiService, // !!!
+    public readonly sportAnalyticsApi: SportAnalyticsApiService,
   ) {
     this.subscriptions.push(
       this.subscribeInputFocus(),
@@ -112,7 +112,7 @@ export class SportAreaBriefInfoComponent implements OnDestroy {
 
   // #region Download
   /* eslint-disable */
-  private base64ToArrayBuffer(base64: string): Uint8Array{ // !!!
+  private base64ToArrayBuffer(base64: string): Uint8Array{
     var binaryString = window.atob(base64);
     var binaryLen = binaryString.length;
     var bytes = new Uint8Array(binaryLen);
@@ -123,7 +123,7 @@ export class SportAreaBriefInfoComponent implements OnDestroy {
     return bytes;
   }
 
-  public async download() { // !!!
+  public async download() {
       const body = await this.sportAnalyticsApi.getFullPolygonAnalytics(this.polygon as LatLng[]).toPromise()
       const req = fetch('http://89.178.239.84:3201/api/v1/GetExport', {
           method: 'post',
