@@ -1,5 +1,5 @@
 export interface PolygonLayerSource {
-  polygon: GeoJSON.FeatureCollection<GeoJSON.MultiPolygon>;
+  polygon: GeoJSON.FeatureCollection<GeoJSON.Polygon>;
   color: string;
   opacity: number;
 }

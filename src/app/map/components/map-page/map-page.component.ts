@@ -479,7 +479,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   // #endregion
 
-
+  /* eslint-disable */
   public readonly polygonSources = combineLatest([
     this.polygonSelection,
     this.mode.modeObservable,
@@ -494,11 +494,20 @@ export class MapPageComponent implements OnDestroy, OnInit {
       return this.sportPolygonApi.getIntersections(
         selection, filter.availabilities![0],
       ).pipe(
-        map(geojson => [{ polygon: geojson, color: '#A0D89B', opacity: 0.5 }]),
+        map((geojsons) => {
+          const result = []
+          for (const geojson of geojsons)
+            result.push({ polygon: geojson, color: this.randomizeColor(), opacity: 0.5 })
+          return result
+        }),
       );
     }),
   );
 
+  private randomizeColor(): string {
+    return '#' + Math.floor(Math.random()*16777215).toString(16)
+  }
+  /* eslint-enable */
 
   // #region Markers
 
