@@ -17,11 +17,11 @@ export class SportPolygonApiService {
     private readonly http: HttpClient,
   ) { }
 
-
+  /* eslint-disable */
   public getIntersections(
     polygon: LatLng[],
     availability: SportObjectAvailability,
-  ): Observable<GeoJSON.FeatureCollection<GeoJSON.MultiPolygon>> {
+  ): Observable<GeoJSON.FeatureCollection<GeoJSON.Polygon>[]> {
     return this.http.post<{ intersections: { geojson: string }[] }>(
       '/ListIntersections',
       {
@@ -29,10 +29,13 @@ export class SportPolygonApiService {
         availability,
       },
     ).pipe(
-      map(dto => JSON.parse(
-        dto.intersections[0].geojson,
-      ) as GeoJSON.FeatureCollection<GeoJSON.MultiPolygon>),
+      map((dto) => {
+        const result: GeoJSON.FeatureCollection<GeoJSON.Polygon>[] = []
+        for (const intersection of dto.intersections)
+          result.push(JSON.parse(intersection.geojson))
+        return result
+      }),
     );
   }
-
+  /* eslint-enable */
 }
