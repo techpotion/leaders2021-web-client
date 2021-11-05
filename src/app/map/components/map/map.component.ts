@@ -27,6 +27,7 @@ import { MapEvent } from '../../models/map-event';
 
 
 import { MapService, PolygonDrawMode } from '../../services/map.service';
+import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 
 mapboxgl.accessToken = environment.map.token;
@@ -106,6 +107,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     existingMap.on('move', () =>
       this.centerSubject.next(existingMap.getCenter()));
+
+    existingMap.on('mousemove', event => this.sourceMouseMove.next({
+      point: event.lngLat,
+      mouse: {
+        x: event.originalEvent.x,
+        y: event.originalEvent.y,
+      },
+    }));
 
     existingMap.on('sourcedata', (event: mapboxgl.MapSourceDataEvent) => {
       // eslint-disable-next-line
@@ -187,6 +196,21 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }
     }
   }
+
+  // #endregion
+
+
+  // #region Mouse actions
+
+  private readonly sourceMouseMove = new BehaviorSubject<{
+    point: LatLng;
+    mouse: { x: number; y: number };
+  } | null>(null);
+
+  @Output()
+  public readonly mouseMove = this.sourceMouseMove.pipe(
+    filter(isNotNil),
+  );
 
   // #endregion
 

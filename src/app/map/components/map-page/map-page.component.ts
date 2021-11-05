@@ -30,10 +30,12 @@ import { SportObjectsApiService } from '../../../sport-objects/services/sport-ob
 import { SportAnalyticsApiService } from '../../../sport-objects/services/sport-analytics-api.service';
 import { SportObjectFilterService } from '../../../sport-objects/services/sport-object-filter.service';
 import { SportPolygonApiService } from '../../../polygon-saving/services/sport-polygon-api.service';
+import { PointApiService } from '../../../sport-objects/services/point-api.service';
 import { MapUtilsService } from '../../services/map-utils.service';
 import { MapLoadingService } from '../../services/map-loading.service';
 import { MapModeService, MapMode } from '../../services/map-mode.service';
 import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale-increase-animation';
+import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 import { PolygonDrawMode } from '../../services/map.service';
 import { Heatmap } from '../../models/heatmap';
@@ -83,6 +85,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
     public readonly mapUtils: MapUtilsService,
     public readonly loading: MapLoadingService,
     public readonly mode: MapModeService,
+    public readonly pointApi: PointApiService,
     public readonly populationApi: PopulationApiService,
     public readonly sportAnalyticsApi: SportAnalyticsApiService,
     public readonly sportObjectsApi: SportObjectsApiService,
@@ -217,6 +220,62 @@ export class MapPageComponent implements OnDestroy, OnInit {
       ],
     };
   }
+
+  // #endregion
+
+
+  // #region Mouse events
+
+  public readonly mapMouseMove = new BehaviorSubject<{
+    point: LatLng;
+    mouse: { x: number; y: number };
+  } | null>(null);
+
+  public readonly mousePosition = this.mapMouseMove.pipe(
+    filter(isNotNil),
+    map(mouseEvent => mouseEvent.mouse),
+  );
+
+  public readonly mouseDensityEnabled = this.mode.modeObservable.pipe(
+    map(modes =>
+      (modes.includes('sport-heatmap')
+        || modes.includes('population-heatmap'))
+        && !modes.includes('marker')
+        && !modes.includes('polygon-draw')
+        && !modes.includes('polygon-saving')
+        && !modes.includes('object-intersection'),
+    ),
+  );
+
+  public readonly pointPopulationDensity = combineLatest([
+    this.mapMouseMove.pipe(
+      filter(isNotNil),
+    ),
+    this.mode.modeObservable,
+    this.mouseDensityEnabled,
+  ]).pipe(
+    switchMap(([moveEvent, modes, enabled]) => {
+      if (!modes.includes('population-heatmap') || !enabled) {
+        return of(null);
+      }
+      return this.pointApi.getPopulationDensity(moveEvent.point);
+    }),
+  );
+
+  public readonly pointObjectsDensity = combineLatest([
+    this.mapMouseMove.pipe(
+      filter(isNotNil),
+    ),
+    this.mode.modeObservable,
+    this.mouseDensityEnabled,
+  ]).pipe(
+    switchMap(([moveEvent, modes, enabled]) => {
+      if (!modes.includes('sport-heatmap') || !enabled) {
+        return of(null);
+      }
+      return this.pointApi.getObjectsDensity(moveEvent.point);
+    }),
+  );
 
   // #endregion
 

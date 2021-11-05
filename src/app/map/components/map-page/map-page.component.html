@@ -15,6 +15,7 @@
         (mapLoad)="loading.toggle('map', false)"
         (markerLayerLoad)="loading.toggle('marker', false)"
         (heatmapLoad)="loading.toggle('heatmap', false)"
+        (mouseMove)="mapMouseMove.next($event)"
     ></tp-map>
 
     <div class="top-controls">
@@ -91,8 +92,7 @@
                     </tp-tooltip>
                 </div>
 
-                <div class="heatmap-toggles">
-                    <tp-tooltip
+                <div class="heatmap-toggles"><tp-tooltip
                         text="Тепловая карта населения"
                         position="left">
                         <tp-map-toggle
@@ -100,9 +100,7 @@
                             (pressChange)="onTogglePress($event, 'population-heatmap')"
                             lightIcon="assets/light/population.svg"
                             darkIcon="assets/dark/population.svg"    
-                        ></tp-map-toggle>
-                    </tp-tooltip>
-                    <tp-tooltip
+                        ></tp-map-toggle></tp-tooltip><tp-tooltip
                         text="Тепловая карта спортивных объектов"
                         position="left">
                         <tp-map-toggle
@@ -110,9 +108,7 @@
                             (pressChange)="onTogglePress($event, 'sport-heatmap')"
                             lightIcon="assets/light/runner.svg"
                             darkIcon="assets/dark/runner.svg"    
-                        ></tp-map-toggle>
-                    </tp-tooltip>
-                    <tp-tooltip
+                        ></tp-map-toggle></tp-tooltip><tp-tooltip
                         text="Пересечения областей"
                         position="left">
                         <tp-map-toggle
@@ -121,12 +117,19 @@
                             (pressChange)="onTogglePress($event, 'object-intersection')"
                             lightIcon="assets/light/intersection.svg"
                             darkIcon="assets/dark/intersection.svg"    
-                        ></tp-map-toggle>
-                    </tp-tooltip>
-                </div>
+                        ></tp-map-toggle></tp-tooltip></div>
             </div>
         </div>
     </div>
+
+    <ng-container *ngIf="mousePosition | async as mouse">
+        <tp-density-info class="density-info"
+            *ngIf="mouseDensityEnabled | async"
+            [style.transform]="'translate(calc(' + mouse.x + 'px - 50%),calc(' +  mouse.y + 'px - 100% - 10px))'"
+            [population]="pointPopulationDensity | async"
+            [objects]="pointObjectsDensity | async">
+        </tp-density-info>
+    </ng-container>
 </div>
 
 <!-- <tp-loading-spinner class="loading-spinner" -->
