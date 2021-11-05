@@ -204,7 +204,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private readonly sourceMouseMove = new BehaviorSubject<{
     point: LatLng;
-    mouse: { x: number; y: number; }
+    mouse: { x: number; y: number };
   } | null>(null);
 
   @Output()

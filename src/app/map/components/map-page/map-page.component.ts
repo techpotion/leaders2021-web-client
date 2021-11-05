@@ -35,7 +35,7 @@ import { MapUtilsService } from '../../services/map-utils.service';
 import { MapLoadingService } from '../../services/map-loading.service';
 import { MapModeService, MapMode } from '../../services/map-mode.service';
 import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale-increase-animation';
-import { isNotNil }from '../../../shared/utils/is-not-nil';
+import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 import { PolygonDrawMode } from '../../services/map.service';
 import { Heatmap } from '../../models/heatmap';
