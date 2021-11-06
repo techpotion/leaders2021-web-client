@@ -10,6 +10,16 @@
     <div class="analytics-container"
          *ngIf="isOpened | async"
          [@sizeIncrease]>
+        <div class="population-density-container">
+            <h2 class="metric-name">Плотность населения</h2>
+            <span class="metric-value">
+                {{ polygon.analytics.density | area }}
+                <span class="units">
+                    чел/км<sup>2</sup>
+                </span>
+            </span>
+        </div>
+
         <div class="area-square-container">
             <h2 class="metric-name">Площадь спортзон</h2>
             <span class="metric-value">
