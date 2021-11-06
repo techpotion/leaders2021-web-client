@@ -44,8 +44,14 @@ export class SportAnalyticsApiService {
     polygon: LatLng[],
   ): Observable<Blob> {
     return this.getFullPolygonAnalytics(polygon).pipe(
-      switchMap(analytics =>
-        this.http.post<{ data: string }>('/GetExport', analytics)),
+      switchMap(analytics => this.getAnalyticsBlob(analytics)),
+    );
+  }
+
+  public getAnalyticsBlob(
+    analytics: FullPolygonAnalytics,
+  ): Observable<Blob> {
+    return this.http.post<{ data: string }>('/GetExport', analytics).pipe(
       map(({ data }) => {
         const binaryString = window.atob(data);
         const bytes = new Uint8Array(

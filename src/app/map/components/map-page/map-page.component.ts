@@ -362,7 +362,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   // #region Download
 
-  private readonly analyticsDownload = new BehaviorSubject<boolean>(false);
+  public readonly analyticsDownload = new BehaviorSubject<boolean>(false);
 
   private subscribeAnalyticsDownload(): Subscription {
     return this.analyticsDownload.subscribe(downloading =>

@@ -34,6 +34,7 @@
             [analytics]="dashboardAnalytics | async"
             [areas]="dashboardAreas | async"
             (closeDashboard)="mode.removeContent('polygon-dashboard')"
+            (analyticsExport)="analyticsDownload.next($event)"
         ></tp-sport-area-dashboard>
 
         <div class="map-container">

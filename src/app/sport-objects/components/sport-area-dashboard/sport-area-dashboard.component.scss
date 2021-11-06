@@ -38,77 +38,116 @@
 
   .headings {
     display: flex;
-    gap: 30px;
-    align-items: flex-end;
-    justify-content: space-around;
+    justify-content: space-between;
 
     width: 100%;
     margin-top: 30px;
 
-    .heading {
-      @extend %body-1-semibold-font;
+    .heading-container {
+      display: flex;
+      gap: 30px;
+      align-items: flex-end;
 
-      position: relative;
-
-      padding-bottom: 5px;
-      border-bottom: 1px solid var(--color-theme-primary-400);
-
-      color: var(--color-theme-primary-1000);
-      font-weight: 300;
-
-      cursor: pointer;
-
-      user-select: none;
-
-      hr {
-        position: absolute;
-        bottom: -10px;
-        left: 0;
-
-        width: 0;
-        height: 2px;
-        border: 0;
-
-        background: var(--color-theme-primary-800);
-
-        transition: var(--transition-default);
-      }
-
-      &.selected {
+      .heading {
         @extend %body-1-semibold-font;
 
+        position: relative;
+
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--color-theme-primary-400);
+
+        color: var(--color-theme-primary-1000);
+        font-weight: 300;
+
+        cursor: pointer;
+
+        user-select: none;
+
         hr {
-          width: 100%;
+          position: absolute;
+          bottom: -10px;
+          left: 0;
+
+          width: 0;
+          height: 2px;
+          border: 0;
+
+          background: var(--color-theme-primary-800);
+
+          transition: var(--transition-default);
+        }
+
+        &.selected {
+          @extend %body-1-semibold-font;
+
+          hr {
+            width: 100%;
+          }
+        }
+
+        &.areas {
+          width: 163px;
+        }
+
+        &.area-types {
+          width: 406px;
+        }
+
+        &.analytics {
+          display: flex;
+          gap: 5px;
+          align-items: flex-end;
+
+          width: 122px;
+
+          .icon {
+            width: 20px;
+            height: 23px;
+
+            background-image: url('../../../../assets/bulb.svg');
+          }
+
+          &:hover,
+          &.selected {
+            .icon {
+              background-image: url('../../../../assets/lighting-bulb.svg');
+            }
+          }
         }
       }
+    }
 
-      &.areas {
-        width: 163px;
+    .download-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+
+      background: var(--color-theme-white-1000);
+      box-shadow: var(--shadow-default);
+
+      transition: var(--transition-default);
+
+      .icon {
+        width: 21px;
+        height: 19px;
+
+        background-image: url('../../../../assets/dark/download.svg');
+        background-size: cover;
       }
 
-      &.area-types {
-        width: 406px;
+      &:hover {
+        box-shadow: var(--shadow-input-active);
       }
 
-      &.analytics {
-        display: flex;
-        gap: 5px;
-        align-items: flex-end;
-
-        width: 122px;
+      &:active {
+        background: var(--color-theme-primary-1000);
 
         .icon {
-          width: 20px;
-          height: 23px;
-
-          background-image: url('../../../../assets/bulb.svg');
-        }
-
-        &:hover,
-        &.selected {
-          .icon {
-            background-image: url('../../../../assets/lighting-bulb.svg');
-          }
+          background-image: url('../../../../assets/light/download.svg');
         }
       }
     }
