@@ -492,7 +492,12 @@ export class MapPageComponent implements OnDestroy, OnInit {
         return of(null);
       }
       return this.sportPolygonApi.getIntersections(
-        selection, filter.availabilities![0],
+        selection,
+        filter.availabilities![0],
+        filter.sportKinds!,
+        filter.departmentalOrganizationNames!,
+        filter.sportsAreaNames!,
+        filter.sportsAreaTypes!,
       ).pipe(
         map((geojsons) => {
           const result = []
