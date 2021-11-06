@@ -21,7 +21,7 @@ const METRIC_NORMALS = {
   sportKindsCount: 50,
   square: 400000,
   subwayDistance: 1500,
-  pollutionLevel: 0.1,
+  pollutionLevel: 10,
 };
 
 @Component({
