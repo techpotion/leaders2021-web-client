@@ -6,6 +6,7 @@ import { map, switchMap } from 'rxjs/operators';
 
 import { LatLng } from '../../map/models/lat-lng';
 import {
+  AnalyticsFilterRequest,
   FullPolygonAnalytics,
   PolygonSportAnalytics,
 } from '../../polygon-saving/models/polygon-sport-analytics';
@@ -23,27 +24,27 @@ export class SportAnalyticsApiService {
   ) { }
 
   public getPolygonAnalytics(
-    polygon: LatLng[],
+    request: AnalyticsFilterRequest,
   ): Observable<PolygonSportAnalytics> {
     return this.http.post<PolygonSportAnalytics>(
       '/PolygonAnalytics',
-      { polygon: { points: polygon } },
+      request,
     );
   }
 
   public getFullPolygonAnalytics(
-    polygon: LatLng[],
+    request: AnalyticsFilterRequest,
   ): Observable<FullPolygonAnalytics> {
     return this.http.post<FullPolygonAnalytics>(
       '/PolygonAnalyticsDashboard',
-      { polygon: { points: polygon } },
+      request,
     );
   }
 
   public getPolygonAnalyticsBlob(
-    polygon: LatLng[],
+    request: AnalyticsFilterRequest,
   ): Observable<Blob> {
-    return this.getFullPolygonAnalytics(polygon).pipe(
+    return this.getFullPolygonAnalytics(request).pipe(
       switchMap(analytics => this.getAnalyticsBlob(analytics)),
     );
   }

@@ -78,7 +78,9 @@ export class PolygonSavingSettingsComponent {
   public readonly newPolygonAnalytics = this.newPolygonGeometry.pipe(
     switchMap(polygon => {
       if (!polygon) { return of(null); }
-      return this.analyticsApi.getPolygonAnalytics(polygon);
+      return this.analyticsApi.getPolygonAnalytics({
+        polygon: { points: polygon },
+      });
     }),
   );
 

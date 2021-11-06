@@ -34,7 +34,8 @@
 
             <tp-multiple-select class="select"
                 [variants]="filter.variants"
-                (variantsSelect)="onChange($event, filter.apiName)">
+                (variantsSelect)="onChange($event, filter.apiName)"
+                [selected]="filter.selected">
             </tp-multiple-select>
         </div>
 

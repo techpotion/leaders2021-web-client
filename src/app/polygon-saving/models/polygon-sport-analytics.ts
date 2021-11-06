@@ -1,4 +1,5 @@
 import { LatLng } from '../../map/models/lat-lng';
+import { SportObjectAvailability } from '../../sport-objects/models/sport-object';
 
 export interface PolygonSportAnalytics {
   areasSquare: number;
@@ -54,4 +55,15 @@ export interface FullPolygonAnalytics {
     points: SubwayPoint[];
   };
   mark: number;
+}
+
+export interface AnalyticsFilterRequest {
+  availabilities?: SportObjectAvailability[];
+  sportsAreaNames?: string[];
+  sportsAreaTypes?: string[];
+  sportKinds?: string[];
+  departmentalOrganizationNames?: string[];
+  polygon?: {
+    points: LatLng[];
+  };
 }

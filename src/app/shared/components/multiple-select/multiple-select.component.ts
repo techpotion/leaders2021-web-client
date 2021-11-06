@@ -12,7 +12,7 @@ import {
 import { FormControl } from '@angular/forms';
 
 import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
-import { map, debounceTime, distinctUntilChanged, skip, startWith } from 'rxjs/operators';
+import { tap, map, debounceTime, distinctUntilChanged, skip, startWith } from 'rxjs/operators';
 import _ from 'lodash';
 
 import { EnumSelectVariant } from '../../models/enum-select-variant';
@@ -45,6 +45,7 @@ export class MultipleSelectComponent implements OnDestroy {
   ) {
     this.subscriptions.push(
       this.subscribeInputFocus(),
+      this.subscribeVariantsOuterSelected(),
     );
   }
 
@@ -72,7 +73,6 @@ export class MultipleSelectComponent implements OnDestroy {
       return { index, name };
     });
     this.variantsSubject.next(enumVariants);
-    this.variantsSelected.next(this.allSelectedArray);
   }
 
   // #endregion
@@ -140,6 +140,41 @@ export class MultipleSelectComponent implements OnDestroy {
 
 
   // #region Variant selection
+
+  @Input()
+  public set selected(value: (string | EnumSelectVariant)[] | undefined) {
+    if (!value) {
+      this.variantsOuterSelected.next(value);
+      return;
+    }
+
+    const enumVariants = value.map(variant => {
+      const index = typeof variant === 'string' ? undefined : variant.index;
+      const name = typeof variant === 'string' ? variant : variant.name;
+      return { index, name };
+    });
+    this.variantsOuterSelected.next(enumVariants);
+  }
+
+  public readonly variantsOuterSelected =
+  new BehaviorSubject<SelectVariant[] | undefined>(undefined);
+
+  public subscribeVariantsOuterSelected(): Subscription {
+    return combineLatest([
+      this.variantsOuterSelected.pipe(
+        skip(1),
+      ),
+      this.variantsSubject.pipe(
+        skip(1),
+      ),
+    ]).pipe(
+      map(([selected, variants]) => selected ? selected.map(variant =>
+        variants.findIndex(
+          existingVariant => existingVariant.name === variant.name,
+        )) : this.allSelectedArray),
+      map(variants => variants.filter(variant => variant !== -1)),
+    ).subscribe(variants => this.variantsSelected.next(variants));
+  }
 
   private readonly variantsSelected = new BehaviorSubject<number[]>([]);
 

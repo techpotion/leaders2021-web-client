@@ -18,9 +18,8 @@ import { saveAs } from 'file-saver';
 import { SportPolygonService } from '../../../polygon-saving/services/sport-polygon.service';
 import { isNotNil } from '../../../shared/utils/is-not-nil';
 
-import { PolygonSportAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
+import { PolygonSportAnalytics, AnalyticsFilterRequest } from '../../../polygon-saving/models/polygon-sport-analytics';
 import { SportArea } from '../../models/sport-object';
-import { LatLng } from '../../../map/models/lat-lng';
 
 import { SportAnalyticsApiService } from '../../services/sport-analytics-api.service';
 
@@ -99,17 +98,17 @@ export class SportAreaBriefInfoComponent implements OnDestroy {
   // #region Open full info
 
   @Input()
-  public polygon?: LatLng[];
+  public filters?: AnalyticsFilterRequest;
 
   @Output()
-  public readonly openFull = new EventEmitter<LatLng[]>();
+  public readonly openFull = new EventEmitter<AnalyticsFilterRequest>();
 
   public openFullInfo(): void {
-    if (!this.polygon) {
+    if (!this.filters?.polygon) {
       throw new Error('Cannot open full info: '
         + 'polygon not passed.');
     }
-    this.openFull.next(this.polygon);
+    this.openFull.next(this.filters);
   }
 
   // #endregion
@@ -121,13 +120,13 @@ export class SportAreaBriefInfoComponent implements OnDestroy {
   public readonly analyticsDownload = new EventEmitter<boolean>();
 
   public async download(): Promise<void> {
-    if (!this.polygon) {
+    if (!this.filters) {
       throw new Error('Cannot download analytics: no polygon passed');
     }
 
     this.analyticsDownload.emit(true);
     const blob = await this.sportAnalyticsApi.getPolygonAnalyticsBlob(
-      this.polygon,
+      this.filters,
     ).toPromise();
     this.analyticsDownload.emit(false);
     saveAs(blob, EXPORT_FILENAME);
@@ -196,12 +195,12 @@ export class SportAreaBriefInfoComponent implements OnDestroy {
     this.savedState.next('saving');
 
     setTimeout(() => {
-      if (!this.polygon || !this.analytics || !this.areas) {
+      if (!this.filters?.polygon || !this.analytics || !this.areas) {
         throw new Error('Cannot save polygon: some fields are empty.');
       }
 
       this.polygonStorage.savePolygon({
-        geometry: this.polygon,
+        geometry: this.filters.polygon.points,
         name: this.selectionNameControl.value as string,
         analytics: this.analytics,
         areas: this.areas,

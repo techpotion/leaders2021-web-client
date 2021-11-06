@@ -33,6 +33,7 @@
             [objects]="dashboardObjects | async"
             [analytics]="dashboardAnalytics | async"
             [areas]="dashboardAreas | async"
+            [filtersEnabled]="!!(filtersEnabled | async)"
             (closeDashboard)="mode.removeContent('polygon-dashboard')"
             (analyticsExport)="analyticsDownload.next($event)"
         ></tp-sport-area-dashboard>
