@@ -21,12 +21,20 @@ export class SportPolygonApiService {
   public getIntersections(
     polygon: LatLng[],
     availability: SportObjectAvailability,
+    sportKinds: string[],
+    departmentalOrganizationNames: string[],
+    sportsAreaNames: string[],
+    sportsAreaTypes: string[],
   ): Observable<GeoJSON.FeatureCollection<GeoJSON.Polygon>[]> {
     return this.http.post<{ intersections: { geojson: string }[] }>(
       '/ListIntersections',
       {
         polygon: { points: polygon },
         availability,
+        sportKinds,
+        departmentalOrganizationNames,
+        sportsAreaNames,
+        sportsAreaTypes,
       },
     ).pipe(
       map((dto) => {

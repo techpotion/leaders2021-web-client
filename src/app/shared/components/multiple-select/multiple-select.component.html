@@ -12,7 +12,7 @@
         </ng-template>
     </span>
 
-    <input type="text" #searchInput 
+    <input type="text" #searchInput
            [ngClass]="{ 'hidden': (isOpened | async) === null || (isOpened | async) === false }"
            [formControl]="searchControl">
 
@@ -22,12 +22,12 @@
     </div>
 </div>
 
-<cdk-virtual-scroll-viewport class="variants-viewport" 
-    *ngIf="isOpened | async" 
+<cdk-virtual-scroll-viewport class="variants-viewport"
+    *ngIf="isOpened | async"
     [@sizeIncrease]
     itemSize="48"
-    [minBufferPx]="variantsMaxHeight * 2"
-    [maxBufferPx]="variantsMaxHeight * 2">
+    [minBufferPx]="variantsMaxHeight * 300"
+    [maxBufferPx]="variantsMaxHeight * 300">
         <div class="variant"
             (click)="selectAll()">
             Все
