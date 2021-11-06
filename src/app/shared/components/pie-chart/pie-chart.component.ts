@@ -78,11 +78,11 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
         datasets: [{
           data: data.map(element => element.value),
           backgroundColor: [
-            '#F6DCDE',
+            '#EBB0B5',
             '#6C82C1',
             '#193C9D',
             '#EE2D1E',
-            '#DAE0EF',
+            '#ACB9DC',
           ],
           borderColor: '#DAE0EF',
           borderWidth: 1,
