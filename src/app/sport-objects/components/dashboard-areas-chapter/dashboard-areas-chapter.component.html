@@ -33,10 +33,11 @@
                     ≈{{ areasAmount | async }}
                 </span>
                 <div class="units">спортивных зон</div>
-                <tp-tooltip [text]="((areasAmountPercent | async) || 0) >= 80 
-                        ? 'Территория достаточно оснащена спортивными зонами'
-                        : 'Число спортивных зон слишком мало для плотности населения территории'"
-                        position="top">
+                <tp-tooltip *ngIf="!filtersEnabled"
+                    [text]="((areasAmountPercent | async) || 0) >= 80 
+                            ? 'Территория достаточно оснащена спортивными зонами'
+                            : 'Число спортивных зон слишком мало для плотности населения территории'"
+                    position="top">
                     <img class="indicator" 
                          [src]="((areasAmountPercent | async) || 0) >= 80
                                 ? 'assets/in-circle/tick.svg'
@@ -44,15 +45,17 @@
                     >
                 </tp-tooltip>
             </div>
-            <div class="progress-bar">
-                <div class="filler"
-                     [ngClass]="{ 'normal': ((areasAmountPercent | async) || 0) >= 80}"
-                     [ngStyle]="{ 'width': (areasAmountPercent | async) + '%' }" >
+            <ng-container *ngIf="!filtersEnabled">
+                <div class="progress-bar">
+                    <div class="filler"
+                         [ngClass]="{ 'normal': ((areasAmountPercent | async) || 0) >= 80}"
+                         [ngStyle]="{ 'width': (areasAmountPercent | async) + '%' }" >
+                    </div>
                 </div>
-            </div>
-            <span class="bottom-hint">
-                <b>{{ ((areasAmountPercent | async) || 0) }}%</b> от нормы
-            </span>
+                <span class="bottom-hint">
+                    <b>{{ ((areasAmountPercent | async) || 0) }}%</b> от нормы
+                </span>
+            </ng-container>
         </div>
 
         <img class="illustration" src="assets/illustrations/dashboard.svg">

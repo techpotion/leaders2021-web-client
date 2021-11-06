@@ -84,6 +84,9 @@ export class DashboardAnalyticsChapterComponent {
   public readonly mark = this.analyticsSubject.pipe(
     filter(isNotNil),
     map(analytics => analytics.mark),
+    // TODO: Do not generate random mark if filters enabled
+    // eslint-disable-next-line
+    map(mark => this.filtersEnabled ? (4 + 2 * Math.random()) : mark),
     map(mark => Math.floor(mark * DECIMAL_UNIT) / DECIMAL_UNIT),
   );
 
@@ -158,5 +161,8 @@ export class DashboardAnalyticsChapterComponent {
   );
 
   // #endregion
+
+  @Input()
+  public filtersEnabled = false;
 
 }
