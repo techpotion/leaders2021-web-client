@@ -1,4 +1,7 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 
 import { filter, map } from 'rxjs/operators';
 
@@ -18,14 +21,20 @@ export class LoadingScreenComponent {
   ) { }
 
   public readonly objectName = this.service.loadingObservable.pipe(
-    filter(obj => obj.map || obj.marker
-      || obj.heatmap || obj.analytics || obj.data),
+    filter(obj => obj.map
+      || obj.marker
+      || obj.heatmap
+      || obj.analytics
+      || obj.data
+      || obj.download,
+    ),
     map(obj => {
       if (obj.map) { return 'карту'; }
       if (obj.marker) { return 'маркеры'; }
       if (obj.heatmap) { return 'тепловую карту'; }
       if (obj.analytics) { return 'аналитику'; }
       if (obj.data) { return 'данные'; }
+      if (obj.download) { return 'файл'; }
       return null;
     }),
   );

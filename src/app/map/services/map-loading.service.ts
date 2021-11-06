@@ -8,6 +8,7 @@ import { debounceTime, map } from 'rxjs/operators';
 interface MapLoadingObject {
   analytics: boolean;
   data: boolean;
+  download: boolean;
   heatmap: boolean;
   map: boolean;
   marker: boolean;
@@ -28,6 +29,7 @@ export class MapLoadingService {
   private readonly loadingObject = new BehaviorSubject<MapLoadingObject>({
     analytics: false,
     data: false,
+    download: false,
     heatmap: false,
     map: false,
     marker: false,

@@ -94,6 +94,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
   ) {
     this.subscriptions.push(
       this.subscribeClearingPolygon(),
+      this.subscribeAnalyticsDownload(),
     );
   }
 
@@ -359,6 +360,18 @@ export class MapPageComponent implements OnDestroy, OnInit {
   // #endregion
 
 
+  // #region Download
+
+  private readonly analyticsDownload = new BehaviorSubject<boolean>(false);
+
+  private subscribeAnalyticsDownload(): Subscription {
+    return this.analyticsDownload.subscribe(downloading =>
+      this.loading.toggle('download', downloading));
+  }
+
+  // #endregion
+
+
   // #region Popups
 
   private readonly forcePopups = new BehaviorSubject<PopupSource[]>([]);
@@ -429,6 +442,9 @@ export class MapPageComponent implements OnDestroy, OnInit {
                   this.mode.addContent('polygon-dashboard');
                   this.forcePopups.next([]);
                 }),
+
+                component.analyticsDownload.subscribe(downloading =>
+                  this.analyticsDownload.next(downloading)),
               );
             },
             anchor: 'right' as const,

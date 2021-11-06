@@ -13,6 +13,8 @@ import { FormControl } from '@angular/forms';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
+import { saveAs } from 'file-saver';
+
 import { SportPolygonService } from '../../../polygon-saving/services/sport-polygon.service';
 import { isNotNil } from '../../../shared/utils/is-not-nil';
 
@@ -21,6 +23,9 @@ import { SportArea } from '../../models/sport-object';
 import { LatLng } from '../../../map/models/lat-lng';
 
 import { SportAnalyticsApiService } from '../../services/sport-analytics-api.service';
+
+
+const EXPORT_FILENAME = 'Аналитика полигона.xlsx';
 
 const SAVED_STATE_TIMEOUT = 500;
 
@@ -111,43 +116,23 @@ export class SportAreaBriefInfoComponent implements OnDestroy {
 
 
   // #region Download
-  /* eslint-disable */
-  private base64ToArrayBuffer(base64: string): Uint8Array{
-    var binaryString = window.atob(base64);
-    var binaryLen = binaryString.length;
-    var bytes = new Uint8Array(binaryLen);
-    for (var i = 0; i < binaryLen; i++) {
-        var ascii = binaryString.charCodeAt(i);
-        bytes[i] = ascii;
+
+  @Output()
+  public readonly analyticsDownload = new EventEmitter<boolean>();
+
+  public async download(): Promise<void> {
+    if (!this.polygon) {
+      throw new Error('Cannot download analytics: no polygon passed');
     }
-    return bytes;
+
+    this.analyticsDownload.emit(true);
+    const blob = await this.sportAnalyticsApi.getPolygonAnalyticsBlob(
+      this.polygon,
+    ).toPromise();
+    this.analyticsDownload.emit(false);
+    saveAs(blob, EXPORT_FILENAME);
   }
 
-  public async download() {
-      const body = await this.sportAnalyticsApi.getFullPolygonAnalytics(this.polygon as LatLng[]).toPromise()
-      const req = fetch('http://89.178.239.84:3201/api/v1/GetExport', {
-          method: 'post',
-          body: JSON.stringify(body),
-          headers: {'Content-Type': 'application/json'}
-      });
-
-      req.then(resp => {
-          resp.json().then(json => {
-              const bytestr = this.base64ToArrayBuffer(json['data'])
-              var blob = new Blob([bytestr], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-              var link = document.createElement("a");
-              link.href = window.URL.createObjectURL(blob);
-              link.download = "Аналитика\ полигона.xlsx";
-              link.click();
-          })
-      })
-  }
-
-  // public download(): void {
-  //   console.warn('Download method not implemented');
-  // }
-
-  /* eslint-enable */
   // #endregion
 
 
