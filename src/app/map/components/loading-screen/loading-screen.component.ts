@@ -1,7 +1,6 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
 } from '@angular/core';
 
 import { filter, map } from 'rxjs/operators';
@@ -18,7 +17,6 @@ import { MapLoadingService } from '../../services/map-loading.service';
 export class LoadingScreenComponent {
 
   constructor(
-    public readonly cd: ChangeDetectorRef,
     private readonly service: MapLoadingService,
   ) { }
 
