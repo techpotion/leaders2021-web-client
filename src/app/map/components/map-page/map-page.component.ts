@@ -624,88 +624,122 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   // #region Markers
 
-  public readonly markerLayers: Observable<MarkerLayerSource[] | null> =
-  combineLatest([
-    this.mode.modeObservable.pipe(
-      pairwise(),
-      filter(([prev, curr]) =>
-        _.difference(prev, curr).includes('marker')
-        || _.difference(curr, prev).includes('marker'),
-      ),
-      startWith([this.mode.modes, this.mode.modes]),
+  public readonly markerLayers: Observable<MarkerLayerSource[] | null> = merge(
+    combineLatest([
+      this.quickAnalytics.center,
+      this.mode.contentObservable,
+    ]).pipe(
+      map(([center, content]) => {
+        if (!center) { return null; }
+        if (!content.includes('quick-analytics')) { return null; }
+        return center;
+      }),
+      map(center => center === null ? center : ([{
+        data: {
+          type: 'FeatureCollection',
+          features: [{
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [center.lat, center.lng],
+            },
+            properties: null,
+          }],
+        },
+        idMethod: (obj: any) => { return 0; },
+        image: {
+          source: 'assets/unknown-marker.svg',
+          anchor: 'bottom' as const,
+        },
+        className: 'quick-analysis-marker',
+        cluster: {
+          background: '#193C9D',
+          color: '#FFFFFF',
+        },
+      }])),
     ),
-    this.filterRequest,
-    this.polygonSelection,
-  ]).pipe(
-    switchMap(([[prev, curr], filter, polygon]) => {
-      if (!isFilterRequestEmpty(filter)) {
-        this.loading.toggle('marker', true);
-        const polygonizedFilter = { ...filter };
-        if (polygon) {
-          polygonizedFilter.polygon = { points: polygon };
+    combineLatest([
+      this.mode.modeObservable.pipe(
+        pairwise(),
+        filter(([prev, curr]) =>
+          _.difference(prev, curr).includes('marker')
+          || _.difference(curr, prev).includes('marker'),
+        ),
+        startWith([this.mode.modes, this.mode.modes]),
+      ),
+      this.filterRequest,
+      this.polygonSelection,
+    ]).pipe(
+      switchMap(([[prev, curr], filter, polygon]) => {
+        if (!isFilterRequestEmpty(filter)) {
+          this.loading.toggle('marker', true);
+          const polygonizedFilter = { ...filter };
+          if (polygon) {
+            polygonizedFilter.polygon = { points: polygon };
+          }
+          return this.sportObjectsApi.getFilteredObjectsGeoJson(
+            polygonizedFilter,
+          ).pipe(
+            map(source => [this.createSportObjectMarkerLayer(source)]),
+          );
         }
-        return this.sportObjectsApi.getFilteredObjectsGeoJson(
-          polygonizedFilter,
-        ).pipe(
-          map(source => [this.createSportObjectMarkerLayer(source)]),
-        );
-      }
 
-      if (_.difference(curr, prev).includes('marker')) {
-        this.loading.toggle('marker', true);
-        return this.sportObjectsApi.getObjectsGeoJson().pipe(
-          map(source => [this.createSportObjectMarkerLayer(source)]),
-        );
-      }
+        if (_.difference(curr, prev).includes('marker')) {
+          this.loading.toggle('marker', true);
+          return this.sportObjectsApi.getObjectsGeoJson().pipe(
+            map(source => [this.createSportObjectMarkerLayer(source)]),
+          );
+        }
 
-      if (polygon) {
-        this.loading.toggle('marker', true);
-        return this.sportObjectsApi.getObjectsGeoJson(
-          { polygon: { points: polygon } },
-        ).pipe(
-          map(source => [this.createSportObjectMarkerLayer(source)]),
-        );
-      }
+        if (polygon) {
+          this.loading.toggle('marker', true);
+          return this.sportObjectsApi.getObjectsGeoJson(
+            { polygon: { points: polygon } },
+          ).pipe(
+            map(source => [this.createSportObjectMarkerLayer(source)]),
+          );
+        }
 
-      return of(null);
-    }),
-    map(sources => {
-      if (!sources) { return sources; }
-      for (const source of sources) {
-        source.popup = {
-          component: SportObjectBriefInfoComponent,
-          initMethod: (
+        return of(null);
+      }),
+      map(sources => {
+        if (!sources) { return sources; }
+        for (const source of sources) {
+          source.popup = {
             component: SportObjectBriefInfoComponent,
-            obj: SportObject,
-          ) => {
-            component.obj = obj;
-          },
-          eventHandler: (
-            component: SportObjectBriefInfoComponent,
-            obj: SportObject,
-          ) => {
-            if (this.fullInfoObjectSubscription
-              && !this.fullInfoObjectSubscription.closed) {
-              this.fullInfoObjectSubscription.unsubscribe();
-            }
+            initMethod: (
+              component: SportObjectBriefInfoComponent,
+              obj: SportObject,
+            ) => {
+              component.obj = obj;
+            },
+            eventHandler: (
+              component: SportObjectBriefInfoComponent,
+              obj: SportObject,
+            ) => {
+              if (this.fullInfoObjectSubscription
+                && !this.fullInfoObjectSubscription.closed) {
+                this.fullInfoObjectSubscription.unsubscribe();
+              }
 
-            this.fullInfoObjectSubscription = component.openFull.pipe(
-              tap(() => this.loading.toggle('data', true)),
-              switchMap(objectId => this.sportObjectsApi.getFilteredAreas({
-                objectIds: [objectId],
-              })),
-              map(areas => ({ obj, areas })),
-              tap(() => this.loading.toggle('data', false)),
-            ).subscribe(obj => {
-              this.mode.addContent('object-info');
-              this.fullInfoObject.next(obj);
-            });
-          },
-        };
-      }
-      return sources;
-    }),
-    tap(() => setTimeout(() => this.cd.detectChanges())),
+              this.fullInfoObjectSubscription = component.openFull.pipe(
+                tap(() => this.loading.toggle('data', true)),
+                switchMap(objectId => this.sportObjectsApi.getFilteredAreas({
+                  objectIds: [objectId],
+                })),
+                map(areas => ({ obj, areas })),
+                tap(() => this.loading.toggle('data', false)),
+              ).subscribe(obj => {
+                this.mode.addContent('object-info');
+                this.fullInfoObject.next(obj);
+              });
+            },
+          };
+        }
+        return sources;
+      }),
+      tap(() => setTimeout(() => this.cd.detectChanges())),
+    ),
   );
 
   private createSportObjectMarkerLayer(

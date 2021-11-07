@@ -45,7 +45,7 @@
   .hint {
     @extend %body-font;
 
-    font-size: 8px;
+    font-size: 10px;
   }
 
   .per100k-container {
@@ -92,7 +92,7 @@
       @extend %body-2-light-font;
 
       color: var(--color-theme-primary-1000);
-      font-size: 8px;
+      font-size: 10px;
 
       transition: var(--transition-default);
 
