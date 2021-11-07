@@ -1,0 +1,41 @@
+<div class="heading-container">
+    <h1 class="heading">Быстрая аналитика</h1>
+    <img class="icon" src="assets/lightning.svg">
+</div>
+
+<span class="mark">
+    <b [ngClass]="{ 'bad': !(markIsOk | async)}">
+        {{ mark | async }}
+    </b> / 10
+</span>
+
+<span class="hint">
+    {{ markBasedSolution | async }}
+</span>
+
+<div class="per100k-container">
+    <h2 class="heading">
+        На <b>100 000</b> населения
+    </h2>
+    <table>
+        <tr>
+            <td class="key">Спортивных зон</td>
+            <td class="value">{{ areaAmount | async}}</td>
+        </tr>
+        <tr>
+            <td class="key">Видов спорт услуг</td>
+            <td class="value">{{ sportKindAmount | async }}</td>
+        </tr>
+        <tr>
+            <td class="key">Площадь спортзон</td>
+            <td class="value">{{ square | async | area }} км<sup>2</sup></td>
+        </tr>
+    </table>
+</div>
+
+<div class="open-full-container">
+    <button class="open-full"
+        (click)="openFull.emit()">
+        Подробнее
+    </button>
+</div>
