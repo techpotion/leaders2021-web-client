@@ -17,6 +17,7 @@ import { DashboardChipListComponent } from './components/dashboard-chip-list/das
 import { AreaPipe } from './pipes/area.pipe';
 import { TooltipComponent } from './components/tooltip/tooltip.component';
 import { ChartLegendComponent } from './components/chart-legend/chart-legend.component';
+import { RangeSliderComponent } from './components/range-slider/range-slider.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { ChartLegendComponent } from './components/chart-legend/chart-legend.com
     AreaPipe,
     TooltipComponent,
     ChartLegendComponent,
+    RangeSliderComponent,
   ],
   exports: [
     LoadingSpinnerComponent,
@@ -43,6 +45,7 @@ import { ChartLegendComponent } from './components/chart-legend/chart-legend.com
     DashboardChipListComponent,
     AreaPipe,
     TooltipComponent,
+    RangeSliderComponent,
   ],
   imports: [
     CommonModule,

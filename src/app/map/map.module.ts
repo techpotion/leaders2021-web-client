@@ -5,6 +5,7 @@ import { MapRoutingModule } from './map-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { SportObjectsModule } from '../sport-objects/sport-objects.module';
 import { PolygonSavingModule } from '../polygon-saving/polygon-saving.module';
+import { QuickAnalyticsModule } from '../quick-analytics/quick-analytics.module';
 
 import { MapComponent } from './components/map/map.component';
 import { MapPageComponent } from './components/map-page/map-page.component';
@@ -29,6 +30,7 @@ import { LoadingScreenComponent } from './components/loading-screen/loading-scre
     PolygonSavingModule,
     SharedModule,
     SportObjectsModule,
+    QuickAnalyticsModule,
   ],
   providers: [
     ComponentRenderService,

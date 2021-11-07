@@ -1,0 +1,20 @@
+@import '../../../../styles/mixins';
+
+:host {
+  @extend %body-2-regular-font;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  box-sizing: border-box;
+  width: 250px;
+  padding: 15px;
+  border-radius: 10px;
+
+  color: var(--color-theme-primary-1000);
+  font-size: 12px;
+
+  background: var(--color-theme-white-1000);
+  box-shadow: var(--shadow-default);
+}

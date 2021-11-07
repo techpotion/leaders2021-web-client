@@ -59,6 +59,12 @@
                 [event]="polygonEvent | async"
             ></tp-polygon-saving-settings>
 
+            <tp-quick-analytics-controls
+                class="quick-analytics-controls"
+                *ngIf="!!(mode.hasContent('quick-analytics') | async)"
+                [@scaleIncrease]
+            > </tp-quick-analytics-controls>
+
             <div class="layers-toggles">
                 <div class="top-toggles">
                     <tp-tooltip

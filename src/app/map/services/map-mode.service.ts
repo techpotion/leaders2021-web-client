@@ -140,6 +140,8 @@ export class MapModeService {
   private onRemove(mode: MapMode): void {
     if (mode === 'polygon-saving') {
       this.removeContent('polygon-saving');
+    } else if (mode === 'quick-analytics') {
+      this.removeContent('quick-analytics');
     }
   }
 
