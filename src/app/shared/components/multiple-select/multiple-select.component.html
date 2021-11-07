@@ -26,8 +26,8 @@
     *ngIf="isOpened | async"
     [@sizeIncrease]
     itemSize="48"
-    [minBufferPx]="variantsMaxHeight * 300"
-    [maxBufferPx]="variantsMaxHeight * 300">
+    [minBufferPx]="variantsBuffer"
+    [maxBufferPx]="variantsBuffer">
         <div class="variant"
             (click)="selectAll()">
             Все
@@ -37,12 +37,13 @@
         </div>
 
         <div class="variant"
-            *cdkVirtualFor="let variant of variantsSubject | async; index as i"
-            (click)="selectVariant(i, !variant.selected)"
-            [ngClass]="{ 'hidden': !variant.shown }">
-            {{ variant.name }}
+            *cdkVirtualFor="let shownVariant of shownVariants | async"
+            (click)="selectVariant(shownVariant.index)">
+            {{ shownVariant.variant.name }}
+            <!-- eslint-disable -->
             <tp-checkbox class="checkbox"
-                [value]="variant.selected">
+                [value]="!!(isVariantSelected(shownVariant.index) | async)">
             </tp-checkbox>
+            <!-- eslint-enable -->
         </div>
 </cdk-virtual-scroll-viewport>

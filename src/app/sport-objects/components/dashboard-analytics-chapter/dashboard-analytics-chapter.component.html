@@ -17,7 +17,7 @@
                 <span class="number">
                     ≈{{ areasCount | async }}
                 </span>
-                <tp-tooltip *ngIf="(areasCountIsOk | async) === false"
+                <tp-tooltip *ngIf="!filtersEnabled && (areasCountIsOk | async) === false"
                     text="Для данной плотности населения спортивных зон недостаточно">
                     <img class="indicator" src="assets/in-circle/exclamation.svg">
                 </tp-tooltip>
@@ -30,7 +30,7 @@
                 <span class="number">
                     ≈{{ sportKindsCount | async }}
                 </span>
-                <tp-tooltip *ngIf="(sportKindsIsOk | async) === false"
+                <tp-tooltip *ngIf="!filtersEnabled && (sportKindsIsOk | async) === false"
                     text="Для данной плотности населения недостаточно видов спортивных услуг">
                     <img class="indicator" src="assets/in-circle/exclamation.svg">
                 </tp-tooltip>
@@ -46,7 +46,7 @@
                         м <sup>2</sup>
                     </span>
                 </span>
-                <tp-tooltip *ngIf="(areasSquareIsOk | async) === false"
+                <tp-tooltip *ngIf="!filtersEnabled && (areasSquareIsOk | async) === false"
                     text="Для данной плотности населения недостаточно площади спортивных зон"
                     position="left">
                     <img class="indicator" src="assets/in-circle/exclamation.svg">
@@ -93,7 +93,7 @@
                 <span class="heading">Экологическая обстановка</span>
             </div>
 
-            <tp-tooltip *ngIf="(pollutionLevelIsOk | async) === false"
+            <tp-tooltip *ngIf="!filtersEnabled && (pollutionLevelIsOk | async) === false"
                     text="Уровень загрязненности области слишком высок"
                     position="left">
                 <img class="indicator" src="assets/in-circle/exclamation.svg">
@@ -140,7 +140,7 @@
                 <span class="heading">Транспортная доступность</span>
             </div>
 
-            <tp-tooltip *ngIf="(subwayDistanceIsOk | async) === false"
+            <tp-tooltip *ngIf="!filtersEnabled && (subwayDistanceIsOk | async) === false"
                     text="Данная область имеет низкий уровень транспортной доступности"
                     position="left">
                 <img class="indicator" src="assets/in-circle/exclamation.svg">

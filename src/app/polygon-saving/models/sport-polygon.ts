@@ -1,6 +1,6 @@
-import { LatLng } from '../../map/models/lat-lng';
 import { PolygonSportAnalytics } from './polygon-sport-analytics';
 import { SportArea } from '../../sport-objects/models/sport-object';
+import { LatLng } from '../../map/models/lat-lng';
 
 
 export interface SportPolygon {

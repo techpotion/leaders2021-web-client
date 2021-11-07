@@ -362,12 +362,43 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
   // #region Download
 
-  private readonly analyticsDownload = new BehaviorSubject<boolean>(false);
+  public readonly analyticsDownload = new BehaviorSubject<boolean>(false);
 
   private subscribeAnalyticsDownload(): Subscription {
     return this.analyticsDownload.subscribe(downloading =>
       this.loading.toggle('download', downloading));
   }
+
+  // #endregion
+
+
+  // #region Marker filters
+
+  public readonly markerFilterSources = combineLatest([
+    this.sportObjectsFilter.createDepartmentalOrganizationNamesFilter(),
+    this.sportObjectsFilter.createSportKindsFilter(),
+    this.sportObjectsFilter.createSportAreaNamesFilter(),
+    this.sportObjectsFilter.createSportAreaTypesFilter(),
+    of(this.sportObjectsFilter.createSportObjectAvailabilityFilter()),
+  ]);
+
+  public readonly nameVariants = this.sportObjectsApi.getObjectNames();
+
+  public readonly filterRequest =
+  new BehaviorSubject<SportObjectFilterRequest>({});
+
+  public readonly filtersEnabled = this.filterRequest.pipe(
+    map(request => !!request.sportKinds?.length
+      || !!request.availabilities?.length
+      || !!request.sportsAreaNames?.length
+      || !!request.sportsAreaTypes?.length
+      || !!request.departmentalOrganizationNames?.length),
+  );
+
+  public readonly singleAvailabilityChosen = this.filterRequest.pipe(
+    map(request => request.availabilities?.length ?? 0),
+    map(availabilityLength => availabilityLength === 1),
+  );
 
   // #endregion
 
@@ -381,33 +412,43 @@ export class MapPageComponent implements OnDestroy, OnInit {
     combineLatest([
       this.polygonSelection,
       this.mode.contentObservable,
+      this.filterRequest,
     ]).pipe(
-      map(([polygon, content]) => {
+      map(([polygon, content, filters]) => {
         if (!polygon) { return null; }
         if ((this.mode.modes.includes('polygon-draw')
           || this.mode.modes.includes('polygon-saving'))
           && !content.includes('polygon-dashboard')) {
-          return polygon;
+          return { polygon, filters };
         }
         return null;
       }),
-      switchMap(polygon => {
+      map(request => request === null ? request : ({
+        polygon: { points: request.polygon },
+        sportKinds: request.filters.sportKinds,
+        sportsAreaTypes: request.filters.sportsAreaTypes,
+        sportsAreaNames: request.filters.sportsAreaNames,
+        departmentalOrganizationNames:
+        request.filters.departmentalOrganizationNames,
+        availabilities: request.filters.availabilities,
+      })),
+      switchMap(request => {
         this.loading.toggle('analytics', false);
-        if (!polygon) { return of(null); }
+        if (!request) { return of(null); }
 
         this.loading.toggle('analytics', true);
         return combineLatest(
-          this.sportAnalyticsApi.getPolygonAnalytics(polygon),
+          this.sportAnalyticsApi.getPolygonAnalytics(request),
           this.sportObjectsApi.getFilteredAreas(
-            { polygon: { points: polygon } },
+            { polygon: request.polygon },
           ),
         ).pipe(
           tap(() => this.loading.toggle('analytics', false)),
           map(([analytics, areas]) => ({
-            position: this.mapUtils.getMostLeftPoint(polygon),
+            position: this.mapUtils.getMostLeftPoint(request.polygon.points),
             component: SportAreaBriefInfoComponent,
             initMethod: (component: SportAreaBriefInfoComponent) => {
-              component.polygon = polygon;
+              component.filters = request;
               component.analytics = analytics;
               component.areas = areas;
               if (this.mode.modes.includes('polygon-saving')) {
@@ -428,11 +469,11 @@ export class MapPageComponent implements OnDestroy, OnInit {
 
                 component.openFull.pipe(
                   tap(() => this.loading.toggle('analytics', true)),
-                  switchMap(() => combineLatest([
+                  switchMap(filters => combineLatest([
                     this.sportObjectsApi.getObjects(
-                      { polygon: { points: polygon } },
+                      { polygon: filters.polygon },
                     ),
-                    this.sportAnalyticsApi.getFullPolygonAnalytics(polygon),
+                    this.sportAnalyticsApi.getFullPolygonAnalytics(filters),
                   ])),
                   tap(() => this.loading.toggle('analytics', false)),
                 ).subscribe(([objects, analytics]) => {
@@ -469,29 +510,6 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public readonly dashboardObjects = new BehaviorSubject<SportObject[]>([]);
 
   public readonly dashboardAreas = new BehaviorSubject<SportArea[]>([]);
-
-  // #endregion
-
-
-  // #region Marker filters
-
-  public readonly markerFilterSources = combineLatest([
-    this.sportObjectsFilter.createDepartmentalOrganizationNamesFilter(),
-    this.sportObjectsFilter.createSportKindsFilter(),
-    this.sportObjectsFilter.createSportAreaNamesFilter(),
-    this.sportObjectsFilter.createSportAreaTypesFilter(),
-    of(this.sportObjectsFilter.createSportObjectAvailabilityFilter()),
-  ]);
-
-  public readonly nameVariants = this.sportObjectsApi.getObjectNames();
-
-  public readonly filterRequest =
-  new BehaviorSubject<SportObjectFilterRequest>({});
-
-  public readonly singleAvailabilityChosen = this.filterRequest.pipe(
-    map(request => request.availabilities?.length ?? 0),
-    map(availabilityLength => availabilityLength === 1),
-  );
 
   // #endregion
 

@@ -63,6 +63,7 @@ export type FilterApiName = keyof SportObjectFilterRequest;
 export interface SportObjectFilterSource {
   name: string;
   variants: string[] | EnumSelectVariant[];
+  selected?: (string | EnumSelectVariant)[];
   apiName: FilterApiName;
 }
 

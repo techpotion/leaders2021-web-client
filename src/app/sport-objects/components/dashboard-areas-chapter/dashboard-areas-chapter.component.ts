@@ -106,4 +106,7 @@ export class DashboardAreasChapterComponent {
 
   // #endregion
 
+  @Input()
+  public filtersEnabled = false;
+
 }

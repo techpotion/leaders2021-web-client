@@ -77,6 +77,8 @@ export class SportObjectFilterBarComponent {
       throw new Error('Wrong API filter name.');
     }
 
+    filterSource.selected = filters;
+
     const formattedFilters = filters.map(
       filter => typeof filter === 'string' ? filter : filter.index,
     );
@@ -117,7 +119,7 @@ export class SportObjectFilterBarComponent {
   public clearFilters(): void {
     // updating variants in multiple select to clear selection
     for (const source of this.filterSources) {
-      source.variants = [ ...(source.variants as string[]) ];
+      source.selected = undefined;
     }
 
     this.request = {};

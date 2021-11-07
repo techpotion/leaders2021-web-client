@@ -5,25 +5,31 @@
 </button>
 
 <div class="headings">
-    <div class="heading areas"
-        (click)="mode.next('areas')"
-        [ngClass]="{ 'selected': (mode | async) === 'areas' }">
-        Спортивные зоны
-        <hr>
+    <div class="heading-container">
+        <div class="heading areas"
+            (click)="mode.next('areas')"
+            [ngClass]="{ 'selected': (mode | async) === 'areas' }">
+            Спортивные зоны
+            <hr>
+        </div>
+        <div class="heading area-types"
+            (click)="mode.next('area-types')"
+            [ngClass]="{ 'selected': (mode | async) === 'area-types' }">
+            Виды спортивных услуг и площадь спортзон
+            <hr>
+        </div>
+        <div class="heading analytics"
+            (click)="mode.next('analytics')"
+            [ngClass]="{ 'selected': (mode | async) === 'analytics' }">
+            Аналитика
+            <div class="icon"></div>
+            <hr>
+        </div>
     </div>
-    <div class="heading area-types"
-        (click)="mode.next('area-types')"
-        [ngClass]="{ 'selected': (mode | async) === 'area-types' }">
-        Виды спортивных услуг и площадь спортзон
-        <hr>
-    </div>
-    <div class="heading analytics"
-        (click)="mode.next('analytics')"
-        [ngClass]="{ 'selected': (mode | async) === 'analytics' }">
-        Аналитика
+    <button class="download-button"
+        (click)="exportAnalytics()">
         <div class="icon"></div>
-        <hr>
-    </div>
+    </button>
 </div>
 
 <div class="content"
@@ -31,7 +37,8 @@
     <tp-dashboard-areas-chapter *ngSwitchCase="'areas'"
         [objects]="objectsSubject | async"
         [analytics]="analyticsSubject | async"
-        [areas]="areasSubject | async">
+        [areas]="areasSubject | async"
+        [filtersEnabled]="filtersEnabled">
     </tp-dashboard-areas-chapter>
 
     <tp-dashboard-area-types-chapter *ngSwitchCase="'area-types'"
@@ -40,6 +47,7 @@
     </tp-dashboard-area-types-chapter>
 
     <tp-dashboard-analytics-chapter *ngSwitchCase="'analytics'"
-        [analytics]="analyticsSubject | async">
+        [analytics]="analyticsSubject | async"
+        [filtersEnabled]="filtersEnabled">
     </tp-dashboard-analytics-chapter>
 </div>
