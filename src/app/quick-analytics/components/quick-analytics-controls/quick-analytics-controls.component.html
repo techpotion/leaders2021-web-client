@@ -1,0 +1,11 @@
+<span class="hint">
+    Выберите точку на карте и задайте радиус области
+</span>
+
+<tp-range-slider
+    [value]="minRadius"
+    [min]="minRadius"
+    [max]="maxRadius"
+    units="м"
+    (valueChange)="radiusChange.emit($event)"
+> </tp-range-slider>

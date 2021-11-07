@@ -4,6 +4,13 @@ import { SportObjectAvailability } from './sport-object';
 import { EnumSelectVariant } from '../../shared/models/enum-select-variant';
 import { LatLng } from '../../map/models/lat-lng';
 
+export function isFilterEnabled(filter: SportObjectFilterRequest): boolean {
+  return !!filter.sportKinds?.length
+    || !!filter.availabilities?.length
+    || !!filter.sportsAreaNames?.length
+    || !!filter.sportsAreaTypes?.length
+    || !!filter.departmentalOrganizationNames?.length;
+}
 
 export interface SportObjectFilterRequest
   extends SimpleSportObjectFilterRequest {

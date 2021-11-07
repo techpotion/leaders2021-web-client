@@ -1,0 +1,20 @@
+<div class="interactive-container">
+    <div class="bullet"
+        [style.transform]="'translateX(calc(' + (markerTransform | async) + 'px - 20px))'">
+        <img src="assets/slider-marker.svg"
+            class="marker">
+        <span class="value">
+            {{ valueChange | async }}
+        </span>
+    </div>
+    <input class="input" type="range"
+        #input
+        [min]="minSubject | async"
+        [max]="maxSubject | async"
+        [formControl]="inputForm">
+</div>
+
+<div class="minmax-container">
+    <span class="min">{{ minSubject | async }}{{ units }}</span>
+    <span class="max">{{ maxSubject | async }}{{ units }}</span>
+</div>

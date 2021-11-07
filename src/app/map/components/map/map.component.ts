@@ -124,6 +124,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }
     });
 
+    existingMap.on('click', event => this.mouseClick.next(event.lngLat));
+
     existingMap.on('render', () => this.renderEvent.next());
 
     this.subscribeOnMapLoadEvent(existingMap);
@@ -211,6 +213,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public readonly mouseMove = this.sourceMouseMove.pipe(
     filter(isNotNil),
   );
+
+  @Output()
+  private readonly mouseClick = new BehaviorSubject<LatLng | null>(null);
 
   // #endregion
 
