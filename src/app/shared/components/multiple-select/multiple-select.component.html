@@ -40,8 +40,10 @@
             *cdkVirtualFor="let shownVariant of shownVariants | async"
             (click)="selectVariant(shownVariant.index)">
             {{ shownVariant.variant.name }}
+            <!-- eslint-disable -->
             <tp-checkbox class="checkbox"
                 [value]="!!(isVariantSelected(shownVariant.index) | async)">
             </tp-checkbox>
+            <!-- eslint-enable -->
         </div>
 </cdk-virtual-scroll-viewport>

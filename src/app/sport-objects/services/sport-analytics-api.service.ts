@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { LatLng } from '../../map/models/lat-lng';
 import {
   AnalyticsFilterRequest,
   FullPolygonAnalytics,

@@ -12,7 +12,7 @@ import {
 import { FormControl } from '@angular/forms';
 
 import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
-import { tap, map, debounceTime, distinctUntilChanged, skip, startWith } from 'rxjs/operators';
+import { map, debounceTime, distinctUntilChanged, skip, startWith } from 'rxjs/operators';
 import _ from 'lodash';
 
 import { EnumSelectVariant } from '../../models/enum-select-variant';
