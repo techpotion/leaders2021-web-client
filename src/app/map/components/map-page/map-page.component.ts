@@ -388,11 +388,11 @@ export class MapPageComponent implements OnDestroy, OnInit {
   new BehaviorSubject<SportObjectFilterRequest>({});
 
   public readonly filtersEnabled = this.filterRequest.pipe(
-    map(request => !!(request.sportKinds?.length
-      ?? request.availabilities?.length
-      ?? request.sportsAreaNames?.length
-      ?? request.sportsAreaTypes?.length
-      ?? request.departmentalOrganizationNames?.length)),
+    map(request => !!request.sportKinds?.length
+      || !!request.availabilities?.length
+      || !!request.sportsAreaNames?.length
+      || !!request.sportsAreaTypes?.length
+      || !!request.departmentalOrganizationNames?.length),
   );
 
   public readonly singleAvailabilityChosen = this.filterRequest.pipe(
