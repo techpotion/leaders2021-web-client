@@ -60,66 +60,82 @@
             ></tp-polygon-saving-settings>
 
             <div class="layers-toggles">
-                <tp-tooltip
-                    text="Работа со слоями"
-                    position="left">
-                    <tp-map-toggle
-                        [isPressed]="!!(mode.hasContent('polygon-saving') | async)"
-                        (pressChange)="onTogglePress($event, 'polygon-saving')"
-                        lightIcon="assets/light/layers.svg"
-                        darkIcon="assets/dark/layers.svg"    
-                    ></tp-map-toggle>
-                </tp-tooltip>
+                <div class="top-toggles">
+                    <tp-tooltip
+                        text="Работа со слоями"
+                        position="left">
+                        <tp-map-toggle class="toggle"
+                            [isPressed]="!!(mode.hasContent('polygon-saving') | async)"
+                            (pressChange)="onTogglePress($event, 'polygon-saving')"
+                            lightIcon="assets/light/layers.svg"
+                            darkIcon="assets/dark/layers.svg"    
+                        ></tp-map-toggle>
+                    </tp-tooltip>
 
-                <div class="marker-toggles">
-                    <tp-tooltip
-                        text="Нарисовать область"
-                        position="left">
-                        <tp-map-toggle
-                            [isPressed]="!!(mode.hasMode('polygon-draw') | async)"
-                            (pressChange)="onTogglePress($event, 'polygon-draw')"
-                            lightIcon="assets/light/polygon.svg"
-                            darkIcon="assets/dark/polygon.svg"    
-                        ></tp-map-toggle>
-                    </tp-tooltip>
-                    <tp-tooltip
-                        text="Спортивные объекты"
-                        position="left">
-                        <tp-map-toggle
-                            [isPressed]="!!(mode.hasMode('marker') | async)"
-                            (pressChange)="onTogglePress($event, 'marker')"
-                            lightIcon="assets/light/marker.svg"
-                            darkIcon="assets/dark/marker.svg"    
-                        ></tp-map-toggle>
-                    </tp-tooltip>
+                    <div class="marker-toggles">
+                        <tp-tooltip
+                            text="Нарисовать область"
+                            position="left">
+                            <tp-map-toggle class="toggle"
+                                [isPressed]="!!(mode.hasMode('polygon-draw') | async)"
+                                (pressChange)="onTogglePress($event, 'polygon-draw')"
+                                lightIcon="assets/light/polygon.svg"
+                                darkIcon="assets/dark/polygon.svg"    
+                            ></tp-map-toggle>
+                        </tp-tooltip>
+                        <tp-tooltip
+                            text="Спортивные объекты"
+                            position="left">
+                            <tp-map-toggle class="toggle"
+                                [isPressed]="!!(mode.hasMode('marker') | async)"
+                                (pressChange)="onTogglePress($event, 'marker')"
+                                lightIcon="assets/light/marker.svg"
+                                darkIcon="assets/dark/marker.svg"    
+                            ></tp-map-toggle>
+                        </tp-tooltip>
+                    </div>
+
+                    <div class="heatmap-toggles">
+                        <tp-tooltip text="Тепловая карта населения"
+                                position="left">
+                            <tp-map-toggle class="toggle"
+                                [isPressed]="!!(mode.hasMode('population-heatmap') | async)"
+                                (pressChange)="onTogglePress($event, 'population-heatmap')"
+                                lightIcon="assets/light/population.svg"
+                                darkIcon="assets/dark/population.svg"    
+                            ></tp-map-toggle>
+                        </tp-tooltip>
+                        <tp-tooltip text="Тепловая карта спортивных объектов"
+                                position="left">
+                            <tp-map-toggle class="toggle"
+                                [isPressed]="!!(mode.hasMode('sport-heatmap') | async)"
+                                (pressChange)="onTogglePress($event, 'sport-heatmap')"
+                                lightIcon="assets/light/runner.svg"
+                                darkIcon="assets/dark/runner.svg"    
+                            ></tp-map-toggle>
+                        </tp-tooltip>
+                        <tp-tooltip text="Пересечения областей"
+                                position="left"
+                                *ngIf="singleAvailabilityChosen | async">
+                            <tp-map-toggle class="toggle"
+                                [isPressed]="!!(isObjectIntersectionTogglePressed | async)"
+                                (pressChange)="onTogglePress($event, 'object-intersection')"
+                                lightIcon="assets/light/intersection.svg"
+                                darkIcon="assets/dark/intersection.svg"    
+                            ></tp-map-toggle>
+                        </tp-tooltip>
+                    </div>
                 </div>
 
-                <div class="heatmap-toggles"><tp-tooltip
-                        text="Тепловая карта населения"
+                <tp-tooltip text="Быстрая аналитика"
                         position="left">
-                        <tp-map-toggle
-                            [isPressed]="!!(mode.hasMode('population-heatmap') | async)"
-                            (pressChange)="onTogglePress($event, 'population-heatmap')"
-                            lightIcon="assets/light/population.svg"
-                            darkIcon="assets/dark/population.svg"    
-                        ></tp-map-toggle></tp-tooltip><tp-tooltip
-                        text="Тепловая карта спортивных объектов"
-                        position="left">
-                        <tp-map-toggle
-                            [isPressed]="!!(mode.hasMode('sport-heatmap') | async)"
-                            (pressChange)="onTogglePress($event, 'sport-heatmap')"
-                            lightIcon="assets/light/runner.svg"
-                            darkIcon="assets/dark/runner.svg"    
-                        ></tp-map-toggle></tp-tooltip><tp-tooltip
-                        text="Пересечения областей"
-                        position="left">
-                        <tp-map-toggle
-                            *ngIf="singleAvailabilityChosen | async"
-                            [isPressed]="!!(isObjectIntersectionTogglePressed | async)"
-                            (pressChange)="onTogglePress($event, 'object-intersection')"
-                            lightIcon="assets/light/intersection.svg"
-                            darkIcon="assets/dark/intersection.svg"    
-                        ></tp-map-toggle></tp-tooltip></div>
+                    <tp-map-toggle class="toggle"
+                        [isPressed]="!!(mode.hasMode('quick-analytics') | async)"
+                        (pressChange)="onTogglePress($event, 'quick-analytics')"
+                        lightIcon="assets/lightning.svg"
+                        darkIcon="assets/lightning.svg"    
+                    ></tp-map-toggle>
+                </tp-tooltip>
             </div>
         </div>
     </div>
@@ -133,10 +149,6 @@
         </tp-density-info>
     </ng-container>
 </div>
-
-<!-- <tp-loading-spinner class="loading-spinner" -->
-                    <!-- [ngClass]="{ 'shown': loading.isShown | async }"> -->
-<!-- </tp-loading-spinner> -->
 
 <tp-loading-screen class="loading-screen"
     [ngClass]="{ shown: loading.isShown | async }">

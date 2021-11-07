@@ -71,7 +71,6 @@
       }
 
       .map-container {
-
         position: absolute;
         top: var(--filter-bar-default-height);
         left: 0;
@@ -93,20 +92,33 @@
 
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          justify-content: space-between;
 
-          margin-top: 25px;
-          margin-right: 40px;
+          box-sizing: border-box;
+          height: 100%;
+          padding: 25px 40px 25px 0;
 
-          .marker-toggles,
-          .heatmap-toggles {
+          pointer-events: none;
+
+          .toggle {
+            pointer-events: auto;
+          }
+
+          .top-toggles {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 20px;
 
-            border-radius: 25px;
+            .marker-toggles,
+            .heatmap-toggles {
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
 
-            background: var(--color-background);
+              border-radius: 25px;
+
+              background: var(--color-background);
+            }
           }
         }
 
@@ -132,25 +144,6 @@
 
       display: flex;
       gap: 25px;
-    }
-  }
-
-  .loading-spinner {
-    position: absolute;
-    right: 40px;
-    bottom: 25px;
-    z-index: 1;
-
-    opacity: 0;
-
-    transition: var(--transition-default);
-
-    pointer-events: none;
-
-    &.shown {
-      opacity: 1;
-
-      pointer-events: auto;
     }
   }
 

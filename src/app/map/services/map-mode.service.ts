@@ -8,12 +8,14 @@ export type MapMode = 'marker'
 | 'population-heatmap'
 | 'sport-heatmap'
 | 'polygon-draw'
+| 'quick-analytics'
 | 'polygon-saving'
 | 'object-intersection';
 
 export type MapContent = 'object-info'
 | 'analysis'
 | 'polygon-saving'
+| 'quick-analytics'
 | 'polygon-dashboard';
 
 @Injectable()
@@ -68,6 +70,8 @@ export class MapModeService {
       this.clearContent();
     } else if (content === 'polygon-dashboard') {
       this.removeContent('object-info');
+    } else if (content === 'quick-analytics') {
+      this.clearContent();
     }
   }
 
@@ -115,13 +119,21 @@ export class MapModeService {
     if (mode === 'polygon-saving') {
       this.remove('marker');
       this.remove('polygon-draw');
+      this.remove('quick-analytics');
       this.addContent('polygon-saving');
     } else if (mode === 'marker') {
       this.remove('polygon-saving');
       this.remove('polygon-draw');
+      this.remove('quick-analytics');
     } else if (mode === 'polygon-draw') {
       this.remove('polygon-saving');
       this.remove('marker');
+      this.remove('quick-analytics');
+    } else if (mode === 'quick-analytics') {
+      this.remove('polygon-saving');
+      this.remove('polygon-draw');
+      this.remove('marker');
+      this.addContent('quick-analytics');
     }
   }
 
