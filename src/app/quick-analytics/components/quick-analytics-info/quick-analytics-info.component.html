@@ -4,7 +4,7 @@
 </div>
 
 <span class="mark">
-    <b [ngClass]="{ 'bad': !(markIsOk | async)}">
+    <b [ngClass]="{ 'bad': (markIsOk | async) === false}">
         {{ mark | async }}
     </b> / 10
 </span>

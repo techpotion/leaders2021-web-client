@@ -38,7 +38,6 @@ import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale
 import { isNotNil } from '../../../shared/utils/is-not-nil';
 import { QuickAnalyticsService } from '../../../quick-analytics/services/quick-analytics.service';
 import { convertToAnalyticsRequest } from '../../../sport-objects/utils/convert-to-analytics-request';
-import { isFilterEnabled } from '../../../sport-objects/models/sport-object-filter';
 
 import { PolygonDrawMode } from '../../services/map.service';
 import { Heatmap } from '../../models/heatmap';
@@ -50,6 +49,7 @@ import { QuickAnalyticsInfoComponent } from '../../../quick-analytics/components
 import {
   SportObjectFilterRequest,
   isFilterRequestEmpty,
+  isFilterEnabled,
 } from '../../../sport-objects/models/sport-object-filter';
 import { MapEvent } from '../../models/map-event';
 import { PopupSource } from '../../models/popup';
@@ -519,7 +519,10 @@ export class MapPageComponent implements OnDestroy, OnInit {
         ).pipe(
           tap(() => this.loading.toggle('analytics', false)),
           map(([analytics, areas]) => ({
-            position: this.mapUtils.getMostLeftPoint((request as any).polygon.points),
+            position: this.mapUtils.getMostLeftPoint(
+              // eslint-disable-next-line
+              (request as any).polygon.points,
+            ),
             component: SportAreaBriefInfoComponent,
             initMethod: (component: SportAreaBriefInfoComponent) => {
               component.filters = request;
@@ -646,7 +649,8 @@ export class MapPageComponent implements OnDestroy, OnInit {
             properties: null,
           }],
         },
-        idMethod: (obj: any) => { return 0; },
+        // eslint-disable-next-line
+        idMethod: (obj: any) => 0,
         image: {
           source: 'assets/unknown-marker.svg',
           anchor: 'bottom' as const,

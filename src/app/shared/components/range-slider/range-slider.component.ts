@@ -9,7 +9,7 @@ import {
 import { FormControl } from '@angular/forms';
 
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { startWith, map, tap, filter } from 'rxjs/operators';
+import { startWith, map, filter } from 'rxjs/operators';
 
 
 const DEFAULT_MAX_VALUE = 100;
