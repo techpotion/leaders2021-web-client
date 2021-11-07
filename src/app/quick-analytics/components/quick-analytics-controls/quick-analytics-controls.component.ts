@@ -1,16 +1,29 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  EventEmitter,
+  Output,
+} from '@angular/core';
+
+
+const MIN_RADIUS = 500;
+const MAX_RADIUS = 5000;
 
 @Component({
   selector: 'tp-quick-analytics-controls',
   templateUrl: './quick-analytics-controls.component.html',
   styleUrls: ['./quick-analytics-controls.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class QuickAnalyticsControlsComponent implements OnInit {
+export class QuickAnalyticsControlsComponent {
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  public readonly minRadius = MIN_RADIUS;
+
+  public readonly maxRadius = MAX_RADIUS;
+
+  @Output()
+  public readonly radiusChange = new EventEmitter<number>();
 
 }

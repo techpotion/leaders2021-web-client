@@ -36,6 +36,9 @@ import { MapLoadingService } from '../../services/map-loading.service';
 import { MapModeService, MapMode } from '../../services/map-mode.service';
 import { createScaleIncreaseAnimation } from '../../../shared/utils/create-scale-increase-animation';
 import { isNotNil } from '../../../shared/utils/is-not-nil';
+import { QuickAnalyticsService } from '../../../quick-analytics/services/quick-analytics.service';
+import { convertToAnalyticsRequest } from '../../../sport-objects/utils/convert-to-analytics-request';
+import { isFilterEnabled } from '../../../sport-objects/models/sport-object-filter';
 
 import { PolygonDrawMode } from '../../services/map.service';
 import { Heatmap } from '../../models/heatmap';
@@ -43,6 +46,7 @@ import { LatLng } from '../../models/lat-lng';
 import { MarkerLayerSource } from '../../models/marker-layer';
 import { SportObject, SportArea } from '../../../sport-objects/models/sport-object';
 import { FullPolygonAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
+import { QuickAnalyticsInfoComponent } from '../../../quick-analytics/components/quick-analytics-info/quick-analytics-info.component';
 import {
   SportObjectFilterRequest,
   isFilterRequestEmpty,
@@ -76,6 +80,7 @@ const POLYGON_SAVING_BOUNDS_PADDING = {
   providers: [
     MapLoadingService,
     MapModeService,
+    QuickAnalyticsService,
   ],
 })
 export class MapPageComponent implements OnDestroy, OnInit {
@@ -91,6 +96,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
     public readonly sportObjectsApi: SportObjectsApiService,
     public readonly sportObjectsFilter: SportObjectFilterService,
     public readonly sportPolygonApi: SportPolygonApiService,
+    public readonly quickAnalytics: QuickAnalyticsService,
   ) {
     this.subscriptions.push(
       this.subscribeClearingPolygon(),
@@ -388,11 +394,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
   new BehaviorSubject<SportObjectFilterRequest>({});
 
   public readonly filtersEnabled = this.filterRequest.pipe(
-    map(request => !!request.sportKinds?.length
-      || !!request.availabilities?.length
-      || !!request.sportsAreaNames?.length
-      || !!request.sportsAreaTypes?.length
-      || !!request.departmentalOrganizationNames?.length),
+    map(request => isFilterEnabled(request)),
   );
 
   public readonly singleAvailabilityChosen = this.filterRequest.pipe(
@@ -410,6 +412,84 @@ export class MapPageComponent implements OnDestroy, OnInit {
   public readonly popups = merge(
     this.forcePopups,
     combineLatest([
+      this.quickAnalytics.polygon,
+      this.mode.contentObservable,
+      this.filterRequest,
+    ]).pipe(
+      map(([polygon, content, filters]) => {
+        if (!polygon) { return null; }
+        if (!content.includes('quick-analytics')) { return null; }
+        return { polygon, filters };
+      }),
+      map(request => request === null ? request : ({
+        analyticsRequest: convertToAnalyticsRequest(
+          request.filters,
+          request.polygon,
+        ),
+        filterRequest: request.filters,
+      })),
+      switchMap(request => {
+        this.loading.toggle('analytics', false);
+        if (!request) { return of(null); }
+
+        this.loading.toggle('analytics', true);
+        return this.sportAnalyticsApi.getFullPolygonAnalytics(
+          request.analyticsRequest,
+        ).pipe(
+          map(analytics => ({
+            analytics,
+            polygon: request.analyticsRequest.polygon?.points,
+            filtersEnabled: isFilterEnabled(request.filterRequest),
+          })),
+          tap(() => this.loading.toggle('analytics', false)),
+          map(({ analytics, polygon, filtersEnabled }) => {
+            if (!polygon) {
+              throw new Error('New error');
+            }
+            return { analytics, polygon, filtersEnabled };
+          }),
+          map(({ analytics, polygon, filtersEnabled }) => ({
+            position: this.mapUtils.getMostLeftPoint(polygon),
+            component: QuickAnalyticsInfoComponent,
+            initMethod: (component: QuickAnalyticsInfoComponent) => {
+              component.analytics = analytics;
+              component.filtersEnabled = filtersEnabled;
+            },
+            eventHandler: (component: QuickAnalyticsInfoComponent) => {
+              if (this.polygonSubscriptions.length) {
+                this.polygonSubscriptions.forEach(sub => sub.unsubscribe());
+                this.polygonSubscriptions = [];
+              }
+
+              this.polygonSubscriptions.push(
+                component.openFull.pipe(
+                  tap(() => this.loading.toggle('analytics', true)),
+                  switchMap(() => combineLatest([
+                    this.sportObjectsApi.getObjects(
+                      { polygon: { points: polygon } },
+                    ),
+                    this.sportObjectsApi.getFilteredAreas(
+                      { polygon: { points: polygon } },
+                    ),
+                  ])),
+                  tap(() => this.loading.toggle('analytics', false)),
+                ).subscribe(([objects, areas]) => {
+                  this.dashboardObjects.next(objects);
+                  this.dashboardAnalytics.next(analytics);
+                  this.dashboardAreas.next(areas);
+                  this.mode.addContent('polygon-dashboard');
+                  this.forcePopups.next([]);
+                }),
+              );
+            },
+            anchor: 'right' as const,
+            closeOnClick: false,
+          })),
+          map(popup => [popup]),
+        );
+      }),
+    ),
+    combineLatest([
       this.polygonSelection,
       this.mode.contentObservable,
       this.filterRequest,
@@ -423,15 +503,9 @@ export class MapPageComponent implements OnDestroy, OnInit {
         }
         return null;
       }),
-      map(request => request === null ? request : ({
-        polygon: { points: request.polygon },
-        sportKinds: request.filters.sportKinds,
-        sportsAreaTypes: request.filters.sportsAreaTypes,
-        sportsAreaNames: request.filters.sportsAreaNames,
-        departmentalOrganizationNames:
-        request.filters.departmentalOrganizationNames,
-        availabilities: request.filters.availabilities,
-      })),
+      map(request => request === null
+        ? request
+        : convertToAnalyticsRequest(request.filters, request.polygon)),
       switchMap(request => {
         this.loading.toggle('analytics', false);
         if (!request) { return of(null); }
@@ -445,7 +519,7 @@ export class MapPageComponent implements OnDestroy, OnInit {
         ).pipe(
           tap(() => this.loading.toggle('analytics', false)),
           map(([analytics, areas]) => ({
-            position: this.mapUtils.getMostLeftPoint(request.polygon.points),
+            position: this.mapUtils.getMostLeftPoint((request as any).polygon.points),
             component: SportAreaBriefInfoComponent,
             initMethod: (component: SportAreaBriefInfoComponent) => {
               component.filters = request;

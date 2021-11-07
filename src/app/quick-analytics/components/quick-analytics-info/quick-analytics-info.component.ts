@@ -9,8 +9,8 @@ import {
 import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
-import { FullPolygonAnalytics } from '../../polygon-saving/models/polygon-sport-analytics';
-import { isNotNil } from '../../shared/utils/is-not-nil';
+import { FullPolygonAnalytics } from '../../../polygon-saving/models/polygon-sport-analytics';
+import { isNotNil } from '../../../shared/utils/is-not-nil';
 
 
 const DECIMAL_UNIT = 10;
@@ -83,6 +83,7 @@ export class QuickAnalyticsInfoComponent {
 
   // #endregion
 
+  @Output()
   public readonly openFull = new EventEmitter<void>();
 
 }

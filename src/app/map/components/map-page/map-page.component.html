@@ -16,6 +16,7 @@
         (markerLayerLoad)="loading.toggle('marker', false)"
         (heatmapLoad)="loading.toggle('heatmap', false)"
         (mouseMove)="mapMouseMove.next($event)"
+        (mouseClick)="quickAnalytics.center.next($event)"
     ></tp-map>
 
     <div class="top-controls">
@@ -63,6 +64,7 @@
                 class="quick-analytics-controls"
                 *ngIf="!!(mode.hasContent('quick-analytics') | async)"
                 [@scaleIncrease]
+                (radiusChange)="quickAnalytics.radius.next($event)"
             > </tp-quick-analytics-controls>
 
             <div class="layers-toggles">
@@ -159,5 +161,3 @@
 <tp-loading-screen class="loading-screen"
     [ngClass]="{ shown: loading.isShown | async }">
 </tp-loading-screen>
-
-<tp-quick-analytics-info class="info"></tp-quick-analytics-info>

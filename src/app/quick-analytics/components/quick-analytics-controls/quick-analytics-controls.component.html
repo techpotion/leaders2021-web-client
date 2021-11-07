@@ -3,8 +3,9 @@
 </span>
 
 <tp-range-slider
-    [value]="500"
-    [min]="500"
-    [max]="5000"
+    [value]="minRadius"
+    [min]="minRadius"
+    [max]="maxRadius"
     units="м"
+    (valueChange)="radiusChange.emit($event)"
 > </tp-range-slider>

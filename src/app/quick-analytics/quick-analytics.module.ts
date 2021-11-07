@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
 
 import { QuickAnalyticsControlsComponent } from './components/quick-analytics-controls/quick-analytics-controls.component';
-import { QuickAnalyticsInfoComponent } from './quick-analytics-info/quick-analytics-info.component';
+import { QuickAnalyticsInfoComponent } from './components/quick-analytics-info/quick-analytics-info.component';
 
 
 @NgModule({
